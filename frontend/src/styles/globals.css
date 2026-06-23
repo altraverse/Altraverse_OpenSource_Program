@@ -1,4 +1,5 @@
-@tailwind utilities;
+
+@import "tailwindcss";
 
 /* ── Base reset ── */
 *, *::before, *::after { box-sizing: border-box; }

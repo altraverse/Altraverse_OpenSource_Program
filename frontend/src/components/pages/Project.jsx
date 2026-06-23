@@ -40,8 +40,8 @@ export const organisations = [
     date: "2 Issues open"
   }];
 
-import Navbar from "../layout/Navbar";
 import OrganisationCard from "./OrganisationCard";
+import Navbar from "../../component/layout/Navbar";
 
 export default function OrganisationsPage() {
   return (

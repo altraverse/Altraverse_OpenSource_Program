@@ -1,6 +1,7 @@
 import React from "react";
 import Navbar from "../component/layout/Navbar";
 import { motion } from "motion/react";
+import Footer from "./footer";
 
 const stats = [
   { value: "50K+", label: "Contributors" },
@@ -13,7 +14,7 @@ const values = [
   {
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
       </svg>
     ),
     title: "Real Impact",
@@ -22,7 +23,7 @@ const values = [
   {
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+        <rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8M12 17v4" />
       </svg>
     ),
     title: "Learn & Grow",
@@ -31,8 +32,8 @@ const values = [
   {
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
       </svg>
     ),
     title: "Strong Community",
@@ -209,25 +210,7 @@ export default function AboutPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/[0.06] px-8 py-8 flex items-center justify-between max-w-7xl mx-auto">
-        <div className="flex items-center gap-2.5">
-          <div className="w-6 h-6 rounded-lg btn-violet flex items-center justify-center">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M6 1l1.5 3.5H11.5l-3 2.4 1.1 3.8L6 9 2.4 10.7l1.1-3.8L.5 4.5H5z" fill="white"/>
-            </svg>
-          </div>
-          <span className="text-[15px] font-bold text-white/60">ASOC</span>
-        </div>
-        <div className="flex items-center gap-6">
-          {["About", "Projects", "Contributors", "Events"].map((link) => (
-            <a key={link} href="#"
-               className="text-[12px] text-white/30 hover:text-white/55 transition-colors duration-200">
-              {link}
-            </a>
-          ))}
-        </div>
-        <div className="text-[11px] text-white/25">© 2026 ASOC. All rights reserved.</div>
-      </footer>
+      <Footer />
     </div>
   );
 }

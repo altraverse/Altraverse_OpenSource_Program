@@ -2,10 +2,10 @@ import React from "react";
 
 // 1. Move static configuration data outside the component to prevent re-allocation on re-renders
 const FOOTER_LINKS = [
-  { label: "About", href: "#about" },
+  { label: "About", href: "/about" },
   { label: "Projects", href: "/projects" }, // Assuming a routing framework or internal id
-  { label: "Announcements", href: "/announcements" },
-  { label: "Resources", href: "#resources" },
+  { label: "Announcements", href: "/announcement" },
+  { label: "Resources", href: "/resources" },
 ];
 
 const Footer = () => {

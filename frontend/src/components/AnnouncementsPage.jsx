@@ -20,23 +20,15 @@ export default function AnnouncementsPage() {
   const sideCards = filtered.slice(0, 3);
   const miniCards = filtered.slice(3);
 
-
-
   return (
     <div style={{ background: "#06091b", minHeight: "100vh", color: "#fff" }}>
-
-
       <Navbar />
       <HeroSection />
-      <section className="relative z-10 max-w-7xl mx-auto px-8 pt-12 pb-20">
 
-
-
-
-
+      <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20">
 
         {/* Section header */}
-        <div className="flex items-end justify-between mb-8 ">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
               <div className="h-px w-6 bg-gradient-to-r from-violet-DEFAULT to-transparent" />
@@ -44,9 +36,8 @@ export default function AnnouncementsPage() {
                 Program Announcements
               </span>
             </div>
-            {/* FIX: font-body bold instead of font-display extrabold — no stretching */}
-            <h2 className="font-body font-bold text-white leading-tight"
-              style={{ fontSize: 26, letterSpacing: "-0.01em" }}>
+            <h2 className="font-body font-bold text-white leading-tight text-2xl sm:text-[26px]"
+              style={{ letterSpacing: "-0.01em" }}>
               Stay ahead of every update
             </h2>
             <p className="font-body text-[13px] text-white/40 mt-1.5 font-light">
@@ -54,37 +45,38 @@ export default function AnnouncementsPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
             <FilterBar active={activeFilter} onChange={setActiveFilter} />
-            <a href="#" className="font-body text-[12px] text-violet-DEFAULT
-                                   hover:opacity-75 transition-opacity duration-200 whitespace-nowrap">
+            <a href="#" className="font-body text-[12px] text-violet-DEFAULT hover:opacity-75 transition-opacity duration-200 whitespace-nowrap">
               View all →
             </a>
           </div>
         </div>
 
-        {/* Magazine grid: featured left + sidebar right — FIX: sidebar has max-w so it never overflows */}
+        {/* Magazine grid: Stacked on mobile, 2 columns on desktop (lg) */}
         {featured && (
-          <div className="grid gap-4 mb-4" style={{ gridTemplateColumns: "1fr 320px" }}>
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 mb-6">
             {/* Featured spotlight */}
             <FeaturedCard item={featured} />
-            {/* Side stack — overflow hidden so cards don't bleed right */}
+
+            {/* Side stack */}
             <div className="flex flex-col gap-3 min-w-0 overflow-hidden">
-              {sideCards.length > 0
-                ? sideCards.map((item, i) => (
+              {sideCards.length > 0 ? (
+                sideCards.map((item, i) => (
                   <SideCard key={item.id} item={item} animDelay={0.35 + i * 0.1} />
                 ))
-                : <div className="flex items-center justify-center h-full text-white/30 text-sm font-body">
+              ) : (
+                <div className="flex items-center justify-center min-h-[200px] lg:h-full border border-white/5 rounded-xl text-white/30 text-sm font-body bg-white/[0.02]">
                   No announcements in this category.
                 </div>
-              }
+              )}
             </div>
           </div>
         )}
 
-        {/* Bottom mini-card row */}
+        {/* Bottom mini-card row: Responsive grid columns */}
         {miniCards.length > 0 && (
-          <div className={`grid gap-3 ${miniCards.length >= 3 ? "grid-cols-3" : miniCards.length === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {miniCards.map((item, i) => (
               <MiniCard key={item.id} item={item} animDelay={0.55 + i * 0.1} />
             ))}
@@ -103,8 +95,6 @@ export default function AnnouncementsPage() {
       <StatsBar />
 
       <Footer />
-      {/* Footer */}
     </div>
-
   );
 }

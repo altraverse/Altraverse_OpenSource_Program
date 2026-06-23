@@ -15,9 +15,9 @@ import Navbar from "@/component/layout/Navbar";
 import WhyJoin from "@/component/home/WhyJoin";
 import Stats from "@/component/home/Stats";
 import EventSection from "@/component/home/EventSection";
-import { InteractiveNetworkBackground } from "../interactive-network-background";
 import Hero from "../home/Hero";
 import Footer from "../../components/footer";
+import { InteractiveNetworkBackground } from "../../components/interactive-network-background";
 
 
 

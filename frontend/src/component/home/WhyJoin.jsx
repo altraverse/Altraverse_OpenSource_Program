@@ -162,12 +162,12 @@ export default function WhyJoin() {
         </div>
 
         {/* Cards Responsive Grid */}
-        <div className="flex gap-6 auto-rows-fr w-full">
+        <div className="flex justify-around gap-6 flex-wrap auto-rows-fr w-full">
 
           {/* CARD 1: Real Impact */}
           <div
             data-card-id="impact"
-            className="interactive-card relative border border-slate-800/50 rounded-2xl p-6 sm:p-8 bg-slate-900/30 backdrop-blur-md flex flex-col justify-between transition-colors duration-300 shadow-xl"
+            className="w-80 interactive-card relative border border-slate-800/50 rounded-2xl p-6 sm:p-8 bg-slate-900/30 backdrop-blur-md flex flex-col justify-between transition-colors duration-300 shadow-xl"
           >
             <div className="mb-8">
               <h3 className="text-xl font-bold text-white mb-3">Real Impact</h3>
@@ -202,7 +202,7 @@ export default function WhyJoin() {
           {/* CARD 2: Learn And Grow */}
           <div
             data-card-id="grow"
-            className="interactive-card relative border border-slate-800/50 rounded-2xl p-6 sm:p-8 bg-slate-900/30 backdrop-blur-md flex flex-col justify-between transition-colors duration-300 shadow-xl"
+            className="w-80 interactive-card relative border border-slate-800/50 rounded-2xl p-6 sm:p-8 bg-slate-900/30 backdrop-blur-md flex flex-col justify-between transition-colors duration-300 shadow-xl"
           >
             <div className="mb-8">
               <h3 className="text-xl font-bold text-white mb-3">Learn And Grow</h3>
@@ -245,7 +245,7 @@ export default function WhyJoin() {
           {/* CARD 3: Strong Community */}
           <div
             data-card-id="community"
-            className="interactive-card relative border border-slate-800/50 rounded-2xl p-6 sm:p-8 bg-slate-900/30 backdrop-blur-md flex flex-col justify-between transition-colors duration-300 shadow-xl"
+            className="w-80 interactive-card relative border border-slate-800/50 rounded-2xl p-6 sm:p-8 bg-slate-900/30 backdrop-blur-md flex flex-col justify-between transition-colors duration-300 shadow-xl"
           >
             <div className="mb-8">
               <h3 className="text-xl font-bold text-white mb-3">Strong Community</h3>

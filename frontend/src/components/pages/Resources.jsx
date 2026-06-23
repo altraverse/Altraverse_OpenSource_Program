@@ -1,5 +1,5 @@
+import Navbar from "../../component/layout/Navbar";
 import Footer from "../../components/footer";
-import Navbar from "../layout/Navbar"
 
 const Resources = () => {
   // Real Articles for Bento Grid with Contextual Unsplash Images

@@ -169,6 +169,15 @@
   background: linear-gradient(181deg, var(--color-brand1) 0%, var(--color-brand2) 22%, var(--color-brand3) 65%, var(--color-brand4) 90%);
 }
 
+.desk{
+  display:flex;
+}
+@media only screen and (max-width: 600px) {
+.desk{
+  display:none;
+}
+}
+
 /* .shooting-star { */
 /*   position: absolute; */
 /*   left: -150px;  */
