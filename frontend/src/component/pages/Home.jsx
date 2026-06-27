@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import {
   Accordion,
   AccordionContent,
@@ -30,6 +31,7 @@ const fadeUpVariant = {
 };
 
 function Home() {
+  const navigate = useNavigate();
   // useEffect(() => {
   //   // // @ts-ignore
   //    if (window.particlesJS) {
@@ -41,7 +43,21 @@ function Home() {
   // }, []);
 
   return (
-    <div className="min-h-screen bg-brand1 text-white overflow-x-hidden selection:bg-brand2">
+    <div className="min-h-screen bg-[#06091b] text-white overflow-x-hidden selection:bg-indigo-500/30 relative">
+      {/* Background Mesh Glow Layers for the entire Home Page */}
+      <div 
+        className="absolute top-0 left-0 w-full h-[1500px] pointer-events-none z-0 opacity-30"
+        style={{ background: "radial-gradient(ellipse 70% 50% at 30% 20%, rgba(91,63,214,0.22) 0%, transparent 65%)" }} 
+      />
+      <div 
+        className="absolute top-[1800px] right-0 w-[900px] h-[900px] pointer-events-none z-0 opacity-20"
+        style={{ background: "radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 75%)" }} 
+      />
+      <div 
+        className="absolute bottom-[800px] left-0 w-[900px] h-[900px] pointer-events-none z-0 opacity-15"
+        style={{ background: "radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 75%)" }} 
+      />
+
       {/* Navbar */}
       <Navbar />
 
@@ -49,7 +65,7 @@ function Home() {
       <Hero />
 
       {/* Sponsors Section (Marquee / Grid) */}
-      <section className="py-12 border-b border-white/10 bg-brand1">
+      <section className="py-12 border-b border-white/[0.06] bg-transparent relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-16">
           <p className="text-center text-sm font-medium text-slate-400 mb-8 uppercase tracking-widest">
             Backed By Industry Leaders
@@ -86,64 +102,104 @@ function Home() {
       <Roles />
 
       {/* Stats and Community Banner Wrapper */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-16 bg-brand2">
+      <section className="relative py-20 px-4 sm:px-6 lg:px-16 bg-transparent z-10">
         <div className="max-w-7xl mx-auto">
-          {/* Community Banner Section */}
+          {/* Community Banner Section - Overhauled to GSSoC / Nexus Style */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="relative rounded-3xl overflow-hidden border border-blue-900/30"
+            className="relative rounded-3xl overflow-hidden border border-white/[0.08] bg-[#0c102b]/30 backdrop-blur-md p-8 sm:p-12 md:p-16 flex flex-col lg:flex-row justify-between items-center gap-12 shadow-[0_20px_50px_rgba(99,102,241,0.1)]"
           >
-            {/* Background */}
-            <img
-              src="scenery.png"
-              alt="scenery"
-              className="z-2 absolute bottom-0 left-0 w-full object-cover pointer-events-none"
-            />
+            {/* Interactive Network background */}
+            <div className="absolute inset-0 z-0 pointer-events-none opacity-60">
+              <InteractiveNetworkBackground />
+            </div>
 
-            {/* Character */}
-            <img
-              src="boy.webp"
-              alt="boy"
-              className="
-            absolute
-            bottom-0
-            right-0
-            w-40
-            sm:w-56
-            md:w-72
-            lg:w-96
-            z-10
-            pointer-events-none
-          "
-            />
+            {/* Glowing Accent Orbs */}
+            <div className="absolute -left-20 -top-20 w-60 h-60 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none z-0" />
+            <div className="absolute -right-20 -bottom-20 w-60 h-60 bg-purple-500/10 rounded-full blur-3xl pointer-events-none z-0" />
 
-            {/* Stars */}
-            // <div id="star" className="absolute inset-0" />
-            <InteractiveNetworkBackground />
+            {/* Content (Left) */}
+            <div className="relative z-10 max-w-xl text-left flex-1">
+              <div className="inline-flex items-center gap-2 mb-4 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-ping" />
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-indigo-300">
+                  Open Source Is For Everyone
+                </span>
+              </div>
 
-            {/* Content */}
-            <div className="relative z-20 max-w-xl p-10 md:p-20">
-              <span className="text-blue-400 text-sm md:text-base font-semibold tracking-wider">
-                OPEN SOURCE IS FOR EVERYONE
-              </span>
-
-              <h3 className="text-3xl md:text-5xl font-bold my-6">
-                Build the future together
+              <h3 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-display leading-[1.15] text-white tracking-tight my-4">
+                Build the future,
+                <br />
+                <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">one commit at a time.</span>
               </h3>
 
-              <p className="text-gray-300 leading-relaxed mb-8">
-                From beginners to advanced developers, everyone has a place in
-                open source. Find projects, fix bugs, add features, and make a
-                difference.
+              <p className="text-slate-400 leading-relaxed text-sm sm:text-base mb-8 font-light">
+                Whether you are an absolute beginner writing your first line of code or a seasoned open-source veteran, ASOC provides the mentorship, tools, and community to accelerate your contribution journey.
               </p>
 
-              <Button className="buttonGradient">
+              <Button onClick={() => navigate('/projects')} className="buttonGradient py-6 px-8 rounded-full font-semibold text-sm shadow-[0_4px_24px_rgba(99,102,241,0.3)] flex items-center gap-2 cursor-pointer">
                 Start Contributing
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight size={16} />
               </Button>
+            </div>
+
+            {/* Orbiting Coding Tokens Grid (Right) */}
+            <div className="relative z-10 w-full max-w-[340px] aspect-square flex justify-center items-center flex-shrink-0">
+              {/* Central Core Glow */}
+              <div className="absolute w-36 h-36 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 blur-2xl opacity-20 animate-pulse" />
+              
+              {/* Outer border rings */}
+              <div className="absolute w-72 h-72 rounded-full border border-white/[0.04] animate-[spin_50s_linear_infinite]" />
+              <div className="absolute w-52 h-52 rounded-full border border-dashed border-white/[0.06] animate-[spin_30s_linear_infinite_reverse]" />
+              
+              {/* Orb 1: Git */}
+              <motion.div 
+                animate={{ y: [0, -10, 0] }}
+                transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                className="absolute top-4 left-6 bg-[#0c102b]/90 border border-white/[0.08] px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-lg"
+              >
+                <span className="w-2 h-2 rounded-full bg-orange-400" />
+                <span className="font-mono text-[10px] text-white/80 font-bold uppercase tracking-wider">Git</span>
+              </motion.div>
+
+              {/* Orb 2: React */}
+              <motion.div 
+                animate={{ y: [0, 8, 0] }}
+                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut", delay: 0.5 }}
+                className="absolute top-16 right-4 bg-[#0c102b]/90 border border-white/[0.08] px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-lg"
+              >
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                <span className="font-mono text-[10px] text-white/80 font-bold uppercase tracking-wider">React</span>
+              </motion.div>
+
+              {/* Orb 3: Python */}
+              <motion.div 
+                animate={{ y: [0, -12, 0] }}
+                transition={{ repeat: Infinity, duration: 3.8, ease: "easeInOut", delay: 0.2 }}
+                className="absolute bottom-20 left-2 bg-[#0c102b]/90 border border-white/[0.08] px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-lg"
+              >
+                <span className="w-2 h-2 rounded-full bg-yellow-400" />
+                <span className="font-mono text-[10px] text-white/80 font-bold uppercase tracking-wider">Python</span>
+              </motion.div>
+
+              {/* Orb 4: Rust */}
+              <motion.div 
+                animate={{ y: [0, 10, 0] }}
+                transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut", delay: 0.8 }}
+                className="absolute bottom-6 right-10 bg-[#0c102b]/90 border border-white/[0.08] px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-lg"
+              >
+                <span className="w-2 h-2 rounded-full bg-rose-500" />
+                <span className="font-mono text-[10px] text-white/80 font-bold uppercase tracking-wider">Rust</span>
+              </motion.div>
+
+              {/* Center ASOC logo bubble */}
+              <div className="w-24 h-24 rounded-full bg-[#0c102b] border border-indigo-500/40 shadow-[0_0_30px_rgba(99,102,241,0.25)] flex flex-col justify-center items-center select-none">
+                <span className="text-sm font-black tracking-widest text-white">ASOC</span>
+                <span className="text-[7px] font-mono tracking-widest text-indigo-400 font-bold mt-1">COHORT</span>
+              </div>
             </div>
           </motion.div>
 
@@ -153,7 +209,7 @@ function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-24 px-6 md:px-16 bg-slate-950 text-white border-t border-slate-900">
+      <section className="py-24 px-6 md:px-16 bg-transparent text-white border-t border-white/[0.06] relative z-10">
         <motion.div
           initial="hidden"
           whileInView="visible"
