@@ -50,19 +50,21 @@ const Resources = () => {
   ];
 
   return (
-    <div className="hero min-h-screen flex flex-col justify-between antialiased relative overflow-hidden bg-slate-950">
+
+    < div className=" resource min-h-screen flex flex-col justify-between antialiased relative overflow-hidden bg-slate-950" >
 
       {/* BACKGROUND GLOW EFFECT */}
-      <div
+      < div
         className="absolute top-[20%] left-1/2 -translate-x-1/2 w-10 h-10 rounded-full pointer-events-none z-0 opacity-70"
         style={{
           WebkitBoxShadow: "0px 0px 196px 64px rgba(2,66,244,0.45)",
           MozBoxShadow: "0px 0px 196px 64px rgba(2,66,244,0.45)",
           boxShadow: "0px 0px 196px 64px rgba(2,66,244,0.45)"
-        }}
+        }
+        }
       />
 
-      <Navbar />
+      < Navbar />
 
       <main className="max-w-6xl mx-auto px-4 py-12 space-y-24 flex-grow w-full relative z-10">
 
@@ -165,18 +167,32 @@ const Resources = () => {
             </div>
 
             {/* Quote content */}
-            <div className="space-y-4 text-center md:text-left">
-              <span className="text-4xl text-indigo-400 font-serif leading-none block">“</span>
-              <blockquote className="text-xl md:text-2xl font-medium text-slate-200 italic leading-relaxed -mt-4">
-                Open source allows people to build on a solid base of previous knowledge, without some silly hiding. Open source is the right thing to do, the same way I believe science is better than alchemy.
-              </blockquote>
-              <div>
-                <cite className="not-italic font-bold text-white block text-lg">
-                  Linus Torvalds
-                </cite>
-                <span className="text-sm text-slate-400 font-medium">
-                  Creator of Linux & Git
+            <div className="relative">
+              {/* Top-left glow */}
+              <div className="absolute -top-10 -left-10 h-32 w-32 rounded-full bg-purple-500/15 blur-3xl pointer-events-none" />
+
+              {/* Bottom-right glow */}
+              <div className="absolute -bottom-10 -right-10 h-32 w-32 rounded-full bg-emerald-400/15 blur-3xl pointer-events-none" />
+
+              <div className="relative space-y-4 text-center md:text-left">
+                <span className="text-4xl text-indigo-400 font-serif leading-none block">
+                  “
                 </span>
+
+                <blockquote className="text-xl md:text-2xl font-medium text-slate-200 italic leading-relaxed -mt-4">
+                  Open source allows people to build on a solid base of previous
+                  knowledge, without some silly hiding. Open source is the right thing to
+                  do, the same way I believe science is better than alchemy.
+                </blockquote>
+
+                <div>
+                  <cite className="not-italic font-bold text-white block text-lg">
+                    Linus Torvalds
+                  </cite>
+                  <span className="text-sm text-slate-400 font-medium">
+                    Creator of Linux & Git
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -185,7 +201,7 @@ const Resources = () => {
       </main>
 
       <Footer />
-    </div>
+    </div >
   )
 }
 
