@@ -206,7 +206,7 @@ export default function Hero() {
           <motion.div
             animate={{ y: [0, -8, 0] }}
             transition={{ repeat: Infinity, duration: 4.2, ease: "easeInOut", delay: 0.6 }}
-            className="absolute top-28 left-4 bg-[#090b1c]/80 border border-white/[0.08] backdrop-blur-md rounded-2xl p-3 shadow-2xl flex items-center gap-3 w-[170px]"
+            className="absolute top-18 left-4 bg-[#090b1c]/80 border border-white/[0.08] backdrop-blur-md rounded-2xl p-3 shadow-2xl flex items-center gap-3 w-[170px]"
           >
             <div className="w-7.5 h-7.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center flex-shrink-0">
               <Award size={14} className="text-indigo-400" />
