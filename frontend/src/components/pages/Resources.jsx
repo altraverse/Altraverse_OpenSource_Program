@@ -67,7 +67,11 @@ const Resources = () => {
       < Navbar />
 
       <main className="max-w-6xl mx-auto px-4 py-12 space-y-24 flex-grow w-full relative z-10">
+        {/* Purple */}
+        <div className="absolute -top-36 -left-36 h-[34rem] w-[34rem] rounded-full bg-gradient-to-br from-fuchsia-500/25 via-violet-500/15 to-transparent blur-[170px] pointer-events-none" />
 
+        {/* Green */}
+        <div className="absolute -bottom-36 -right-36 h-[34rem] w-[34rem] rounded-full bg-gradient-to-tl from-emerald-400/25 via-green-400/15 to-transparent blur-[170px] pointer-events-none" />
         {/* Header Section */}
         <section className="mt-20 text-center max-w-2xl mx-auto space-y-4">
           <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
