@@ -7,7 +7,7 @@ export default function Hero() {
   const navigate = useNavigate();
   useEffect(() => {
 
-    window.particlesJS.load('hero', '/partical.json', function() {
+    window.particlesJS.load('hero', '/partical.json', function () {
       console.log('callback - particles.js config loaded');
     });
 
@@ -93,7 +93,7 @@ export default function Hero() {
     <div id='hero' className=' bg-black h-screen w-full hero'>
 
       {/* moon */}
-      <div className="absolute top-10 md:top-20 right-[10%] md:right-[15%] z-5 hidden sm:block">
+      {/* <div className="absolute top-10 md:top-20 right-[10%] md:right-[15%] z-5 hidden sm:block">
         <div className="relative w-16 h-16 md:w-22 md:h-22">
           <div className="absolute inset-0 bg-blue-100/30 rounded-full blur-2xl"></div>
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-gray-200 rounded-full shadow-lg" style={{ boxShadow: '0 0 30px rgba(191, 219, 254, 0.4)' }}>
@@ -102,16 +102,20 @@ export default function Hero() {
             <div className="absolute bottom-5 left-4 w-2 h-2 md:w-2.5 md:h-2.5 bg-gray-300 rounded-full opacity-55"></div>
           </div>
         </div>
-      </div>
+      </div> */}
       <img className='absolute z-4 bottom-0 left-0 w-full' src="/bg.png" alt="background" />
 
       {/* star container */}
       <div className="absolute inset-0 z-2 overflow-hidden starContainer"></div>
 
       <div className='w-full absolute z-4 h-full flex flex-col justify-center items-start p-6 md:p-16 lg:p-20 gap-4 md:gap-6'>
-        <h2 className='text-3xl md:text-5xl lg:text-6xl font-bold text-white'>Code. Contribute.</h2>
-        <h2 className='text-3xl md:text-5xl lg:text-6xl font-bold textGradient bg-clip-text text-transparent'>Create Impact.</h2>
-        <p className='text-sm md:text-base lg:text-lg text-gray-200 max-w-2xl mt-2 md:mt-4'>ASOC is India's largest open source program, connecting developers with real-world projects to learn, build, and grow together.
+        <h1 className="font-display text-[clamp(32px,5.5vw,64px)] font-extrabold leading-[1.1] text-white mb-5 tracking-tight">
+          Code. Contribute.
+          <br />
+          <span className="gradient-text">Create Impact.</span>
+        </h1>
+        <p className="font-body text-[15px] sm:text-[16px] leading-[1.8] text-white/50 max-w-[520px] mb-8 font-light">
+          ASOC is India's largest open source program — connecting developers with real-world projects to learn, build, and grow together.
         </p>
         <div className='flex flex-col sm:flex-row gap-3 md:gap-4 mt-4 md:mt-6'>
           <Button onClick={() => navigate('/projects')} className='buttonGradient w-full sm:w-auto'>

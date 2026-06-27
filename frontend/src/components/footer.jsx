@@ -1,53 +1,196 @@
 import React from "react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { ChevronRight } from "lucide-react";
 
-// 1. Move static configuration data outside the component to prevent re-allocation on re-renders
-const FOOTER_LINKS = [
-  { label: "About", href: "/about" },
-  { label: "Projects", href: "/projects" }, // Assuming a routing framework or internal id
-  { label: "Announcements", href: "/announcement" },
-  { label: "Resources", href: "/resources" },
-];
-
-const Footer = () => {
+export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full border-t border-white/[0.06] bg-[#06091b77]">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-4">
-
-        {/* Brand Identity / Logo */}
-        <div className="flex items-center gap-2.5 group">
-          <div className="w-6 h-6 rounded-lg bg-violet-600 flex items-center justify-center shadow-[0_0_15px_rgba(124,58,237,0.3)] group-hover:scale-105 transition-transform duration-200">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M6 1l1.5 3.5H11.5l-3 2.4 1.1 3.8L6 9 2.4 10.7l1.1-3.8L.5 4.5H5z" fill="white" />
-            </svg>
+    <footer className="bg-slate-950 pt-20 pb-10 border-t border-white/10 px-4 sm:px-6 lg:px-16 w-full">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+          <div className="md:col-span-1">
+            <h2 className="font-black text-2xl tracking-tighter mb-4 textGradient inline-block">
+              ASOC
+            </h2>
+            <p className="text-slate-400 text-sm leading-relaxed mb-6">
+              Empowering developers worldwide to learn, collaborate, and create
+              impact through open source.
+            </p>
+            <div className="flex gap-4">
+              <Link
+                to="#"
+                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors text-slate-300 hover:text-white"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="icon icon-tabler icons-tabler-outline icon-tabler-brand-github"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+                </svg>
+              </Link>
+              <Link
+                to="#"
+                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors text-slate-300 hover:text-white"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="icon icon-tabler"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M4 4l11.733 16h4.267l-11.733 -16l-4.267 0" />
+                  <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+                </svg>
+              </Link>
+              <Link
+                to="#"
+                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors text-slate-300 hover:text-white"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="icon icon-tabler icons-tabler-outline icon-tabler-brand-linkedin"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M8 11v5" />
+                  <path d="M8 8v.01" />
+                  <path d="M12 16v-5" />
+                  <path d="M16 16v-3a2 2 0 1 0 -4 0" />
+                  <path d="M3 7a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4l0 -10" />
+                </svg>
+              </Link>
+            </div>
           </div>
-          <span className="font-display text-[15px] font-bold text-white/60 group-hover:text-white/80 transition-colors duration-200 tracking-wide">
-            ASOC
-          </span>
+
+          <div>
+            <h3 className="font-bold mb-6 text-white text-base">Programs</h3>
+            <ul className="space-y-4 text-sm text-slate-400">
+              <li>
+                <Link
+                  to="#"
+                  className="hover:text-indigo-400 transition-colors flex items-center gap-2"
+                >
+                  <ChevronRight className="w-3 h-3" /> Contributors
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="#"
+                  className="hover:text-indigo-400 transition-colors flex items-center gap-2"
+                >
+                  <ChevronRight className="w-3 h-3" /> Mentors
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="#"
+                  className="hover:text-indigo-400 transition-colors flex items-center gap-2"
+                >
+                  <ChevronRight className="w-3 h-3" /> Project Admins
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="#"
+                  className="hover:text-indigo-400 transition-colors flex items-center gap-2"
+                >
+                  <ChevronRight className="w-3 h-3" /> Ambassadors
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-bold mb-6 text-white text-base">Resources</h3>
+            <ul className="space-y-4 text-sm text-slate-400">
+              <li>
+                <Link
+                  to="/about"
+                  className="hover:text-indigo-400 transition-colors flex items-center gap-2"
+                >
+                  <ChevronRight className="w-3 h-3" /> About ASOC
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/projects"
+                  className="hover:text-indigo-400 transition-colors flex items-center gap-2"
+                >
+                  <ChevronRight className="w-3 h-3" /> Open Projects
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/announcement"
+                  className="hover:text-indigo-400 transition-colors flex items-center gap-2"
+                >
+                  <ChevronRight className="w-3 h-3" /> Announcements
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/resources"
+                  className="hover:text-indigo-400 transition-colors flex items-center gap-2"
+                >
+                  <ChevronRight className="w-3 h-3" /> Support & Guidelines
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-bold mb-6 text-white text-base">Newsletter</h3>
+            <p className="text-slate-400 text-sm mb-4">
+              Stay updated with our latest news and announcements.
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm w-full focus:outline-none focus:border-indigo-500 transition-colors text-white"
+              />
+              <Button className="buttonGradient shrink-0">Subscribe</Button>
+            </div>
+          </div>
         </div>
 
-        {/* Modular Navigation Tree */}
-        <nav aria-label="Footer Navigation" className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-          {FOOTER_LINKS.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="font-body text-[12px] text-white/30 hover:text-white/70 transition-colors duration-200 relative py-1"
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
-
-        {/* Dynamic Legal & Copyright Notice */}
-        <div className="font-body text-[11px] text-white/25 text-center sm:text-right select-none">
-          &copy; {currentYear} ASOC. All rights reserved.
+        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+          <p>© {currentYear} ASOC. All rights reserved.</p>
+          <div className="flex gap-6">
+            <Link to="#" className="hover:text-white transition-colors">
+              Privacy Policy
+            </Link>
+            <Link to="#" className="hover:text-white transition-colors">
+              Terms of Service
+            </Link>
+          </div>
         </div>
-
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

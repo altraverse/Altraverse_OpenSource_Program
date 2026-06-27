@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Optimized color map using tailwind-compatible border/text utility values 
 // and dynamic hex/rgba strings for seamless integration.
@@ -25,12 +26,14 @@ export const colorMap = {
 
 export default function OrganisationCard({ item, animDelay = 0 }) {
   const [hovered, setHovered] = useState(false);
+  const navigate = useNavigate();
   const cm = colorMap[item.color] || colorMap.violet;
 
   return (
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={() => navigate(`/projects/${item.id}`)}
       className={`group relative rounded-xl w-100 md:w-80 border border-white/[0.05] bg-[#0c102b]/40 backdrop-blur-md overflow-hidden cursor-pointer
                   transition-all duration-300 ease-out flex flex-col justify-between transform will-change-transform
                   ${cm.border} ${hovered ? "-translate-y-1 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.7)] bg-[#0c102b]/70" : ""}`}

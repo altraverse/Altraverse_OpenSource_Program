@@ -18,6 +18,8 @@ import EventSection from "@/component/home/EventSection";
 import Hero from "../home/Hero";
 import Footer from "../../components/footer";
 import { InteractiveNetworkBackground } from "../../components/interactive-network-background";
+import Timeline from "@/component/home/Timeline";
+import Roles from "@/component/home/Roles";
 
 
 
@@ -71,11 +73,17 @@ function Home() {
         </div>
       </section>
 
+      {/* Program Timeline */}
+      <Timeline />
+
       {/* How it Works / Timeline */}
       <EventSection />
 
       {/* Why ASOC */}
       <WhyJoin />
+
+      {/* Roles & Participation */}
+      <Roles />
 
       {/* Stats and Community Banner Wrapper */}
       <section className="relative py-20 px-4 sm:px-6 lg:px-16 bg-brand2">
@@ -145,7 +153,7 @@ function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-24 px-6 md:px-16 bg-slate-50 text-slate-900 border-t border-slate-200">
+      <section className="py-24 px-6 md:px-16 bg-slate-950 text-white border-t border-slate-900">
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -153,7 +161,7 @@ function Home() {
           variants={fadeUpVariant}
           className="max-w-3xl mx-auto"
         >
-          <h2 className="text-3xl font-bold mb-10 text-center">
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-12 text-center text-white bg-clip-text bg-gradient-to-r from-white to-slate-400 tracking-tight">
             Frequently Asked Questions
           </h2>
           <Accordion
@@ -164,12 +172,12 @@ function Home() {
           >
             <AccordionItem
               value="item-1"
-              className="bg-white px-6 rounded-xl border border-slate-200 shadow-sm"
+              className="bg-slate-900/30 hover:bg-slate-900/50 transition-all duration-300 px-6 rounded-xl border border-slate-800/50 shadow-xl"
             >
-              <AccordionTrigger className="hover:no-underline font-semibold py-4">
+              <AccordionTrigger className="hover:no-underline font-semibold py-4 text-white hover:text-indigo-400 transition-colors duration-200 text-left text-base sm:text-lg">
                 How do I register as a contributor?
               </AccordionTrigger>
-              <AccordionContent className="text-slate-600 pb-4">
+              <AccordionContent className="text-slate-400 pb-4 text-sm sm:text-base leading-relaxed">
                 Registration opens annually. Keep an eye on our social media
                 handles and the "Get Started" button for the application link.
               </AccordionContent>
@@ -177,12 +185,12 @@ function Home() {
 
             <AccordionItem
               value="item-2"
-              className="bg-white px-6 rounded-xl border border-slate-200 shadow-sm"
+              className="bg-slate-900/30 hover:bg-slate-900/50 transition-all duration-300 px-6 rounded-xl border border-slate-800/50 shadow-xl"
             >
-              <AccordionTrigger className="hover:no-underline font-semibold py-4">
+              <AccordionTrigger className="hover:no-underline font-semibold py-4 text-white hover:text-indigo-400 transition-colors duration-200 text-left text-base sm:text-lg">
                 Is there an age limit?
               </AccordionTrigger>
-              <AccordionContent className="text-slate-600 pb-4">
+              <AccordionContent className="text-slate-400 pb-4 text-sm sm:text-base leading-relaxed">
                 No! ASOC is open to students and enthusiasts of all ages and
                 skill levels.
               </AccordionContent>
@@ -190,12 +198,12 @@ function Home() {
 
             <AccordionItem
               value="item-3"
-              className="bg-white px-6 rounded-xl border border-slate-200 shadow-sm"
+              className="bg-slate-900/30 hover:bg-slate-900/50 transition-all duration-300 px-6 rounded-xl border border-slate-800/50 shadow-xl"
             >
-              <AccordionTrigger className="hover:no-underline font-semibold py-4">
+              <AccordionTrigger className="hover:no-underline font-semibold py-4 text-white hover:text-indigo-400 transition-colors duration-200 text-left text-base sm:text-lg">
                 Do I get a certificate?
               </AccordionTrigger>
-              <AccordionContent className="text-slate-600 pb-4">
+              <AccordionContent className="text-slate-400 pb-4 text-sm sm:text-base leading-relaxed">
                 Yes, all active contributors who meet the minimum participation
                 requirements receive a certificate of completion.
               </AccordionContent>
