@@ -13,19 +13,19 @@ export default function Hero() {
 
       {/* Atmospheric glows from Announcement Hero */}
       <div className="absolute inset-0 pointer-events-none"
-           style={{ background: "radial-gradient(ellipse 60% 50% at 25% 40%, rgba(91,63,214,0.30) 0%, transparent 65%)" }} />
+        style={{ background: "radial-gradient(ellipse 60% 50% at 25% 40%, rgba(91,63,214,0.30) 0%, transparent 65%)" }} />
       <div className="absolute inset-0 pointer-events-none"
-           style={{ background: "radial-gradient(ellipse 40% 50% at 80% 20%, rgba(34,211,168,0.10) 0%, transparent 65%)" }} />
+        style={{ background: "radial-gradient(ellipse 40% 50% at 80% 20%, rgba(34,211,168,0.10) 0%, transparent 65%)" }} />
       <div className="absolute inset-0 pointer-events-none"
-           style={{ background: "radial-gradient(ellipse 30% 40% at 90% 70%, rgba(129,140,248,0.08) 0%, transparent 60%)" }} />
+        style={{ background: "radial-gradient(ellipse 30% 40% at 90% 70%, rgba(129,140,248,0.08) 0%, transparent 60%)" }} />
 
       {/* Crescent Moon from Announcement Hero */}
       <div className="absolute moon-crescent rounded-full"
-           style={{ top: 88, right: 80, width: 58, height: 58 }} />
+        style={{ top: 88, right: 80, width: 58, height: 58 }} />
 
       {/* Main Grid Layout */}
       <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 min-h-screen grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10 w-full pb-20">
-        
+
         {/* Left Column: Typography & CTAs (7 cols) */}
         <div className="lg:col-span-7 flex flex-col items-start text-left gap-5 relative z-10">
           <motion.div
@@ -40,7 +40,7 @@ export default function Hero() {
             </span>
           </motion.div>
 
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -51,7 +51,7 @@ export default function Hero() {
             <span className="gradient-text">Create Global Impact.</span>
           </motion.h1>
 
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -59,8 +59,8 @@ export default function Hero() {
           >
             ASOC connects developers of all skill levels with friendly open source projects. Solve real issues, collaborate with global maintainers, and build your developer portfolio.
           </motion.p>
-          
-          <motion.div 
+
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
@@ -69,9 +69,9 @@ export default function Hero() {
             <Button onClick={() => navigate('/projects')} className="buttonGradient py-6 px-8 rounded-full font-semibold text-sm w-full sm:w-auto shadow-[0_4px_24px_rgba(99,102,241,0.3)] cursor-pointer">
               Explore Projects
             </Button>
-            <Button 
-              onClick={() => window.open('https://discord.gg', '_blank')} 
-              variant="ghost" 
+            <Button
+              onClick={() => window.open('https://discord.gg', '_blank')}
+              variant="ghost"
               className="border border-white/10 hover:border-white/20 hover:bg-white/[0.03] text-white py-6 px-8 rounded-full font-semibold text-sm w-full sm:w-auto flex items-center justify-center gap-2.5 cursor-pointer"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -84,82 +84,15 @@ export default function Hero() {
 
         {/* Right Column: Premium Cyber-Constellation Orbit Visual (5 cols) */}
         <div className="lg:col-span-5 flex justify-center items-center relative w-full h-[450px] mt-10 lg:mt-0 select-none z-10">
-          
+
           {/* Orbital background grid lines */}
           <div className="absolute w-[360px] h-[360px] rounded-full border border-white/[0.02] animate-[spin_60s_linear_infinite_reverse] z-0" />
-          
+
           {/* Ambient Glow behind planet */}
           <div className="absolute w-60 h-60 rounded-full bg-indigo-500/10 blur-3xl z-0" />
 
           {/* The Floating Constellation Planet Container */}
-          <motion.div
-            animate={{ 
-              y: [0, -10, 0]
-            }}
-            transition={{ 
-              repeat: Infinity, 
-              duration: 4.5, 
-              ease: "easeInOut" 
-            }}
-            className="relative z-10 flex flex-col justify-center items-center animate-float"
-          >
-            <svg 
-              viewBox="0 0 240 240" 
-              width="260" 
-              height="260" 
-              xmlns="http://www.w3.org/2000/svg"
-              className="filter drop-shadow-[0_0_35px_rgba(139,92,246,0.25)]"
-            >
-              {/* Central Planet base */}
-              <circle cx="120" cy="120" r="64" fill="#100d4a" stroke="rgba(139,92,246,0.35)" strokeWidth="1.5"/>
-              <circle cx="120" cy="120" r="50" fill="#0d0b3d" stroke="rgba(139,92,246,0.18)" strokeWidth="0.5"/>
-              
-              {/* Planet surface details / craters */}
-              <ellipse cx="100" cy="100" rx="11" ry="9" fill="rgba(139,92,246,0.25)"/>
-              <circle cx="105" cy="96" r="3.5" fill="rgba(200,185,255,0.45)"/>
-              <ellipse cx="140" cy="140" rx="8" ry="6" fill="rgba(139,92,246,0.15)"/>
-              
-              {/* Orbit rings */}
-              <ellipse cx="120" cy="120" rx="85" ry="22" fill="none"
-                       stroke="rgba(139,92,246,0.22)" strokeWidth="1" strokeDasharray="4 3"/>
-              <ellipse cx="120" cy="120" rx="98" ry="28" fill="none"
-                       stroke="rgba(34,211,168,0.15)" strokeWidth="1" strokeDasharray="6 4"/>
-              
-              {/* Constellation connection network lines */}
-              <g stroke="rgba(200,216,240,0.25)" strokeWidth="0.8">
-                <line x1="28" y1="26" x2="65" y2="54"/>
-                <line x1="65" y1="54" x2="120" y2="30"/>
-                <line x1="120" y1="30" x2="195" y2="60"/>
-                <line x1="195" y1="60" x2="218" y2="38"/>
-                <line x1="22" y1="86" x2="65" y2="54"/>
-                <line x1="218" y1="38" x2="228" y2="88"/>
-                <line x1="120" y1="30" x2="120" y2="56"/>
-                <line x1="65" y1="54" x2="80" y2="105"/>
-                <line x1="195" y1="60" x2="175" y2="110"/>
-              </g>
-
-              {/* Constellation Node Stars */}
-              <circle cx="28"  cy="26"  r="3" fill="rgba(255,255,255,0.85)"/>
-              <circle cx="65"  cy="54"  r="2.5" fill="rgba(255,255,255,0.7)"/>
-              <circle cx="120" cy="30"  r="3.5" fill="rgba(255,255,255,0.95)"/>
-              <circle cx="195" cy="60"  r="2.5" fill="rgba(255,255,255,0.7)"/>
-              <circle cx="218" cy="38"  r="2.5" fill="rgba(255,255,255,0.6)"/>
-              <circle cx="22"  cy="86"  r="2" fill="rgba(255,255,255,0.55)"/>
-              <circle cx="228" cy="88"  r="2" fill="rgba(255,255,255,0.55)"/>
-              
-              {/* Additional mini network nodes */}
-              <circle cx="120" cy="56"  r="2" fill="rgba(255,255,255,0.6)"/>
-              <circle cx="80"  cy="105" r="2.5" fill="rgba(34,211,168,0.7)"/>
-              <circle cx="175" cy="110" r="2.5" fill="rgba(139,92,246,0.7)"/>
-
-              {/* Scattered background mini sparkles */}
-              <circle cx="16"   cy="52"  r="1.2" fill="rgba(255,255,255,0.4)"/>
-              <circle cx="205" cy="20"  r="1.2" fill="rgba(255,255,255,0.5)"/>
-              <circle cx="230" cy="130" r="1" fill="rgba(255,255,255,0.35)"/>
-              <circle cx="38"  cy="150" r="1" fill="rgba(255,255,255,0.35)"/>
-              <circle cx="160" cy="16"  r="1.5" fill="rgba(255,255,255,0.6)"/>
-            </svg>
-          </motion.div>
+          <img src="output.png" alt="man" className="h-100 md:h-140 absolute z-0 -bottom-20 md:-bottom-40" />
 
           {/* Floating Skill Badges escaping from the rocket / orbiting */}
           {/* Badge 1: Git (Top-Right) */}
@@ -215,39 +148,39 @@ export default function Hero() {
       </div>
 
       {/* Silhouette vector landscape from Announcement Hero */}
-      <div className="absolute bottom-0 left-0 w-full z-0 pointer-events-none overflow-hidden" style={{ height: 130 }}>
+      <div className="absolute bottom-0 left-0 w-full z-10 pointer-events-none overflow-hidden" style={{ height: 130 }}>
         <svg viewBox="0 0 1440 130" xmlns="http://www.w3.org/2000/svg"
-             preserveAspectRatio="none"
-             className="absolute bottom-0 left-0 w-full h-full block">
+          preserveAspectRatio="none"
+          className="absolute bottom-0 left-0 w-full h-full block">
           {/* Back hills */}
           <path d="M0 130 Q220 30 440 80 Q660 128 880 42 Q1060 -8 1240 58 Q1360 100 1440 48 L1440 130 Z"
-                fill="#0d1640"/>
+            fill="#0d1640" />
           {/* Mid hills */}
           <path d="M0 130 Q160 78 320 104 Q520 130 720 68 Q900 28 1100 90 Q1260 130 1440 72 L1440 130 Z"
-                fill="#0a1232"/>
+            fill="#0a1232" />
           {/* Front ground */}
           <path d="M0 130 Q120 110 240 122 Q420 136 580 104 Q720 82 880 116 Q1040 138 1200 98 Q1340 72 1440 100 L1440 130 Z"
-                fill="#06091b"/>
+            fill="#06091b" />
 
           {/* Left palm cluster */}
-          <rect x="205" y="54" width="6"  height="68" fill="#0a1232"/>
-          <path d="M197 54 Q208 28 219 54 Z" fill="#0a1232"/>
-          <rect x="232" y="70" width="4"  height="54" fill="#0a1232"/>
-          <path d="M225 70 Q234 52 243 70 Z" fill="#0a1232"/>
-          <rect x="182" y="68" width="4"  height="58" fill="#0a1232"/>
-          <path d="M175 68 Q184 50 193 68 Z" fill="#0a1232"/>
+          <rect x="205" y="54" width="6" height="68" fill="#0a1232" />
+          <path d="M197 54 Q208 28 219 54 Z" fill="#0a1232" />
+          <rect x="232" y="70" width="4" height="54" fill="#0a1232" />
+          <path d="M225 70 Q234 52 243 70 Z" fill="#0a1232" />
+          <rect x="182" y="68" width="4" height="58" fill="#0a1232" />
+          <path d="M175 68 Q184 50 193 68 Z" fill="#0a1232" />
 
           {/* Right palm cluster */}
-          <rect x="1218" y="34" width="7"  height="80" fill="#0d1640"/>
-          <path d="M1208 34 Q1221 6 1234 34 Z" fill="#0d1640"/>
-          <rect x="1250" y="55" width="5"  height="60" fill="#0d1640"/>
-          <path d="M1243 55 Q1252 34 1261 55 Z" fill="#0d1640"/>
-          <rect x="1192" y="50" width="4"  height="64" fill="#0d1640"/>
-          <path d="M1186 50 Q1194 30 1202 50 Z" fill="#0d1640"/>
+          <rect x="1218" y="34" width="7" height="80" fill="#0d1640" />
+          <path d="M1208 34 Q1221 6 1234 34 Z" fill="#0d1640" />
+          <rect x="1250" y="55" width="5" height="60" fill="#0d1640" />
+          <path d="M1243 55 Q1252 34 1261 55 Z" fill="#0d1640" />
+          <rect x="1192" y="50" width="4" height="64" fill="#0d1640" />
+          <path d="M1186 50 Q1194 30 1202 50 Z" fill="#0d1640" />
 
           {/* Grass tufts */}
-          <path d="M48 128 Q52 116 56 128 M58 126 Q61 118 64 126" stroke="#0a1232" strokeWidth="2" fill="none"/>
-          <path d="M1390 122 Q1394 112 1398 122" stroke="#0d1640" strokeWidth="2" fill="none"/>
+          <path d="M48 128 Q52 116 56 128 M58 126 Q61 118 64 126" stroke="#0a1232" strokeWidth="2" fill="none" />
+          <path d="M1390 122 Q1394 112 1398 122" stroke="#0d1640" strokeWidth="2" fill="none" />
         </svg>
       </div>
     </div>
