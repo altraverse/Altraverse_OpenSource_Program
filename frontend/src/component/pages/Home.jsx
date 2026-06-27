@@ -44,8 +44,7 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-[#06091b] text-white overflow-x-hidden selection:bg-indigo-500/30 relative">
-      {/* Background Starfield and Mesh Glow Layers for the entire Home Page */}
-      <div className="absolute inset-0 starfield pointer-events-none opacity-40 z-0" />
+      {/* Background Mesh Glow Layers for the entire Home Page */}
       <div 
         className="absolute top-0 left-0 w-full h-[1500px] pointer-events-none z-0 opacity-30"
         style={{ background: "radial-gradient(ellipse 70% 50% at 30% 20%, rgba(91,63,214,0.22) 0%, transparent 65%)" }} 

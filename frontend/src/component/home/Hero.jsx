@@ -1,83 +1,15 @@
-import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
-import { GitBranch, Terminal, Award, GitPullRequest, Flame } from "lucide-react";
+import { GitBranch, Award, GitPullRequest } from "lucide-react";
 
 export default function Hero() {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (window.particlesJS) {
-      window.particlesJS.load('hero', '/partical.json', function () {
-        console.log('callback - particles.js config loaded');
-      });
-    }
-
-    function createShootingStar() {
-      const container = document.querySelector('.starContainer');
-      if (!container) return;
-
-      const radians = Math.atan(Math.min(window.innerHeight, window.innerWidth) / Math.max(window.innerWidth, window.innerHeight) * 2);
-      const deg = radians * (180 / Math.PI);
-      const animationName = `fly-diagonal-${Math.floor(Math.random() * 100000)}`;
-
-      const styleSheet = document.createElement("style");
-      styleSheet.textContent = `
-        @keyframes ${animationName} {
-          0% {
-            transform: rotate(${deg}deg) translateX(0) translateY(0);
-            opacity: 0;
-          }
-          10% {
-            opacity: 1;
-          }
-          90% {
-            opacity: 1;
-          }
-          100% {
-            transform: rotate(${deg}deg) translateX(120vw) ;
-            opacity: 0;
-          }
-        }
-      `;
-      document.head.appendChild(styleSheet);
-
-      const star = document.createElement('div');
-      star.className = 'shooting-star';
-
-      const startTop = Math.random() * 60;
-      const startLeft = -(Math.random() * 10 + 5);
-      const duration = Math.random() * 1 + 1.5;
-
-      Object.assign(star.style, {
-        top: `${startTop}%`,
-        left: `${startLeft}%`,
-        animation: `${animationName} ${duration}s linear forwards`
-      });
-
-      container.appendChild(star);
-
-      star.addEventListener('animationend', () => {
-        star.remove();
-        styleSheet.remove();
-      });
-    }
-
-    function spawnLoop() {
-      createShootingStar();
-      const nextDelay = Math.random() * 10000 + 1000;
-      setTimeout(spawnLoop, nextDelay);
-    }
-
-    spawnLoop();
-  }, []);
 
   return (
     <div id='hero' className='relative bg-[#06091b] min-h-screen w-full overflow-hidden hero2-replaced'>
       {/* Background theme matched exactly with Announcement Hero page */}
       <div className="absolute inset-0 bg-cosmic-hero pointer-events-none" />
-      <div className="absolute inset-0 starfield pointer-events-none" />
 
       {/* Atmospheric glows from Announcement Hero */}
       <div className="absolute inset-0 pointer-events-none"
@@ -90,9 +22,6 @@ export default function Hero() {
       {/* Crescent Moon from Announcement Hero */}
       <div className="absolute moon-crescent rounded-full"
            style={{ top: 88, right: 80, width: 58, height: 58 }} />
-
-      {/* Star container for dynamic shooting stars */}
-      <div className="absolute inset-0 z-2 overflow-hidden starContainer"></div>
 
       {/* Main Grid Layout */}
       <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 min-h-screen grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10 w-full pb-20">
@@ -153,135 +82,132 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* Right Column: Unique 3D Floating Developer Universe Mockup (5 cols) */}
+        {/* Right Column: Premium Cyber-Constellation Orbit Visual (5 cols) */}
         <div className="lg:col-span-5 flex justify-center items-center relative w-full h-[450px] mt-10 lg:mt-0 select-none z-10">
           
           {/* Orbital background grid lines */}
-          <div className="absolute w-80 h-80 rounded-full border border-dashed border-white/[0.03] animate-[spin_40s_linear_infinite] z-0" />
-          <div className="absolute w-[440px] h-[440px] rounded-full border border-white/[0.02] animate-[spin_60s_linear_infinite_reverse] z-0" />
+          <div className="absolute w-[360px] h-[360px] rounded-full border border-white/[0.02] animate-[spin_60s_linear_infinite_reverse] z-0" />
           
-          {/* Ambient Center Glow */}
-          <div className="absolute w-40 h-40 rounded-full bg-indigo-500/10 blur-3xl z-0" />
+          {/* Ambient Glow behind planet */}
+          <div className="absolute w-60 h-60 rounded-full bg-indigo-500/10 blur-3xl z-0" />
 
-          {/* Central Logo Core (Z-Index 10) */}
+          {/* The Floating Constellation Planet Container */}
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="w-24 h-24 rounded-full bg-[#0d102b] border border-indigo-500/30 shadow-[0_0_40px_rgba(99,102,241,0.25)] flex flex-col justify-center items-center z-10"
+            animate={{ 
+              y: [0, -10, 0]
+            }}
+            transition={{ 
+              repeat: Infinity, 
+              duration: 4.5, 
+              ease: "easeInOut" 
+            }}
+            className="relative z-10 flex flex-col justify-center items-center animate-float"
           >
-            <span className="text-sm font-black tracking-widest text-white font-display">ASOC</span>
-            <span className="text-[7px] font-mono tracking-[0.25em] text-indigo-400 font-bold mt-1">CORE</span>
-          </motion.div>
-
-          {/* Floating Element 1: 3D GitHub Contribution Grid Card (Top-Left) */}
-          <motion.div
-            initial={{ opacity: 0, x: -50, y: -50 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="absolute top-4 left-0 z-20"
-          >
-            <motion.div
-              animate={{ y: [0, -8, 0] }}
-              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-              className="bg-[#090b1c]/80 border border-white/[0.08] backdrop-blur-md rounded-2xl p-4 shadow-2xl w-[190px]"
+            <svg 
+              viewBox="0 0 240 240" 
+              width="260" 
+              height="260" 
+              xmlns="http://www.w3.org/2000/svg"
+              className="filter drop-shadow-[0_0_35px_rgba(139,92,246,0.25)]"
             >
-              <div className="flex items-center gap-1.5 mb-2.5">
-                <Flame size={12} className="text-emerald-400 animate-pulse" />
-                <span className="font-mono text-[8px] tracking-wider text-white/50 uppercase">Contribution Graph</span>
-              </div>
+              {/* Central Planet base */}
+              <circle cx="120" cy="120" r="64" fill="#100d4a" stroke="rgba(139,92,246,0.35)" strokeWidth="1.5"/>
+              <circle cx="120" cy="120" r="50" fill="#0d0b3d" stroke="rgba(139,92,246,0.18)" strokeWidth="0.5"/>
               
-              {/* Grid representation */}
-              <div className="grid grid-cols-7 gap-1.5 mb-2">
-                {[
-                  "bg-emerald-500/20", "bg-emerald-400/80", "bg-emerald-500/10", "bg-emerald-500/40", "bg-emerald-500/10", "bg-emerald-400/70", "bg-emerald-300",
-                  "bg-emerald-500/10", "bg-emerald-500/20", "bg-emerald-500/60", "bg-emerald-500/10", "bg-emerald-300", "bg-emerald-500/20", "bg-emerald-500/10",
-                  "bg-emerald-400/80", "bg-emerald-500/10", "bg-emerald-500/10", "bg-emerald-500/40", "bg-emerald-500/10", "bg-emerald-500/10", "bg-emerald-400/90",
-                  "bg-emerald-500/10", "bg-emerald-300", "bg-emerald-500/20", "bg-emerald-500/10", "bg-emerald-500/60", "bg-emerald-500/20", "bg-emerald-500/10"
-                ].map((opacityClass, idx) => (
-                  <div key={idx} className={`w-3.5 h-3.5 rounded-sm ${opacityClass} transition-colors duration-300 hover:bg-emerald-400`} />
-                ))}
-              </div>
-              <div className="font-mono text-[8px] text-emerald-400 flex justify-between items-center mt-1">
-                <span>+42 commits</span>
-                <span className="text-[7px] text-white/30">this month</span>
-              </div>
-            </motion.div>
+              {/* Planet surface details / craters */}
+              <ellipse cx="100" cy="100" rx="11" ry="9" fill="rgba(139,92,246,0.25)"/>
+              <circle cx="105" cy="96" r="3.5" fill="rgba(200,185,255,0.45)"/>
+              <ellipse cx="140" cy="140" rx="8" ry="6" fill="rgba(139,92,246,0.15)"/>
+              
+              {/* Orbit rings */}
+              <ellipse cx="120" cy="120" rx="85" ry="22" fill="none"
+                       stroke="rgba(139,92,246,0.22)" strokeWidth="1" strokeDasharray="4 3"/>
+              <ellipse cx="120" cy="120" rx="98" ry="28" fill="none"
+                       stroke="rgba(34,211,168,0.15)" strokeWidth="1" strokeDasharray="6 4"/>
+              
+              {/* Constellation connection network lines */}
+              <g stroke="rgba(200,216,240,0.25)" strokeWidth="0.8">
+                <line x1="28" y1="26" x2="65" y2="54"/>
+                <line x1="65" y1="54" x2="120" y2="30"/>
+                <line x1="120" y1="30" x2="195" y2="60"/>
+                <line x1="195" y1="60" x2="218" y2="38"/>
+                <line x1="22" y1="86" x2="65" y2="54"/>
+                <line x1="218" y1="38" x2="228" y2="88"/>
+                <line x1="120" y1="30" x2="120" y2="56"/>
+                <line x1="65" y1="54" x2="80" y2="105"/>
+                <line x1="195" y1="60" x2="175" y2="110"/>
+              </g>
+
+              {/* Constellation Node Stars */}
+              <circle cx="28"  cy="26"  r="3" fill="rgba(255,255,255,0.85)"/>
+              <circle cx="65"  cy="54"  r="2.5" fill="rgba(255,255,255,0.7)"/>
+              <circle cx="120" cy="30"  r="3.5" fill="rgba(255,255,255,0.95)"/>
+              <circle cx="195" cy="60"  r="2.5" fill="rgba(255,255,255,0.7)"/>
+              <circle cx="218" cy="38"  r="2.5" fill="rgba(255,255,255,0.6)"/>
+              <circle cx="22"  cy="86"  r="2" fill="rgba(255,255,255,0.55)"/>
+              <circle cx="228" cy="88"  r="2" fill="rgba(255,255,255,0.55)"/>
+              
+              {/* Additional mini network nodes */}
+              <circle cx="120" cy="56"  r="2" fill="rgba(255,255,255,0.6)"/>
+              <circle cx="80"  cy="105" r="2.5" fill="rgba(34,211,168,0.7)"/>
+              <circle cx="175" cy="110" r="2.5" fill="rgba(139,92,246,0.7)"/>
+
+              {/* Scattered background mini sparkles */}
+              <circle cx="16"   cy="52"  r="1.2" fill="rgba(255,255,255,0.4)"/>
+              <circle cx="205" cy="20"  r="1.2" fill="rgba(255,255,255,0.5)"/>
+              <circle cx="230" cy="130" r="1" fill="rgba(255,255,255,0.35)"/>
+              <circle cx="38"  cy="150" r="1" fill="rgba(255,255,255,0.35)"/>
+              <circle cx="160" cy="16"  r="1.5" fill="rgba(255,255,255,0.6)"/>
+            </svg>
           </motion.div>
 
-          {/* Floating Element 2: PR Merged Card (Middle-Right) */}
+          {/* Floating Skill Badges escaping from the rocket / orbiting */}
+          {/* Badge 1: Git (Top-Right) */}
           <motion.div
-            initial={{ opacity: 0, x: 50, y: -20 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="absolute top-20 right-0 z-20"
+            animate={{ y: [0, -6, 0] }}
+            transition={{ repeat: Infinity, duration: 3.2, ease: "easeInOut" }}
+            className="absolute top-12 right-6 bg-[#090b1c]/80 border border-white/[0.08] backdrop-blur-md rounded-2xl px-4 py-2.5 shadow-2xl flex items-center gap-2"
           >
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut", delay: 0.5 }}
-              className="bg-[#090b1c]/80 border border-white/[0.08] backdrop-blur-md rounded-2xl p-4 shadow-2xl w-[200px]"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-1.5">
-                  <GitPullRequest size={13} className="text-purple-400" />
-                  <span className="font-mono text-[8px] text-purple-400 font-bold tracking-wider uppercase">PR #1204</span>
-                </div>
-                <span className="font-mono text-[7px] bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded-full uppercase font-bold tracking-wider">Merged</span>
-              </div>
-              <div className="font-body text-[10px] text-white/80 font-medium mb-1.5 truncate">
-                feat: add dark mode theme option
-              </div>
-              <div className="flex items-center justify-between border-t border-white/[0.04] pt-2 mt-2">
-                <span className="font-mono text-[8px] text-white/30">Merged by @lead_mentor</span>
-                <span className="font-mono text-[8px] text-emerald-400 font-bold">+150 PTS</span>
-              </div>
-            </motion.div>
+            <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
+            <span className="font-mono text-[9px] text-white/80 font-bold uppercase tracking-wider">Git</span>
           </motion.div>
 
-          {/* Floating Element 3: Contributor Leaderboard Card (Bottom-Left) */}
+          {/* Badge 2: Code (Bottom-Left) */}
           <motion.div
-            initial={{ opacity: 0, x: -40, y: 50 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.4 }}
-            className="absolute bottom-6 left-2 z-20"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ repeat: Infinity, duration: 3.8, ease: "easeInOut", delay: 0.3 }}
+            className="absolute bottom-16 left-6 bg-[#090b1c]/80 border border-white/[0.08] backdrop-blur-md rounded-2xl px-4 py-2.5 shadow-2xl flex items-center gap-2"
           >
-            <motion.div
-              animate={{ y: [0, -6, 0] }}
-              transition={{ repeat: Infinity, duration: 3.8, ease: "easeInOut", delay: 0.2 }}
-              className="bg-[#090b1c]/80 border border-white/[0.08] backdrop-blur-md rounded-2xl p-3.5 shadow-2xl flex items-center gap-3 w-[180px]"
-            >
-              <div className="w-9 h-9 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-                <Award size={18} className="text-indigo-400" />
-              </div>
-              <div>
-                <div className="text-[10px] font-mono text-white/40">LEADERBOARD</div>
-                <div className="text-xs font-bold text-white">#12 Rank (Gold)</div>
-                <div className="text-[9px] text-emerald-400 font-mono font-bold">450 points</div>
-              </div>
-            </motion.div>
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+            <span className="font-mono text-[9px] text-white/80 font-bold uppercase tracking-wider">React</span>
           </motion.div>
 
-          {/* Floating Element 4: Active Code Branch Badge (Bottom-Right) */}
+          {/* Badge 3: Launch Mission Stats (Middle-Left) */}
           <motion.div
-            initial={{ opacity: 0, x: 40, y: 50 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.5 }}
-            className="absolute bottom-10 right-4 z-20"
+            animate={{ y: [0, -8, 0] }}
+            transition={{ repeat: Infinity, duration: 4.2, ease: "easeInOut", delay: 0.6 }}
+            className="absolute top-28 left-4 bg-[#090b1c]/80 border border-white/[0.08] backdrop-blur-md rounded-2xl p-3 shadow-2xl flex items-center gap-3 w-[170px]"
           >
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 0.7 }}
-              className="bg-[#090b1c]/80 border border-white/[0.08] backdrop-blur-md rounded-2xl p-3.5 shadow-2xl flex items-center gap-3 w-[190px]"
-            >
-              <div className="w-9 h-9 rounded-full bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
-                <GitBranch size={16} className="text-violet-400 animate-pulse" />
-              </div>
-              <div>
-                <div className="text-[10px] font-mono text-white/40">ACTIVE STREAM</div>
-                <div className="text-xs font-bold text-white">main ← dev-theme</div>
-                <div className="text-[8px] font-mono text-white/30">Updated 2m ago</div>
-              </div>
-            </motion.div>
+            <div className="w-7.5 h-7.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center flex-shrink-0">
+              <Award size={14} className="text-indigo-400" />
+            </div>
+            <div>
+              <div className="text-[8px] font-mono text-white/40">MISSION STATUS</div>
+              <div className="text-[10px] font-bold text-white uppercase tracking-wider">Ready to Launch</div>
+            </div>
+          </motion.div>
+
+          {/* Badge 4: Live Merges (Bottom-Right) */}
+          <motion.div
+            animate={{ y: [0, 6, 0] }}
+            transition={{ repeat: Infinity, duration: 3.6, ease: "easeInOut", delay: 0.9 }}
+            className="absolute bottom-12 right-4 bg-[#090b1c]/80 border border-white/[0.08] backdrop-blur-md rounded-2xl p-3 shadow-2xl flex items-center gap-2.5 w-[160px]"
+          >
+            <GitPullRequest size={13} className="text-emerald-400" />
+            <div>
+              <div className="text-[8px] font-mono text-white/40">PR SUCCESS RATE</div>
+              <div className="text-[10px] font-bold text-emerald-400">100% Merged</div>
+            </div>
           </motion.div>
 
         </div>
