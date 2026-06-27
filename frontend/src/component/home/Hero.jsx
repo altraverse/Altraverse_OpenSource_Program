@@ -7,7 +7,7 @@ export default function Hero() {
   const navigate = useNavigate();
   useEffect(() => {
 
-    window.particlesJS.load('hero', '/partical.json', function () {
+    window.particlesJS.load('hero', '/partical.json', function() {
       console.log('callback - particles.js config loaded');
     });
 
@@ -90,7 +90,7 @@ export default function Hero() {
 
 
   return (
-    <div id='hero' className=' bg-black h-screen w-full hero'>
+    <div id='hero' className=' bg-black h-screen w-full hero overflow-hidden relative'>
 
       {/* moon */}
       {/* <div className="absolute top-10 md:top-20 right-[10%] md:right-[15%] z-5 hidden sm:block">
@@ -103,7 +103,7 @@ export default function Hero() {
           </div>
         </div>
       </div> */}
-      <img className='absolute z-4 bottom-0 left-0 w-full' src="/bg.png" alt="background" />
+      <img className='absolute z-4 -bottom-3 md:-bottom-25 left-0 w-full' src="/bg.png" alt="background" />
 
       {/* star container */}
       <div className="absolute inset-0 z-2 overflow-hidden starContainer"></div>
