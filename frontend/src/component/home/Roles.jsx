@@ -24,8 +24,8 @@ const rolesData = [
       "1-on-1 mentor guidance",
       "Leaderboard ranking"
     ],
-    buttonText: "Explore Projects",
-    buttonLink: "/projects",
+    buttonText: "Join as Contributor",
+    buttonLink: "/roles/contributor",
     buttonStyle: "border-blue-500/30 text-blue-300 hover:bg-blue-500/10 hover:border-blue-500/50"
   },
   {
@@ -50,7 +50,7 @@ const rolesData = [
       "Recommendation letters"
     ],
     buttonText: "Apply as Ambassador",
-    buttonLink: "/become-mentor",
+    buttonLink: "/roles/ambassador",
     buttonStyle: "border-rose-500/30 text-rose-300 hover:bg-rose-500/10 hover:border-rose-500/50"
   },
   {
@@ -75,7 +75,7 @@ const rolesData = [
       "Showcase project globally"
     ],
     buttonText: "Submit Your Project",
-    buttonLink: "#",
+    buttonLink: "/roles/project-admin",
     buttonStyle: "border-purple-500/30 text-purple-300 hover:bg-purple-500/10 hover:border-purple-500/50"
   },
   {
@@ -100,7 +100,7 @@ const rolesData = [
       "Collaborate on dev relations"
     ],
     buttonText: "Sponsor Program",
-    buttonLink: "mailto:sponsor@asoc.org",
+    buttonLink: "/roles/sponsor",
     buttonStyle: "border-amber-500/30 text-amber-300 hover:bg-amber-500/10 hover:border-amber-500/50"
   }
 ];
@@ -159,7 +159,8 @@ export default function Roles() {
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 whileHover={{ y: -6 }}
-                className={`group relative flex flex-col justify-between p-6 sm:p-7 rounded-2xl border border-white/5 bg-gradient-to-b ${roleInfo.gradient} backdrop-blur-md transition-all duration-300 ${roleInfo.borderClass} ${roleInfo.glowClass} shadow-xl h-full`}
+                onClick={() => navigate(roleInfo.buttonLink)}
+                className={`group relative flex flex-col justify-between p-6 sm:p-7 rounded-2xl border border-white/5 bg-gradient-to-b ${roleInfo.gradient} backdrop-blur-md transition-all duration-300 ${roleInfo.borderClass} ${roleInfo.glowClass} shadow-xl h-full cursor-pointer`}
               >
                 <div>
                   {/* Icon & Badge Row */}
@@ -214,12 +215,9 @@ export default function Roles() {
                 {/* Dedicated Action Button */}
                 <div className="mt-8 pt-4 border-t border-white/5">
                   <button 
-                    onClick={() => {
-                      if (roleInfo.buttonLink.startsWith('mailto:')) {
-                        window.location.href = roleInfo.buttonLink;
-                      } else if (roleInfo.buttonLink !== "#") {
-                        navigate(roleInfo.buttonLink);
-                      }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(roleInfo.buttonLink);
                     }}
                     className={`w-full py-2.5 px-4 rounded-xl font-semibold text-xs text-center transition-all border duration-300 ${roleInfo.buttonStyle} cursor-pointer`}
                   >
