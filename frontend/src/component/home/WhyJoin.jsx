@@ -12,7 +12,7 @@ export default function WhyJoin() {
     // CARD 1
     const cells = gsap.utils.toArray(".contrib-cell");
     const shuffledCells = [...cells].sort(() => Math.random() - 0.5);
-    const tl1 = gsap.timeline({ paused: true });
+    const tl1 = gsap.timeline({ repeat: -1, yoyo: true, repeatDelay: 0.5 });
 
     tl1.to(shuffledCells, {
       fill: () => {
@@ -28,7 +28,7 @@ export default function WhyJoin() {
     // CARD 2
     const path = document.querySelector(".graph-path");
     const points = gsap.utils.toArray(".graph-point");
-    const tl2 = gsap.timeline({ paused: true });
+    const tl2 = gsap.timeline({ repeat: -1, repeatDelay: 2 });
 
     if (path) {
       const pathLength = path.getTotalLength();
@@ -45,6 +45,8 @@ export default function WhyJoin() {
       });
 
       tl2
+        .set(path, { strokeDashoffset: pathLength })
+        .set(points, { scale: 0, opacity: 0 })
         .to(path, {
           strokeDashoffset: 0,
           duration: 1.5,
@@ -75,7 +77,7 @@ export default function WhyJoin() {
       transformOrigin: "center center",
     });
 
-    const tl3 = gsap.timeline({ paused: true });
+    const tl3 = gsap.timeline({ repeat: -1, yoyo: true, repeatDelay: 2 });
 
     tl3
       .to(centerAvatar, {
@@ -102,8 +104,6 @@ export default function WhyJoin() {
     const handlers = [];
 
     cards.forEach((card) => {
-      const cardId = card.dataset.cardId;
-
       const enter = () => {
         gsap.to(card, {
           y: -8,
@@ -112,10 +112,6 @@ export default function WhyJoin() {
           duration: 0.3,
           ease: "power2.out",
         });
-
-        if (cardId === "impact") tl1.restart();
-        if (cardId === "grow") tl2.restart();
-        if (cardId === "community") tl3.restart();
       };
 
       const leave = () => {
@@ -126,10 +122,6 @@ export default function WhyJoin() {
           duration: 0.3,
           ease: "power2.out",
         });
-
-        if (cardId === "impact") tl1.reverse();
-        if (cardId === "grow") tl2.reverse();
-        if (cardId === "community") tl3.reverse();
       };
 
       card.addEventListener("mouseenter", enter);
