@@ -6,9 +6,10 @@
     // 2. Map the alias to the actual directory
     "paths": {
       "@/*": ["./src/*"]
-    }
-  }
+    },
+    "allowJs": true
+  },
+  "include": ["src/**/*"]
 }
-
 
 // just for lsp
