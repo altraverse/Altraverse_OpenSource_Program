@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Footer from '../../components/footer';
-
+import SpaceBackground from "../layout/SpaceBackground";
+import "../layout/SpaceBackground.css";
 
 export const organisations = [
   {
@@ -45,9 +46,9 @@ import Navbar from "../../component/layout/Navbar";
 
 export default function OrganisationsPage() {
   return (
-    <div className="hero2 relative min-h-screen text-white overflow-hidden font-body">
+    <div className=" relative min-h-screen text-white overflow-hidden font-body">
       {/* Background Canvas Layer */}
-
+      <SpaceBackground />
       {/* Content Layer */}
       <div className="relative z-10">
         <Navbar />
@@ -79,8 +80,8 @@ export default function OrganisationsPage() {
           </div>
 
         </main>
-      </div>
       <Footer />
+      </div>
     </div>
   );
 }
