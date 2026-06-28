@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    // 1. Tell TS where to start looking for relative paths
+    "baseUrl": ".", 
+    
+    // 2. Map the alias to the actual directory
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "allowJs": true
+  },
+  "include": ["src/**/*"]
+}
+
+// just for lsp

@@ -1,0 +1,19 @@
+warning: in the working copy of 'frontend/src/components/AnnouncementsPage.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/FeaturedCard.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/FilterBar.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/HeroSection.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/MiniCard.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/SideCard.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/StatsBar.jsx', LF will be replaced by CRLF the next time Git touches it
+ frontend/src/App.jsx                          |  7 [32m++++[m[31m---[m
+ frontend/src/component/home/EventSection.jsx  |  2 [32m+[m[31m-[m
+ frontend/src/component/layout/Navbar.jsx      |  7 [32m+++++++[m
+ frontend/src/components/AnnouncementsPage.jsx | 19 [32m+++++++++++++++[m[31m----[m
+ frontend/src/components/FeaturedCard.jsx      |  2 [32m+[m[31m-[m
+ frontend/src/components/FilterBar.jsx         |  2 [32m+[m[31m-[m
+ frontend/src/components/HeroSection.jsx       |  4 [32m++[m[31m--[m
+ frontend/src/components/MiniCard.jsx          |  6 [32m++[m[31m----[m
+ frontend/src/components/SideCard.jsx          |  4 [32m++[m[31m--[m
+ frontend/src/components/StatsBar.jsx          |  3 [32m+[m[31m--[m
+ frontend/src/main.jsx                         |  2 [32m+[m[31m-[m
+ 11 files changed, 37 insertions(+), 21 deletions(-)
