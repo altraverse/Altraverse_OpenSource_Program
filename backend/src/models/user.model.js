@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
   {
@@ -22,6 +23,26 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
+    password: {
+      type: String,
+      required: false, // Optional for Google OAuth users
+      select: false,
+    },
+
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    otp: {
+      type: String,
+      default: "",
+    },
+
+    otpExpires: {
+      type: Date,
+    },
+
     avatar: {
       type: String,
       default: "",
@@ -29,7 +50,8 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["contributor", "admin"],
+      enum: ["contributor", "ambassador", "project-admin", "sponsor", "admin", "mentor"],
+      default: "contributor",
     },
 
     isCommunityJoined: {
@@ -65,4 +87,19 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Hash password before saving if it has been modified
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) {
+    return;
+  }
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
+// Compare password helper method
+userSchema.methods.comparePassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
 module.exports = mongoose.model("User", userSchema);
+

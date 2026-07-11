@@ -9,6 +9,8 @@ dotenv.config();
 const passport = require("./src/config/passport");
 
 const authRoutes = require("./src/routes/auth.routes");
+const mentorRoutes = require("./src/routes/mentor.routes");
+const roleRoutes = require("./src/routes/role.routes");
 
 connectDB();
 
@@ -31,9 +33,15 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/mentors", mentorRoutes);
+app.use("/api/roles", roleRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;

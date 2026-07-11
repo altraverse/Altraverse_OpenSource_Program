@@ -7,8 +7,13 @@ const {
   getMe,
   joinCommunity,
   logout,
+  register,
+  verifyOtp,
+  resendOtp,
+  login,
 } = require("../controllers/auth.controller");
 
+// Google OAuth
 router.get(
   "/google",
   passport.authenticate("google", {
@@ -26,10 +31,15 @@ router.get(
   googleCallback,
 );
 
+// Local Email/Password with OTP & JWT Authentication
+router.post("/register", register);
+router.post("/verify-otp", verifyOtp);
+router.post("/resend-otp", resendOtp);
+router.post("/login", login);
+
+// Authenticated session state
 router.get("/me", protect, getMe);
-
 router.post("/join-community", protect, joinCommunity);
-
 router.post("/logout", logout);
 
 module.exports = router;
