@@ -8,12 +8,17 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const fetchMe = async () => {
+    const fallbackTimeout = setTimeout(() => {
+      setLoading(false);
+    }, 4000);
+
     try {
       const res = await API.get("/api/auth/me");
       setUser(res.data.user);
     } catch (error) {
       setUser(null);
     } finally {
+      clearTimeout(fallbackTimeout);
       setLoading(false);
     }
   };

@@ -1,21 +1,87 @@
-import { Navigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate, Navigate } from "react-router-dom";
+import { motion } from "motion/react";
 import {
   Code,
   Laptop,
   Trophy,
   Shield,
   Lock,
+  Mail,
   Users,
   Rocket,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import loginBg from "../../assets/bg.png";
+import API from "../../api/axios";
+import Navbar from "../../component/layout/Navbar";
+import Footer from "../footer";
+import { InteractiveNetworkBackground } from "../interactive-network-background";
 
 const Login = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, setUser } = useAuth();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serverError, setServerError] = useState("");
+  
+  const navigate = useNavigate();
 
   const handleGoogleLogin = () => {
     window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
+  };
+
+  const validate = () => {
+    let newErrors = {};
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Enter a valid email address";
+    }
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+    setServerError("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    setIsSubmitting(true);
+    setServerError("");
+
+    try {
+      const response = await API.post("/api/auth/login", formData);
+      if (response.data.success) {
+        setUser(response.data.user);
+        navigate("/roles");
+      }
+    } catch (err) {
+      console.error(err);
+      if (err.response?.data?.notVerified) {
+        // Redirect to OTP verification page if account exists but isn't verified
+        navigate(`/verify-otp?email=${encodeURIComponent(formData.email)}`);
+      } else {
+        setServerError(
+          err.response?.data?.message || "Invalid email or password"
+        );
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -25,9 +91,8 @@ const Login = () => {
       </div>
     );
   }
-
   if (user) {
-    return <Navigate to="/community" replace />;
+    return <Navigate to="/roles" replace />;
   }
 
   const features = [
@@ -48,144 +113,205 @@ const Login = () => {
     },
   ];
 
-  const footerItems = [
-    {
-      icon: Shield,
-      title: "Secure & Trusted",
-      desc: "Your data is safe with us.",
-    },
-    {
-      icon: Lock,
-      title: "Open Source First",
-      desc: "Built by developers, for developers.",
-    },
-    {
-      icon: Users,
-      title: "Global Community",
-      desc: "Join thousands of contributors.",
-    },
-    {
-      icon: Rocket,
-      title: "Impact Driven",
-      desc: "Build projects that matter.",
-    },
-  ];
-
   return (
-    <div
-      className="min-h-screen overflow-x-hidden bg-cover bg-center bg-no-repeat px-4 py-4 text-white"
-      style={{
-        backgroundImage: `url(${loginBg})`,
-      }}
-    >
-      <div className="mx-auto flex min-h-screen max-w-[1200px] flex-col">
-        <nav className="sticky top-0 z-50 flex flex-wrap items-center justify-between gap-5 rounded-2xl border border-white/10 bg-[#0b0128]/40 px-5 py-4 backdrop-blur-xl">
-          <h3 className="text-xl font-bold">Altraverse</h3>
+    <div className="min-h-screen bg-[#06091b] text-white overflow-x-hidden selection:bg-indigo-500/30 relative flex flex-col justify-between">
+      {/* Background Mesh Glow Layers */}
+      <div 
+        className="absolute top-0 left-0 w-full h-[800px] pointer-events-none z-0 opacity-30"
+        style={{ background: "radial-gradient(ellipse 70% 50% at 30% 20%, rgba(91,63,214,0.22) 0%, transparent 65%)" }} 
+      />
+      <div 
+        className="absolute bottom-0 right-0 w-[800px] h-[800px] pointer-events-none z-0 opacity-20"
+        style={{ background: "radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 75%)" }} 
+      />
 
-          <ul className="flex flex-wrap items-center gap-5 text-sm text-gray-400">
-            <li className="cursor-pointer hover:text-white">Home</li>
-            <li className="cursor-pointer hover:text-white">Projects</li>
-            <li className="cursor-pointer hover:text-white">Community</li>
-            <li className="cursor-pointer hover:text-white">Events</li>
-          </ul>
+      {/* Interactive Network Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-50">
+        <InteractiveNetworkBackground />
+      </div>
 
-          <div className="flex items-center gap-3">
-            <button className="rounded-full border border-white px-5 py-2 text-sm text-white">
-              Login
-            </button>
-            <button className="rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-5 py-2 text-sm font-medium text-white">
-              Get Started
-            </button>
-          </div>
-        </nav>
+      {/* Global Navbar */}
+      <Navbar />
 
-        <main className="flex flex-1 flex-col items-center justify-between gap-10 py-10 lg:flex-row">
-          <section className="w-full flex-1 text-center lg:text-left">
-            <h1 className="text-5xl font-bold leading-tight md:text-6xl">
+      {/* Main Content Area */}
+      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-4 sm:px-6 lg:px-16 pt-32 pb-16">
+        <main className="flex flex-1 flex-col items-center justify-between gap-12 lg:flex-row">
+          <motion.section 
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="w-full flex-1 text-center lg:text-left"
+          >
+            <h1 className="text-5xl font-extrabold leading-tight md:text-6xl tracking-tight">
               Welcome{" "}
-              <span className="bg-gradient-to-r from-[#7f5af0] to-[#ff7ad9] bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,122,217,0.5)]">
+              <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(167,139,250,0.3)]">
                 Back
               </span>
             </h1>
 
-            <p className="mt-5 text-lg leading-8 text-gray-300">
+            <p className="mt-5 text-lg leading-relaxed text-slate-300 font-light">
               Continue your open source journey and make an impact together.
             </p>
 
-            <div className="mt-8 space-y-6">
-              {features.map((item) => {
+            <div className="mt-10 space-y-6">
+              {features.map((item, index) => {
                 const Icon = item.icon;
 
                 return (
-                  <div
+                  <motion.div
                     key={item.title}
-                    className="flex flex-col items-center gap-4 sm:flex-row sm:text-left lg:items-center"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.15 + 0.3 }}
+                    className="flex flex-col items-center gap-4 sm:flex-row sm:text-left lg:items-center group"
                   >
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#6a5cff] to-[#8f7bff] shadow-[0_0_15px_rgba(120,100,255,0.5)]">
-                      <Icon size={20} />
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 group-hover:border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.1)] group-hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] transition-all duration-300">
+                      <Icon size={20} className="text-indigo-300 group-hover:text-white transition-colors duration-300" />
                     </div>
 
                     <div>
-                      <h4 className="text-lg font-semibold">{item.title}</h4>
-                      <p className="mt-1 max-w-sm text-sm leading-6 text-slate-300">
+                      <h4 className="text-lg font-semibold text-white group-hover:text-indigo-300 transition-colors duration-300">
+                        {item.title}
+                      </h4>
+                      <p className="mt-1 max-w-sm text-sm leading-relaxed text-slate-400 font-light">
                         {item.desc}
                       </p>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
-          </section>
+          </motion.section>
 
-          <section className="relative w-full max-w-[420px] overflow-hidden rounded-2xl border border-[#2d3446] bg-[#030336]/85 p-8 shadow-2xl">
-            <div className="absolute left-0 top-0 h-[2px] w-full bg-gradient-to-r from-transparent via-[#cec2f0] to-transparent shadow-[0_0_15px_#7f5af0]" />
+          <motion.section 
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
+            className="relative w-full max-w-[440px] overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0c102b]/40 p-8 sm:p-10 shadow-[0_20px_50px_rgba(99,102,241,0.15)] backdrop-blur-xl"
+          >
+            {/* Top Glowing Indicator Border */}
+            <div className="absolute left-0 top-0 h-[2px] w-full bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent shadow-[0_0_20px_#6366f1]" />
 
-            <h2 className="text-2xl font-bold">Login to your account</h2>
-            <p className="mt-2 text-sm text-gray-400">
-              Glad to see you again! 👋
-            </p>
+            {/* Subtle Orb Glow inside Card */}
+            <div className="absolute -right-20 -top-20 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none z-0" />
+            <div className="absolute -left-20 -bottom-20 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none z-0" />
 
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              className="cursor-pointer mt-8 flex w-full items-center justify-center gap-3 rounded-lg bg-white px-4 py-3 font-medium text-black transition hover:bg-gray-200"
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/330px-Google_Favicon_2025.svg.png"
-                alt="Google"
-                className="h-5 w-5"
-              />
-              Continue with Google
-            </button>
+            <div className="relative z-10">
+              <h2 className="text-2xl font-bold tracking-tight text-white">Login to your account</h2>
+              <p className="mt-2 text-sm text-slate-400 font-light">
+                Glad to see you again! 👋
+              </p>
 
-            <p className="mt-6 text-center text-sm text-gray-400">
-              New contributor?{" "}
-              <span className="font-medium text-[#7f5af0]">
-                Google login creates your account automatically.
-              </span>
-            </p>
-          </section>
-        </main>
+              {serverError && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center"
+                >
+                  {serverError}
+                </motion.div>
+              )}
 
-        <footer className="grid gap-4 pb-5 sm:grid-cols-2 lg:grid-cols-4">
-          {footerItems.map((item) => {
-            const Icon = item.icon;
-
-            return (
-              <div key={item.title} className="flex items-center gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#6a5cff] to-[#8f7bff] shadow-[0_0_12px_rgba(120,100,255,0.5)]">
-                  <Icon size={15} />
+              <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                    Email Address
+                  </label>
+                  <div className="relative group">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 group-focus-within:text-indigo-400 transition-colors">
+                      <Mail size={18} />
+                    </span>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className={`w-full pl-10 pr-4 py-3 bg-[#06091b]/60 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm text-white placeholder-slate-600 ${
+                        errors.email ? "border-red-500/50" : "border-white/[0.08]"
+                      }`}
+                      placeholder="you@example.com"
+                    />
+                  </div>
+                  {errors.email && (
+                    <p className="mt-1.5 text-xs text-red-400">{errors.email}</p>
+                  )}
                 </div>
 
                 <div>
-                  <h4 className="text-sm font-semibold">{item.title}</h4>
-                  <p className="text-xs text-slate-300">{item.desc}</p>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                    Password
+                  </label>
+                  <div className="relative group">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 group-focus-within:text-indigo-400 transition-colors">
+                      <Lock size={18} />
+                    </span>
+                    <input
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      className={`w-full pl-10 pr-4 py-3 bg-[#06091b]/60 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm text-white placeholder-slate-600 ${
+                        errors.password ? "border-red-500/50" : "border-white/[0.08]"
+                      }`}
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  {errors.password && (
+                    <p className="mt-1.5 text-xs text-red-400">{errors.password}</p>
+                  )}
                 </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full mt-6 py-3 px-4 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 active:scale-[0.98] transition-all rounded-xl font-semibold text-white text-sm flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-[0_4px_20px_rgba(99,102,241,0.25)] hover:shadow-[0_4px_25px_rgba(99,102,241,0.35)] font-sans"
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center gap-2">
+                      <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Logging in...
+                    </span>
+                  ) : (
+                    "Login"
+                  )}
+                </button>
+              </form>
+
+              <div className="relative flex py-5 items-center">
+                <div className="flex-grow border-t border-white/[0.06]"></div>
+                <span className="flex-shrink mx-4 text-slate-500 text-xs uppercase tracking-wider font-semibold">or</span>
+                <div className="flex-grow border-t border-white/[0.06]"></div>
               </div>
-            );
-          })}
-        </footer>
+
+              <button
+                type="button"
+                onClick={handleGoogleLogin}
+                className="cursor-pointer flex w-full items-center justify-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.08] px-4 py-3 font-semibold text-white transition-all hover:scale-[1.01] active:scale-[0.99] text-sm font-sans"
+              >
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/330px-Google_Favicon_2025.svg.png"
+                  alt="Google"
+                  className="h-4 w-4"
+                />
+                Continue with Google
+              </button>
+
+              <p className="mt-6 text-center text-sm text-slate-400 font-light">
+                New contributor?{" "}
+                <Link to="/register" className="font-semibold text-indigo-400 hover:text-indigo-300 hover:underline">
+                  Create an account
+                </Link>
+              </p>
+            </div>
+          </motion.section>
+        </main>
       </div>
+
+      {/* Global Footer */}
+      <Footer />
     </div>
   );
 };
