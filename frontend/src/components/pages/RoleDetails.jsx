@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import API from "../../api/axios";
+import { useAuth } from "../../context/AuthContext";
+import { Clock, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
   ArrowLeft, 
@@ -143,6 +146,48 @@ export default function RoleDetails() {
   
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const { user } = useAuth();
+  const [existingApplication, setExistingApplication] = useState(null);
+  const [checkingStatus, setCheckingStatus] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        email: user.email || "",
+        name: prev.name || user.name || "",
+      }));
+
+      const checkSubmissions = async () => {
+        try {
+          const res = await API.get("/api/roles/my-applications");
+          if (res.data.success && res.data.applications) {
+            const found = res.data.applications.find(app => app.roleId === roleId);
+            if (found) {
+              setExistingApplication(found);
+            }
+          }
+        } catch (error) {
+          console.error("Failed to fetch applications status", error);
+        } finally {
+          setCheckingStatus(false);
+        }
+      };
+
+      checkSubmissions();
+    } else {
+      setCheckingStatus(false);
+    }
+  }, [user, roleId]);
+
+  if (checkingStatus) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#06091b] text-white">
+        <div className="h-8 w-8 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!role) {
     return (
@@ -170,15 +215,34 @@ export default function RoleDetails() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
-    // Simulate API request submission
-    setTimeout(() => {
+    setSubmitError("");
+
+    try {
+      const response = await API.post("/api/roles/apply", {
+        roleId: role.id,
+        ...formData
+      });
+      if (response.data.success) {
+        setIsSubmitted(true);
+      }
+    } catch (err) {
+      console.error(err);
+      if (err.response?.status === 401) {
+        setSubmitError("You must be logged in to register for a role. Redirecting to login...");
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      } else {
+        setSubmitError(
+          err.response?.data?.message || "Failed to submit your application. Please check your network and try again."
+        );
+      }
+    } finally {
       setLoading(false);
-      setIsSubmitted(true);
-    }, 1200);
+    }
   };
 
   // Render role-specific forms
@@ -207,15 +271,14 @@ export default function RoleDetails() {
               <div className="flex flex-col">
                 <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20" size={16} />
                   <input
-                    required
+                    readOnly
                     type="email"
                     name="email"
                     value={formData.email}
-                    onChange={handleInputChange}
                     placeholder="Enter email address"
-                    className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-blue-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
+                    className="w-full bg-[#0c102b]/60 border border-white/[0.05] rounded-xl py-3 pl-10 pr-4 text-sm text-white/40 outline-none cursor-not-allowed font-mono"
                   />
                 </div>
               </div>
@@ -277,15 +340,14 @@ export default function RoleDetails() {
               <div className="flex flex-col">
                 <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20" size={16} />
                   <input
-                    required
+                    readOnly
                     type="email"
                     name="email"
                     value={formData.email}
-                    onChange={handleInputChange}
                     placeholder="Enter email address"
-                    className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-rose-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
+                    className="w-full bg-[#0c102b]/60 border border-white/[0.05] rounded-xl py-3 pl-10 pr-4 text-sm text-white/40 outline-none cursor-not-allowed font-mono"
                   />
                 </div>
               </div>
@@ -381,15 +443,14 @@ export default function RoleDetails() {
               <div className="flex flex-col">
                 <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Admin Contact Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20" size={16} />
                   <input
-                    required
+                    readOnly
                     type="email"
                     name="email"
                     value={formData.email}
-                    onChange={handleInputChange}
                     placeholder="Enter email address"
-                    className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-purple-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
+                    className="w-full bg-[#0c102b]/60 border border-white/[0.05] rounded-xl py-3 pl-10 pr-4 text-sm text-white/40 outline-none cursor-not-allowed font-mono"
                   />
                 </div>
               </div>
@@ -485,15 +546,14 @@ export default function RoleDetails() {
               <div className="flex flex-col">
                 <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Business Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20" size={16} />
                   <input
-                    required
+                    readOnly
                     type="email"
                     name="email"
                     value={formData.email}
-                    onChange={handleInputChange}
                     placeholder="E.g., sponsor@company.com"
-                    className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-amber-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
+                    className="w-full bg-[#0c102b]/60 border border-white/[0.05] rounded-xl py-3 pl-10 pr-4 text-sm text-white/40 outline-none cursor-not-allowed font-mono"
                   />
                 </div>
               </div>
@@ -643,7 +703,90 @@ export default function RoleDetails() {
               />
 
               <AnimatePresence mode="wait">
-                {!isSubmitted ? (
+                {existingApplication ? (
+                  <motion.div
+                    key="existing"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4 }}
+                    className="py-6 text-center flex flex-col items-center justify-center text-white"
+                  >
+                    <div className="flex items-center gap-3.5 mb-6 w-full text-left">
+                      <div className={`w-11 h-11 rounded-xl border ${role.pillClass} flex items-center justify-center`}>
+                        <Icon size={20} className={role.textClass} />
+                      </div>
+                      <div>
+                        <h2 className="text-lg font-bold">Application Received</h2>
+                        <p className="text-xs text-white/35 font-light">You have already registered for this track.</p>
+                      </div>
+                    </div>
+
+                    <div className="w-full bg-[#06091b]/50 border border-white/[0.05] rounded-2xl p-6 text-left mb-6 space-y-4">
+                      <div className="flex items-center justify-between pb-3 border-b border-white/[0.05]">
+                        <span className="text-xs text-slate-400 font-mono">Current Status:</span>
+                        <div className="flex items-center gap-1.5">
+                          {existingApplication.status === "approved" ? (
+                            <>
+                              <Check size={16} className="text-emerald-400" />
+                              <span className="font-semibold text-emerald-400 text-xs font-mono">Approved</span>
+                            </>
+                          ) : existingApplication.status === "rejected" ? (
+                            <>
+                              <X size={16} className="text-red-400" />
+                              <span className="font-semibold text-red-400 text-xs font-mono">Rejected</span>
+                            </>
+                          ) : (
+                            <>
+                              <Clock size={16} className="text-amber-400 animate-pulse" />
+                              <span className="font-semibold text-amber-400 text-xs font-mono">Pending Review</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2.5 text-xs text-slate-300">
+                        <div>
+                          <span className="text-slate-500 font-mono">Applicant Name:</span> {existingApplication.name}
+                        </div>
+                        <div>
+                          <span className="text-slate-500 font-mono">Registered Email:</span> {existingApplication.email}
+                        </div>
+                        {existingApplication.github && (
+                          <div>
+                            <span className="text-slate-500 font-mono">GitHub Profile:</span> {existingApplication.github}
+                          </div>
+                        )}
+                        {existingApplication.college && (
+                          <div>
+                            <span className="text-slate-500 font-mono">College:</span> {existingApplication.college} ({existingApplication.year})
+                          </div>
+                        )}
+                        {existingApplication.techStack && (
+                          <div>
+                            <span className="text-slate-500 font-mono">Tech Stack:</span> {existingApplication.techStack}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <Link
+                        to="/roles"
+                        className="px-6 py-2.5 rounded-xl border border-white/10 hover:border-white/25 bg-white/[0.02] hover:bg-white/[0.05] text-xs font-semibold text-gray-300 hover:text-white transition-all font-mono"
+                      >
+                        BACK TO ROLES
+                      </Link>
+                      {existingApplication.status === "approved" && role.id === "contributor" && (
+                        <Link
+                          to="/projects"
+                          className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-xs font-semibold text-white hover:opacity-90 shadow-lg shadow-blue-500/20 transition-all font-mono"
+                        >
+                          EXPLORE PROJECTS
+                        </Link>
+                      )}
+                    </div>
+                  </motion.div>
+                ) : !isSubmitted ? (
                   <motion.div
                     key="form"
                     initial={{ opacity: 0, y: 10 }}
@@ -660,6 +803,12 @@ export default function RoleDetails() {
                         <p className="text-xs text-white/35 font-light">Fill out details below and join our ASOC cohort.</p>
                       </div>
                     </div>
+
+                    {submitError && (
+                      <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs leading-normal">
+                        {submitError}
+                      </div>
+                    )}
 
                     <form onSubmit={handleSubmit}>
                       {renderForm()}

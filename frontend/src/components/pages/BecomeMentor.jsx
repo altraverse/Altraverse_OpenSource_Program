@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { CheckCircle2, GraduationCap, Award, Gift, Sparkles, AlertCircle, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../component/layout/Navbar";
 import Footer from "../../components/footer";
 import { Button } from "@/components/ui/button";
+import API from "../../api/axios";
 
 export default function BecomeMentor() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,6 +17,7 @@ export default function BecomeMentor() {
     techStack: "",
     motivation: "",
   });
+  const [submitError, setSubmitError] = useState("");
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -79,17 +82,33 @@ export default function BecomeMentor() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     setIsSubmitting(true);
-    
-    // Simulate API Submission
-    setTimeout(() => {
+    setSubmitError("");
+
+    try {
+      const response = await API.post("/api/mentors/apply", formData);
+      if (response.data.success) {
+        setIsSubmitted(true);
+      }
+    } catch (err) {
+      console.error(err);
+      if (err.response?.status === 401) {
+        setSubmitError("You must be logged in to apply as a mentor. Redirecting to login page...");
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      } else {
+        setSubmitError(
+          err.response?.data?.message || "Failed to submit your application. Please try again."
+        );
+      }
+    } finally {
       setIsSubmitting(false);
-      setIsSubmitted(true);
-    }, 1500);
+    }
   };
 
   return (
@@ -191,6 +210,12 @@ export default function BecomeMentor() {
                 <div className="mb-8">
                   <h3 className="text-2xl font-bold text-white mb-2">Application Form</h3>
                   <p className="text-slate-400 text-sm">Tell us about your project and details. We will reach back to you shortly.</p>
+                  {submitError && (
+                    <div className="mt-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm flex items-start gap-2">
+                      <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                      <span>{submitError}</span>
+                    </div>
+                  )}
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">

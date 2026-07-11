@@ -7,6 +7,11 @@ import Project from './components/pages/Project.jsx';
 import ProjectDetails from './components/pages/ProjectDetails';
 import RoleDetails from './components/pages/RoleDetails';
 import Login from "./components/pages/Login";
+import Register from "./components/pages/Register";
+import VerifyOTP from "./components/pages/VerifyOTP";
+import RolesPage from "./components/pages/RolesPage";
+import AdminDashboard from "./components/pages/AdminDashboard";
+import ProfilePage from "./components/pages/ProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Community from "./components/pages/Community";
 import Resources from './components/pages/Resources.jsx';
@@ -40,6 +45,32 @@ function App() {
       <Route path='/become-mentor' element={<BecomeMentor />} />
 
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/verify-otp" element={<VerifyOTP />} />
+      <Route
+        path="/roles"
+        element={
+          <ProtectedRoute>
+            <RolesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/community"
         element={
