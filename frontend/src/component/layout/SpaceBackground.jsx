@@ -79,11 +79,6 @@ export default function SpaceBackground() {
             <circle cx="1040" cy="178" r="3.2" />
           </g>
 
-          <circle cx="1260" cy="90" r="56" fill="url(#sb-moon-glow)" />
-          <circle cx="1260" cy="90" r="30" fill="#0a1230" />
-          <circle cx="1260" cy="90" r="30" fill="none" stroke="#e7f3ff" strokeWidth="3.5" />
-
-          
 
           <g className="space-bg__shoot-1">
             <line x1="0" y1="0" x2="70" y2="20" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
@@ -98,16 +93,16 @@ export default function SpaceBackground() {
         <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice">
           <defs>
             <linearGradient id="sb-hill-1" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#1c2454" />
-              <stop offset="100%" stopColor="#141a3e" />
+              <stop offset="0%" stopColor="#101535" />
+              <stop offset="100%" stopColor="#06091b" />
             </linearGradient>
             <linearGradient id="sb-hill-2" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#141a42" />
-              <stop offset="100%" stopColor="#0d1230" />
+              <stop offset="0%" stopColor="#0b1029" />
+              <stop offset="100%" stopColor="#06091b" />
             </linearGradient>
             <linearGradient id="sb-hill-3" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#0c1130" />
-              <stop offset="100%" stopColor="#080a20" />
+              <stop offset="0%" stopColor="#06091b" />
+              <stop offset="100%" stopColor="#06091b" />
             </linearGradient>
           </defs>
 

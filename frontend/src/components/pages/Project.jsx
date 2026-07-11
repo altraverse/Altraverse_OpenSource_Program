@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Footer from '../../components/footer';
-import SpaceBackground from "../layout/SpaceBackground";
-import "../layout/SpaceBackground.css";
+import SpaceBackground from "../../component/layout/SpaceBackground";
+import "../../component/layout/SpaceBackground.css";
 
 export const organisations = [
   {
@@ -46,9 +46,19 @@ import Navbar from "../../component/layout/Navbar";
 
 export default function OrganisationsPage() {
   return (
-    <div className=" relative min-h-screen text-white overflow-hidden font-body">
-      {/* Background Canvas Layer */}
-      <SpaceBackground />
+    <div className="relative min-h-screen bg-[#06091b] text-white overflow-hidden font-body">
+      {/* Background Canvas Layer (hidden on mobile) */}
+      <div className="hidden sm:block">
+        <SpaceBackground />
+      </div>
+      {/* Crescent Moon (hidden on mobile, visible from sm: matches Hero / AboutPage) */}
+      <div className="hidden sm:block absolute moon-crescent rounded-full mt-5"
+        style={{ top: 88, right: 80, width: 58, height: 58 }} />
+      {/* Background Mesh Glow Layer */}
+      <div 
+        className="absolute top-0 left-0 w-full h-[800px] pointer-events-none z-0 opacity-25"
+        style={{ background: "radial-gradient(ellipse 70% 50% at 30% 20%, rgba(91,63,214,0.25) 0%, transparent 65%)" }} 
+      />
       {/* Content Layer */}
       <div className="relative z-10">
         <Navbar />
@@ -80,7 +90,7 @@ export default function OrganisationsPage() {
           </div>
 
         </main>
-      <Footer />
+        <Footer />
       </div>
     </div>
   );
