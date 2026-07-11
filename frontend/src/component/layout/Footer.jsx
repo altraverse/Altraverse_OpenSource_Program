@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
+import logo from "../../assets/logo.png"
 
 export default function Footer() {
   return (
@@ -8,9 +9,16 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="md:col-span-1">
-            <h2 className="font-black text-2xl tracking-tighter mb-4 textGradient inline-block">
-              ASOC
-            </h2>
+            <Link to="/" className="flex items-center gap-1 group">
+              <img
+                src={logo}
+                alt="ASOC Logo"
+                className="h-10 w-10 object-contain transition-transform duration-300 group-hover:scale-105"
+              />
+              <h2 className="font-black text-2xl tracking-tighter mb-4 textGradient inline-block">
+                ASOC
+              </h2>
+            </Link>
             <p className="text-slate-400 text-sm leading-relaxed mb-6">
               Empowering developers worldwide to learn, collaborate, and create
               impact through open source.

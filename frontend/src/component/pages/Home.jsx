@@ -65,26 +65,68 @@ function Home() {
       <Hero />
 
       {/* Sponsors Section (Marquee / Grid) */}
-      <section className="py-12 border-b border-white/[0.06] bg-transparent relative z-10">
+      <section className="py-12 border-b border-white/[0.06] bg-transparent relative z-10 overflow-hidden">
+        {/* Style block for continuous scrolling marquee */}
+        <style>{`
+          @keyframes marquee-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .marquee-container {
+            display: flex;
+            overflow: hidden;
+            user-select: none;
+            width: 100%;
+            mask-image: linear-gradient(to right, transparent, white 15%, white 85%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, white 15%, white 85%, transparent);
+          }
+          .marquee-content {
+            display: flex;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: space-around;
+            min-width: 100%;
+            gap: 4rem;
+            animation: marquee-scroll 25s linear infinite;
+          }
+          .marquee-container:hover .marquee-content {
+            animation-play-state: paused;
+          }
+        `}</style>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-16">
           <p className="text-center text-sm font-medium text-slate-400 mb-8 uppercase tracking-widest">
             Backed By Industry Leaders
           </p>
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-            {["Vercel", "GitHub", "DigitalOcean", "JetBrains", "Discord"].map(
-              (sponsor, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="text-xl md:text-2xl font-bold tracking-tighter flex items-center gap-2"
-                >
-                  {sponsor}
-                </motion.div>
-              )
-            )}
+          
+          <div className="marquee-container opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+            {/* Set 1 */}
+            <div className="marquee-content">
+              {["Vercel", "GitHub", "DigitalOcean", "JetBrains", "Discord", "Google", "Amazon", "Microsoft", "Meta", "Netflix", "Slack", "Intel"].map(
+                (sponsor, i) => (
+                  <div
+                    key={`s1-${i}`}
+                    className="text-xl md:text-2xl font-bold tracking-tighter flex items-center gap-2 text-white"
+                  >
+                    {sponsor}
+                  </div>
+                )
+              )}
+            </div>
+            
+            {/* Set 2 (duplicates for infinite loop) */}
+            <div className="marquee-content" aria-hidden="true">
+              {["Vercel", "GitHub", "DigitalOcean", "JetBrains", "Discord", "Google", "Amazon", "Microsoft", "Meta", "Netflix", "Slack", "Intel"].map(
+                (sponsor, i) => (
+                  <div
+                    key={`s2-${i}`}
+                    className="text-xl md:text-2xl font-bold tracking-tighter flex items-center gap-2 text-white"
+                  >
+                    {sponsor}
+                  </div>
+                )
+              )}
+            </div>
           </div>
         </div>
       </section>

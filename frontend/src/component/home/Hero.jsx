@@ -107,11 +107,11 @@ export default function Hero() {
         style={{ background: "radial-gradient(ellipse 30% 40% at 90% 70%, rgba(129,140,248,0.08) 0%, transparent 60%)" }} />
 
       {/* Crescent Moon from Announcement Hero */}
-      <div className="absolute moon-crescent rounded-full"
+      <div className="hidden sm:block absolute moon-crescent rounded-full mt-5 "
         style={{ top: 88, right: 80, width: 58, height: 58 }} />
 
       {/* Main Grid Layout */}
-      <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 min-h-screen grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10 w-full pb-20">
+      <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 min-h-screen grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10 w-full pt-28 sm:pt-32 lg:pt-24 pb-20">
 
         {/* Left Column: Typography & CTAs (7 cols) */}
         <div className="lg:col-span-7 flex flex-col items-start text-left gap-5 relative z-10">
@@ -170,7 +170,7 @@ export default function Hero() {
         </div>
 
         {/* Right Column: Premium Cyber-Constellation Orbit Visual (5 cols) */}
-        <div className="lg:col-span-5 flex justify-center items-center relative w-full h-[450px] mt-10 lg:mt-0 select-none z-10">
+        <div className="lg:col-span-5 flex justify-center items-center relative w-full h-[450px] select-none z-10">
 
           {/* Orbital background grid lines */}
           <div className="absolute w-[360px] h-[360px] rounded-full border border-white/[0.02] animate-[spin_60s_linear_infinite_reverse] z-0" />
