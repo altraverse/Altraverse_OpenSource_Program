@@ -5,6 +5,7 @@ const { updateExcelApplicationStatus, appendRoleApplication } = require("../util
 const { sendAdminRoleNotificationEmail, sendUserRoleStatusEmail } = require("../utils/email.utils");
 const fs = require("fs");
 const path = require("path");
+const xlsx = require("xlsx");
 
 /**
  * Handle user application submission for specific roles
@@ -20,18 +21,26 @@ const applyRole = async (req, res) => {
     });
   }
 
-  // Prevent multiple active applications for the same role
+  // Prevent multiple active applications for the same role (except project-admin which can submit multiple applications)
   try {
-    const existing = await RoleApplication.findOne({
+    const query = {
       userId: req.user._id,
       roleId,
-      status: { $in: ["pending", "approved"] },
-    });
+    };
+    if (roleId === "project-admin") {
+      query.status = "pending";
+    } else {
+      query.status = { $in: ["pending", "approved"] };
+    }
+
+    const existing = await RoleApplication.findOne(query);
 
     if (existing) {
       return res.status(400).json({
         success: false,
-        message: `You already have an active or approved application for the ${roleId} role.`,
+        message: roleId === "project-admin"
+          ? "You already have a pending project submission. Please wait for it to be reviewed."
+          : `You already have an active or approved application for the ${roleId} role.`,
       });
     }
 
@@ -53,12 +62,20 @@ const applyRole = async (req, res) => {
     }
 
     // 1. Save application data to MongoDB (default status is "pending")
-    const application = new RoleApplication({
+    const appData = {
       userId: req.user._id,
       roleId,
       ...req.body,
       status: "pending",
-    });
+    };
+
+    // Prefill legacy fields with first project for backwards compatibility if projects array is provided
+    if (roleId === "project-admin" && req.body.projects && Array.isArray(req.body.projects) && req.body.projects.length > 0) {
+      appData.projectName = req.body.projects[0].projectName;
+      appData.repoUrl = req.body.projects[0].repoUrl;
+    }
+
+    const application = new RoleApplication(appData);
     await application.save();
 
     // 2. Append row to sheet-segmented Excel file (Status will be Pending)
@@ -72,7 +89,11 @@ const applyRole = async (req, res) => {
     }
 
     // Trigger admin notification alert email
-    sendAdminRoleNotificationEmail(req.body.name, req.user.email, roleId);
+    try {
+      await sendAdminRoleNotificationEmail(req.body.name, req.user.email, roleId);
+    } catch (err) {
+      console.error("[SMTP Error] Admin role notification dispatch failed:", err.message);
+    }
 
     res.status(201).json({
       success: true,
@@ -213,10 +234,20 @@ const approveApplication = async (req, res) => {
     const user = await User.findById(userId);
     if (user) {
       user.role = roleId;
+      if (!user.roles) {
+        user.roles = ["user"];
+      }
+      if (!user.roles.includes(roleId)) {
+        user.roles.push(roleId);
+      }
       await user.save();
 
       // Trigger status alert email to the approved user
-      sendUserRoleStatusEmail(userEmail, user.name, roleId, "Approved");
+      try {
+        await sendUserRoleStatusEmail(userEmail, user.name, roleId, "Approved");
+      } catch (err) {
+        console.error("[SMTP Error] User role status dispatch failed:", err.message);
+      }
     }
 
     // Update status in the Excel file
@@ -280,7 +311,11 @@ const rejectApplication = async (req, res) => {
     // Trigger status alert email to the rejected user
     const applicantUser = await User.findById(application.userId);
     if (applicantUser) {
-      sendUserRoleStatusEmail(userEmail, applicantUser.name, roleId, "Rejected");
+      try {
+        await sendUserRoleStatusEmail(userEmail, applicantUser.name, roleId, "Rejected");
+      } catch (err) {
+        console.error("[SMTP Error] User role status dispatch failed:", err.message);
+      }
     }
 
     // Update status in the Excel file
@@ -304,26 +339,141 @@ const rejectApplication = async (req, res) => {
  * Download applications Excel sheets (Admin only)
  * GET /api/roles/admin/download-excel
  */
-const downloadExcelFile = (req, res) => {
+const downloadExcelFile = async (req, res) => {
   const { fileType } = req.query; // 'roles' or 'mentors'
-  const fileName = fileType === "mentors" ? "mentor_applications.xlsx" : "role_applications.xlsx";
-  const filePath = path.join(__dirname, "..", "..", "data", fileName);
 
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).json({
-      success: false,
-      message: `Excel sheet for ${fileType || "role"} applications was not found or has not been generated yet.`,
-    });
-  }
+  try {
+    const workbook = xlsx.utils.book_new();
 
-  res.download(filePath, fileName, (err) => {
-    if (err) {
-      console.error("Excel download error:", err);
-      if (!res.headersSent) {
-        res.status(500).json({ success: false, message: "Error downloading file" });
+    if (fileType === "mentors") {
+      // Fetch all mentor applications from MongoDB
+      const applications = await MentorApplication.find({}).sort({ createdAt: -1 });
+
+      const dataList = applications.map((app) => ({
+        Timestamp: app.createdAt ? new Date(app.createdAt).toLocaleString() : "",
+        Role: "Mentor",
+        Name: app.name,
+        Email: app.email,
+        Status: app.status || "Pending",
+        GitHub: app.github,
+        Repository: app.repository,
+        "Tech Stack": app.techStack,
+        Motivation: app.motivation,
+      }));
+
+      const worksheet = xlsx.utils.json_to_sheet(dataList);
+
+      // Set column widths for readability
+      const cols = [
+        { wch: 22 }, // Timestamp
+        { wch: 10 }, // Role
+        { wch: 20 }, // Name
+        { wch: 25 }, // Email
+        { wch: 12 }, // Status
+        { wch: 20 }, // GitHub
+        { wch: 35 }, // Repository
+        { wch: 30 }, // Tech Stack
+        { wch: 50 }, // Motivation
+      ];
+      worksheet["!cols"] = cols;
+
+      xlsx.utils.book_append_sheet(workbook, worksheet, "Mentors");
+    } else {
+      // Fetch all general role applications from MongoDB
+      const applications = await RoleApplication.find({}).sort({ createdAt: -1 });
+
+      const rolesMap = {
+        "contributor": "Contributors",
+        "ambassador": "Ambassadors",
+        "project-admin": "Project Admins",
+        "sponsor": "Sponsors",
+      };
+
+      const rolesMapLabel = {
+        "contributor": "Contributor",
+        "ambassador": "Ambassador",
+        "project-admin": "Project Admin",
+        "sponsor": "Sponsor",
+      };
+
+      // Group by roleId
+      const grouped = {
+        contributor: [],
+        ambassador: [],
+        "project-admin": [],
+        sponsor: []
+      };
+
+      applications.forEach((app) => {
+        if (grouped[app.roleId]) {
+          grouped[app.roleId].push(app);
+        }
+      });
+
+      // Generate a sheet for each role
+      for (const roleId of ["contributor", "ambassador", "project-admin", "sponsor"]) {
+        const list = grouped[roleId] || [];
+        const sheetName = rolesMap[roleId] || "Applications";
+        const roleLabel = rolesMapLabel[roleId] || "Participant";
+
+        const dataList = list.map((app) => {
+          const row = {
+            Timestamp: app.createdAt ? new Date(app.createdAt).toLocaleString() : "",
+            Role: roleLabel,
+            Name: app.name,
+            Email: app.email,
+            Status: app.status || "Pending",
+          };
+
+          if (roleId === "contributor") {
+            row["GitHub"] = app.github || "";
+            row["Tech Stack"] = app.techStack || "";
+          } else if (roleId === "ambassador") {
+            row["GitHub"] = app.github || "";
+            row["College"] = app.college || "";
+            row["Year"] = app.year || "";
+            row["Motivation"] = app.motivation || "";
+          } else if (roleId === "project-admin") {
+            row["GitHub"] = app.github || "";
+            row["Project Name"] = app.projectName || "";
+            row["Repository URL"] = app.repoUrl || "";
+            row["Motivation"] = app.motivation || "";
+          } else if (roleId === "sponsor") {
+            row["Company"] = app.company || "";
+            row["Sponsorship Tier"] = app.tier || "";
+            row["Message / Suggestions"] = app.message || "";
+          }
+          return row;
+        });
+
+        const worksheet = xlsx.utils.json_to_sheet(dataList);
+
+        // Apply auto column widths
+        if (dataList.length > 0) {
+          const keys = Object.keys(dataList[0]);
+          const cols = keys.map((key) => {
+            const lengths = dataList.map((row) => String(row[key] || "").length);
+            const maxLen = Math.max(key.length, ...lengths, 10);
+            return { wch: Math.min(maxLen + 3, 50) };
+          });
+          worksheet["!cols"] = cols;
+        }
+
+        xlsx.utils.book_append_sheet(workbook, worksheet, sheetName);
       }
     }
-  });
+
+    const excelBuffer = xlsx.write(workbook, { type: "buffer", bookType: "xlsx" });
+    const fileName = fileType === "mentors" ? "mentor_applications.xlsx" : "role_applications.xlsx";
+
+    res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.send(excelBuffer);
+
+  } catch (error) {
+    console.error("Excel generation error:", error);
+    res.status(500).json({ success: false, message: "Error generating Excel sheet" });
+  }
 };
 
 module.exports = {
