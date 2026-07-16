@@ -50,8 +50,13 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["contributor", "ambassador", "project-admin", "sponsor", "admin", "mentor"],
-      default: "contributor",
+      enum: ["user", "contributor", "ambassador", "project-admin", "sponsor", "admin", "mentor"],
+      default: "user",
+    },
+
+    roles: {
+      type: [String],
+      default: ["user"],
     },
 
     isCommunityJoined: {
