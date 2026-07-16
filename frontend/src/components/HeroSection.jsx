@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function HeroSection() {
+  const navigate = useNavigate();
   return (
     <section className="relative pt-16 overflow-hidden" style={{ minHeight: 520 }}>
       {/* Cosmic background */}
@@ -50,18 +52,23 @@ export default function HeroSection() {
           </p>
 
           <div className="flex gap-3 flex-wrap">
-            <button className="font-display text-[13px] font-bold px-6 py-3 rounded-full
+            <button
+              onClick={() => navigate('/projects')}
+              className="font-display text-[13px] font-bold px-6 py-3 rounded-full
                                border-none text-white btn-violet shadow-violet-sm
-                               hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200">
+                               hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+            >
               Explore Projects
             </button>
-            <button className="font-body text-[13px] font-medium px-6 py-3 rounded-full
+            <button
+              onClick={() => window.open('https://chat.whatsapp.com/K9YQAz1PxAyDnB2Kw4lteJ?s=cl&p=a&mlu=0', '_blank')}
+              className="font-body text-[13px] font-medium px-6 py-3 rounded-full
                                border border-white/20 bg-white/[0.04] text-white/80
                                hover:border-white/35 hover:bg-white/[0.07] transition-all duration-200
-                               flex items-center gap-2">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M7 1C3.7 1 1 3.7 1 7s2.7 6 6 6 6-2.7 6-6-2.7-6-6-6zm0 2.2C9 3.2 10.8 5 10.8 7S9 10.8 7 10.8 3.2 9 3.2 7 5 3.2 7 3.2zm-1.5 2L7 5.5 8.5 7H7.5v2h-1V7H5z"
-                  fill="rgba(255,255,255,0.7)" fillRule="evenodd" />
+                               flex items-center gap-2 cursor-pointer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.012 2c-5.506 0-9.988 4.482-9.988 9.988 0 1.761.459 3.479 1.332 5.006l-1.354 4.954 5.074-1.331c1.472.802 3.125 1.223 4.819 1.225h.004c5.505 0 9.987-4.482 9.987-9.988 0-2.668-1.039-5.176-2.927-7.065-1.888-1.887-4.397-2.926-7.065-2.926zm5.823 13.064c-.242.684-1.201 1.25-1.656 1.298-.444.047-.872.247-2.884-.551-2.011-.798-3.303-2.842-3.403-2.975-.1-.134-.814-1.084-.814-2.068 0-.983.513-1.467.697-1.668.184-.2.4-.25.534-.25h.384c.125 0 .292-.047.459.359.167.406.571 1.391.621 1.492.05.101.083.219.017.352-.067.133-.1.219-.2.336-.1.117-.21.261-.3.35-.1.101-.205.21-.089.41.117.2.52 1.012.92 1.368.513.456.953.597 1.087.664.134.067.21.05.292-.046.082-.097.352-.41.444-.551.092-.142.184-.117.31-.071l1.272.597c.125.067.208.101.242.158.033.058.033.336-.075.687z" />
               </svg>
               Join Community
             </button>
