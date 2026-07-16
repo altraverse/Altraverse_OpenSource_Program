@@ -47,6 +47,12 @@ const roleApplicationSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    projects: [
+      {
+        projectName: { type: String, trim: true },
+        repoUrl: { type: String, trim: true }
+      }
+    ],
     company: {
       type: String,
       trim: true,
