@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { colorMap } from "../data/announcements";
 
 const ICONS = {
@@ -33,12 +34,22 @@ const ICONS = {
 
 export default function SideCard({ item, animDelay = 0 }) {
   const [hovered, setHovered] = useState(false);
+  const navigate = useNavigate();
   const cm = colorMap[item.color];
+
+  const handleClick = () => {
+    if (item.link) {
+      window.open(item.link, "_blank");
+    } else if (item.to) {
+      navigate(item.to);
+    }
+  };
 
   return (
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={handleClick}
       className={`relative rounded-xl p-4 border transition-all duration-250 cursor-pointer
                   card-glass  
                   ${cm.border}

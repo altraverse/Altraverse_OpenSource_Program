@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function FeaturedCard({ item }) {
   return (
@@ -59,34 +60,50 @@ export default function FeaturedCard({ item }) {
         </p>
 
         {/* ── Points box: compact, auto width, no huge empty space ── */}
-        <div className="inline-flex items-center gap-4 self-start rounded-xl px-5 py-3 mb-6"
-             style={{
-               background: "rgba(255,255,255,0.04)",
-               border: "1px solid rgba(139,92,246,0.20)"
-             }}>
-          <span className="font-display font-bold tabular-nums leading-none"
-                style={{ fontSize: 44, color: "#8b5cf6", letterSpacing: "-0.03em" }}>
-            {item.points}
-          </span>
-          <div className="border-l border-white/10 pl-4">
-            <div className="font-body font-medium text-[12px] text-white/65">points</div>
-            <div className="font-body text-[11px] font-light mt-0.5" style={{ color: "rgba(255,255,255,0.32)" }}>
-              on completion
+        {item.points !== null && item.points !== undefined && (
+          <div className="inline-flex items-center gap-4 self-start rounded-xl px-5 py-3 mb-6"
+               style={{
+                 background: "rgba(255,255,255,0.04)",
+                 border: "1px solid rgba(139,92,246,0.20)"
+               }}>
+            <span className="font-display font-bold tabular-nums leading-none"
+                  style={{ fontSize: 44, color: "#8b5cf6", letterSpacing: "-0.03em" }}>
+              {item.points}
+            </span>
+            <div className="border-l border-white/10 pl-4">
+              <div className="font-body font-medium text-[12px] text-white/65">points</div>
+              <div className="font-body text-[11px] font-light mt-0.5" style={{ color: "rgba(255,255,255,0.32)" }}>
+                on completion
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <div className="flex-1" />
 
         {/* ── CTA row ── */}
-        <div className="flex items-center gap-3">
-          <a href={item.link || "#"} target="_blank" rel="noopener noreferrer"
-             className="flex-1 text-center font-body font-semibold text-[13px] py-3.5 rounded-full
-                        text-white btn-violet shadow-violet-sm
-                        hover:opacity-90 transition-all duration-200 cursor-pointer">
-            Start Task →
-          </a>
-          <button className="w-10 h-10 rounded-full flex items-center justify-center
+        <div className="flex items-center gap-3 w-full">
+          {item.link ? (
+            <a href={item.link} target="_blank" rel="noopener noreferrer"
+               className="flex-1 text-center font-body font-semibold text-[13px] py-3.5 rounded-full
+                          text-white btn-violet shadow-violet-sm
+                          hover:opacity-90 transition-all duration-200 cursor-pointer">
+              {item.ctaText || "Start Task →"}
+            </a>
+          ) : item.to ? (
+            <Link to={item.to}
+               className="flex-1 text-center font-body font-semibold text-[13px] py-3.5 rounded-full
+                          text-white btn-violet shadow-violet-sm
+                          hover:opacity-90 transition-all duration-200 cursor-pointer">
+              {item.ctaText || "Learn More →"}
+            </Link>
+          ) : (
+            <button className="flex-1 text-center font-body font-semibold text-[13px] py-3.5 rounded-full
+                          text-white/50 bg-white/[0.04] border border-white/5 cursor-not-allowed">
+              {item.ctaText || "Upcoming Announcement"}
+            </button>
+          )}
+          <button className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0
                               border transition-all duration-200 hover:border-white/25"
                   style={{ borderColor: "rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.04)" }}>
             <svg width="13" height="13" viewBox="0 0 14 14" fill="none">

@@ -273,8 +273,8 @@ export default function AboutPage() {
           }}
         />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6">
-          <motion.div
+        {/* <div className="relative z-10 max-w-7xl mx-auto px-6"> */}
+        {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -286,10 +286,10 @@ export default function AboutPage() {
             <p className="text-white/60 text-[clamp(14px,1.5vw,16px)] max-w-2xl mx-auto font-light leading-relaxed">
               A diverse team of passionate professionals with unique skills driving innovation and excellence in every project.
             </p>
-          </motion.div>
+          </motion.div> */}
 
-          {/* Curved team list */}
-          <div
+        {/* Curved team list */}
+        {/* <div
             className="relative w-full overflow-visible select-none flex justify-center pt-8 mt-30 sm:mt-60"
             style={{ height: config.containerHeight }}
           >
@@ -318,70 +318,70 @@ export default function AboutPage() {
                     src={member.img}
                     alt={member.name}
                     className="w-full h-full object-cover pointer-events-none"
-                  />
-                  {/* Subtle glass overlay with name and role on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 sm:p-4 text-center">
+                  /> */}
+        {/* Subtle glass overlay with name and role on hover */}
+        {/* <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 sm:p-4 text-center">
                     <p className="text-white font-bold text-xs sm:text-sm tracking-tight leading-tight">{member.name}</p>
                     <p className="text-violet-400 text-[10px] sm:text-xs mt-0.5 font-medium">{member.role}</p>
                   </div>
-                </div>
-              );
+                </div> */}
+        {/* );
             })}
-          </div>
-        </div>
+          </div> */}
+        {/* </div> */}
       </section>
 
       {/* Team Grid Section */}
-      <section className="relative  overflow-hidden bg-[#06091b] -mt-40 py-10 px-8">
-        {/* Glow backdrop */}
-        <div
+      {/* <section className="relative  overflow-hidden bg-[#06091b] -mt-40 py-10 px-8"> */}
+      {/* Glow backdrop */}
+      {/* <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[75%] h-[75%] rounded-full opacity-20 blur-[130px] pointer-events-none"
           style={{
             background: "radial-gradient(circle, rgba(91,63,214,0.3) 0%, transparent 70%)"
           }}
         />
 
-        <div className="relative z-10 max-w-7xl mx-auto">
-          {/* Section header */}
-          <div className="text-center mb-16">
+        <div className="relative z-10 max-w-7xl mx-auto"> */}
+      {/* Section header */}
+      {/* <div className="text-center mb-16">
             <h2 className="text-[clamp(28px,4vw,44px)] font-bold text-white mb-4 tracking-tight">
               Team
             </h2>
             <p className="text-white/40 text-[clamp(14px,1.5vw,16px)] max-w-2xl mx-auto font-light leading-relaxed">
               A diverse group of passionate professionals, each bringing unique skills and experiences to drive innovation and excellence in every project we undertake.
             </p>
-          </div>
+          </div> */}
 
-          {/* Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
+      {/* Grid */}
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
             {teamMembers.map((member, i) => (
-              <div key={i} className="flex flex-col text-left">
-                {/* Photo */}
-                <div className="w-full aspect-square rounded-[20px] overflow-hidden bg-white/[0.02] border border-white/[0.04]">
+              <div key={i} className="flex flex-col text-left"> */}
+      {/* Photo */}
+      {/* <div className="w-full aspect-square rounded-[20px] overflow-hidden bg-white/[0.02] border border-white/[0.04]">
                   <img
                     src={member.img}
                     alt={member.name}
                     className="w-full h-full object-cover transition-all duration-300"
                   />
-                </div>
+                </div> */}
 
-                {/* Name */}
-                <h3 className="text-white font-bold text-[18px] mt-4 tracking-tight">
+      {/* Name */}
+      {/* <h3 className="text-white font-bold text-[18px] mt-4 tracking-tight">
                   {member.name}
-                </h3>
+                </h3> */}
 
-                {/* Role */}
-                <span className="text-[#5684FC] font-semibold text-[13px] mt-1 tracking-wide">
+      {/* Role */}
+      {/* <span className="text-[#5684FC] font-semibold text-[13px] mt-1 tracking-wide">
                   {member.role}
-                </span>
+                </span> */}
 
-                {/* Bio / Description */}
-                <p className="text-white/50 text-[13px] mt-2.5 leading-relaxed font-light flex-1">
+      {/* Bio / Description */}
+      {/* <p className="text-white/50 text-[13px] mt-2.5 leading-relaxed font-light flex-1">
                   {member.desc}
-                </p>
+                </p> */}
 
-                {/* Social links */}
-                <div className="flex items-center gap-3 mt-4 text-white/30">
+      {/* Social links */}
+      {/* <div className="flex items-center gap-3 mt-4 text-white/30">
                   {Object.entries(member.socials).map(([type, href]) => (
                     <a
                       key={type}
@@ -469,7 +469,7 @@ export default function AboutPage() {
       </section>
 
       {/* Stats */}
-      <section className="py-16 px-8 border-t border-white/[0.06]">
+      {/* <section className="py-16 px-8 border-t border-white/[0.06]">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
           {stats.map((s, i) => (
             <motion.div
@@ -485,7 +485,7 @@ export default function AboutPage() {
             </motion.div>
           ))}
         </div>
-      </section>
+      </section> */}
 
 
 
