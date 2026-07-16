@@ -99,8 +99,8 @@ export default function Timeline() {
         className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[300px] pointer-events-none opacity-30 blur-[100px] transition-all duration-700"
         style={{
           background: isPhase1 
-            ? "radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 80%)"
-            : "radial-gradient(circle, rgba(245,158,11,0.1) 0%, transparent 80%)"
+            ? "radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 80%)"
+            : "radial-gradient(circle, rgba(6,182,212,0.08) 0%, transparent 80%)"
         }}
       />
       <div 
@@ -122,11 +122,11 @@ export default function Timeline() {
             transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-2 mb-3"
           >
-            <div className={`h-px w-8 bg-gradient-to-r ${isPhase1 ? 'from-violet-400' : 'from-amber-400'} to-transparent`} />
-            <span className={`font-mono text-[10px] font-bold tracking-[0.22em] uppercase ${isPhase1 ? 'text-violet-400' : 'text-amber-400'}`}>
+            <div className={`h-px w-8 bg-gradient-to-r ${isPhase1 ? 'from-violet-400' : 'from-cyan-400'} to-transparent`} />
+            <span className={`font-mono text-[10px] font-bold tracking-[0.22em] uppercase ${isPhase1 ? 'text-violet-400' : 'text-cyan-400'}`}>
               Roadmap & Milestones
             </span>
-            <div className={`h-px w-8 bg-gradient-to-l ${isPhase1 ? 'from-violet-400' : 'from-amber-400'} to-transparent`} />
+            <div className={`h-px w-8 bg-gradient-to-l ${isPhase1 ? 'from-violet-400' : 'from-cyan-400'} to-transparent`} />
           </motion.div>
 
           <motion.h2 

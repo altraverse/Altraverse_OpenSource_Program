@@ -45,7 +45,7 @@ export default function Navbar() {
             <img
               src={logo}
               alt="ASOC Logo"
-              className="h-9 w-9 object-contain transition-transform duration-300 group-hover:scale-105"
+              className="h-6 w-6 object-contain transition-transform duration-300 group-hover:scale-105"
             />
             <span className="text-lg font-bold text-white tracking-wider group-hover:text-violet-400 transition-colors duration-200">
               ASOC
@@ -99,23 +99,22 @@ export default function Navbar() {
                 >
                   <span className="font-semibold text-white/90">{user.name}</span>
                   <span
-                    className={`px-2.5 py-0.5 rounded-full text-[9px] font-extrabold font-mono uppercase tracking-wider ${
-                      user.role === "admin" || (user.roles && user.roles.includes("admin"))
-                        ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
-                        : user.roles && user.roles.filter(r => r !== "user").length > 1
+                    className={`px-2.5 py-0.5 rounded-full text-[9px] font-extrabold font-mono uppercase tracking-wider ${user.role === "admin" || (user.roles && user.roles.includes("admin"))
+                      ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                      : user.roles && user.roles.filter(r => r !== "user").length > 1
                         ? "bg-gradient-to-r from-violet-500/20 via-indigo-500/20 to-purple-500/20 text-violet-300 border border-violet-500/30 shadow-[0_0_8px_rgba(139,92,246,0.15)]"
                         : user.role === "contributor"
-                        ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
-                        : user.role === "ambassador"
-                        ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
-                        : user.role === "project-admin"
-                        ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                        : user.role === "sponsor"
-                        ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                        : user.role === "mentor"
-                        ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                        : "bg-slate-500/20 text-slate-300 border border-slate-500/30"
-                    }`}
+                          ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                          : user.role === "ambassador"
+                            ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                            : user.role === "project-admin"
+                              ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                              : user.role === "sponsor"
+                                ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                                : user.role === "mentor"
+                                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                                  : "bg-slate-500/20 text-slate-300 border border-slate-500/30"
+                      }`}
                   >
                     {getDisplayRole(user)}
                   </span>
@@ -245,21 +244,20 @@ export default function Navbar() {
                       {(user.roles && user.roles.length > 0 ? user.roles : [user.role || "user"]).map((r) => (
                         <span
                           key={r}
-                          className={`px-2 py-0.5 rounded-full text-[8px] font-extrabold font-mono uppercase tracking-wider border ${
-                            r === "admin"
-                              ? "bg-indigo-500/10 text-indigo-300 border-indigo-500/20"
-                              : r === "contributor"
+                          className={`px-2 py-0.5 rounded-full text-[8px] font-extrabold font-mono uppercase tracking-wider border ${r === "admin"
+                            ? "bg-indigo-500/10 text-indigo-300 border-indigo-500/20"
+                            : r === "contributor"
                               ? "bg-blue-500/10 text-blue-300 border-blue-500/20"
                               : r === "ambassador"
-                              ? "bg-rose-500/10 text-rose-300 border-rose-500/20"
-                              : r === "project-admin"
-                              ? "bg-purple-500/10 text-purple-300 border-purple-500/20"
-                              : r === "sponsor"
-                              ? "bg-amber-500/10 text-amber-300 border-amber-500/20"
-                              : r === "mentor"
-                              ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
-                              : "bg-slate-500/10 text-slate-300 border-slate-500/20"
-                          }`}
+                                ? "bg-rose-500/10 text-rose-300 border-rose-500/20"
+                                : r === "project-admin"
+                                  ? "bg-purple-500/10 text-purple-300 border-purple-500/20"
+                                  : r === "sponsor"
+                                    ? "bg-amber-500/10 text-amber-300 border-amber-500/20"
+                                    : r === "mentor"
+                                      ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
+                                      : "bg-slate-500/10 text-slate-300 border-slate-500/20"
+                            }`}
                         >
                           {r.replace("-", " ")}
                         </span>
