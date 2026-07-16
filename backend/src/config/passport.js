@@ -27,7 +27,7 @@ passport.use(
             name: profile.displayName,
             email,
             avatar: profile.photos?.[0]?.value || "",
-            role: "contributor",
+            role: "user",
           });
         } else if (!user.googleId) {
           user.googleId = profile.id;
