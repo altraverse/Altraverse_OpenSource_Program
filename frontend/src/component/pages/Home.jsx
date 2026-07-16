@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ const fadeUpVariant = {
 
 function Home() {
   const navigate = useNavigate();
+  const [showAllFaqs, setShowAllFaqs] = useState(false);
   // useEffect(() => {
   //   // // @ts-ignore
   //    if (window.particlesJS) {
@@ -316,78 +317,91 @@ function Home() {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem
-              value="item-5"
-              className="bg-slate-900/30 hover:bg-slate-900/50 transition-all duration-300 px-6 rounded-xl border border-slate-800/50 shadow-xl"
-            >
-              <AccordionTrigger className="hover:no-underline font-semibold py-4 text-white hover:text-indigo-400 transition-colors duration-200 text-left text-base sm:text-lg">
-                How can I register my open-source project as a Project Admin?
-              </AccordionTrigger>
-              <AccordionContent className="text-slate-400 pb-4 text-sm sm:text-base leading-relaxed text-left">
-                Submit your project through the official project registration process, ensuring it meets the eligibility guidelines.
-              </AccordionContent>
-            </AccordionItem>
+            {showAllFaqs && (
+              <>
+                <AccordionItem
+                  value="item-5"
+                  className="bg-slate-900/30 hover:bg-slate-900/50 transition-all duration-300 px-6 rounded-xl border border-slate-800/50 shadow-xl animate-fadeIn"
+                >
+                  <AccordionTrigger className="hover:no-underline font-semibold py-4 text-white hover:text-indigo-400 transition-colors duration-200 text-left text-base sm:text-lg">
+                    How can I register my open-source project as a Project Admin?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-400 pb-4 text-sm sm:text-base leading-relaxed text-left">
+                    Submit your project through the official project registration process, ensuring it meets the eligibility guidelines.
+                  </AccordionContent>
+                </AccordionItem>
 
-            <AccordionItem
-              value="item-6"
-              className="bg-slate-900/30 hover:bg-slate-900/50 transition-all duration-300 px-6 rounded-xl border border-slate-800/50 shadow-xl"
-            >
-              <AccordionTrigger className="hover:no-underline font-semibold py-4 text-white hover:text-indigo-400 transition-colors duration-200 text-left text-base sm:text-lg">
-                What are the responsibilities of mentors and project maintainers?
-              </AccordionTrigger>
-              <AccordionContent className="text-slate-400 pb-4 text-sm sm:text-base leading-relaxed text-left">
-                Mentors guide contributors, review pull requests, and help maintain project quality throughout the program.
-              </AccordionContent>
-            </AccordionItem>
+                <AccordionItem
+                  value="item-6"
+                  className="bg-slate-900/30 hover:bg-slate-900/50 transition-all duration-300 px-6 rounded-xl border border-slate-800/50 shadow-xl animate-fadeIn"
+                >
+                  <AccordionTrigger className="hover:no-underline font-semibold py-4 text-white hover:text-indigo-400 transition-colors duration-200 text-left text-base sm:text-lg">
+                    What are the responsibilities of mentors and project maintainers?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-400 pb-4 text-sm sm:text-base leading-relaxed text-left">
+                    Mentors guide contributors, review pull requests, and help maintain project quality throughout the program.
+                  </AccordionContent>
+                </AccordionItem>
 
-            <AccordionItem
-              value="item-7"
-              className="bg-slate-900/30 hover:bg-slate-900/50 transition-all duration-300 px-6 rounded-xl border border-slate-800/50 shadow-xl"
-            >
-              <AccordionTrigger className="hover:no-underline font-semibold py-4 text-white hover:text-indigo-400 transition-colors duration-200 text-left text-base sm:text-lg">
-                How can I become an ambassador, and what will I do?
-              </AccordionTrigger>
-              <AccordionContent className="text-slate-400 pb-4 text-sm sm:text-base leading-relaxed text-left">
-                Anyone passionate about community building can apply; ambassadors promote the program, organize events, and support participants.
-              </AccordionContent>
-            </AccordionItem>
+                <AccordionItem
+                  value="item-7"
+                  className="bg-slate-900/30 hover:bg-slate-900/50 transition-all duration-300 px-6 rounded-xl border border-slate-800/50 shadow-xl animate-fadeIn"
+                >
+                  <AccordionTrigger className="hover:no-underline font-semibold py-4 text-white hover:text-indigo-400 transition-colors duration-200 text-left text-base sm:text-lg">
+                    How can I become an ambassador, and what will I do?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-400 pb-4 text-sm sm:text-base leading-relaxed text-left">
+                    Anyone passionate about community building can apply; ambassadors promote the program, organize events, and support participants.
+                  </AccordionContent>
+                </AccordionItem>
 
-            <AccordionItem
-              value="item-8"
-              className="bg-slate-900/30 hover:bg-slate-900/50 transition-all duration-300 px-6 rounded-xl border border-slate-800/50 shadow-xl"
-            >
-              <AccordionTrigger className="hover:no-underline font-semibold py-4 text-white hover:text-indigo-400 transition-colors duration-200 text-left text-base sm:text-lg">
-                How can an organization become a sponsor or partner?
-              </AccordionTrigger>
-              <AccordionContent className="text-slate-400 pb-4 text-sm sm:text-base leading-relaxed text-left">
-                Organizations can apply through the sponsorship or partnership forms to support the program and collaborate with the community.
-              </AccordionContent>
-            </AccordionItem>
+                <AccordionItem
+                  value="item-8"
+                  className="bg-slate-900/30 hover:bg-slate-900/50 transition-all duration-300 px-6 rounded-xl border border-slate-800/50 shadow-xl animate-fadeIn"
+                >
+                  <AccordionTrigger className="hover:no-underline font-semibold py-4 text-white hover:text-indigo-400 transition-colors duration-200 text-left text-base sm:text-lg">
+                    How can an organization become a sponsor or partner?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-400 pb-4 text-sm sm:text-base leading-relaxed text-left">
+                    Organizations can apply through the sponsorship or partnership forms to support the program and collaborate with the community.
+                  </AccordionContent>
+                </AccordionItem>
 
-            <AccordionItem
-              value="item-9"
-              className="bg-slate-900/30 hover:bg-slate-900/50 transition-all duration-300 px-6 rounded-xl border border-slate-800/50 shadow-xl"
-            >
-              <AccordionTrigger className="hover:no-underline font-semibold py-4 text-white hover:text-indigo-400 transition-colors duration-200 text-left text-base sm:text-lg">
-                What benefits will participants receive after successfully completing the program?
-              </AccordionTrigger>
-              <AccordionContent className="text-slate-400 pb-4 text-sm sm:text-base leading-relaxed text-left">
-                Successful participants receive certificates, recognition, and may earn additional rewards such as swag or other program-specific perks.
-              </AccordionContent>
-            </AccordionItem>
+                <AccordionItem
+                  value="item-9"
+                  className="bg-slate-900/30 hover:bg-slate-900/50 transition-all duration-300 px-6 rounded-xl border border-slate-800/50 shadow-xl animate-fadeIn"
+                >
+                  <AccordionTrigger className="hover:no-underline font-semibold py-4 text-white hover:text-indigo-400 transition-colors duration-200 text-left text-base sm:text-lg">
+                    What benefits will participants receive after successfully completing the program?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-400 pb-4 text-sm sm:text-base leading-relaxed text-left">
+                    Successful participants receive certificates, recognition, and may earn additional rewards such as swag or other program-specific perks.
+                  </AccordionContent>
+                </AccordionItem>
 
-            <AccordionItem
-              value="item-10"
-              className="bg-slate-900/30 hover:bg-slate-900/50 transition-all duration-300 px-6 rounded-xl border border-slate-800/50 shadow-xl"
-            >
-              <AccordionTrigger className="hover:no-underline font-semibold py-4 text-white hover:text-indigo-400 transition-colors duration-200 text-left text-base sm:text-lg">
-                Can I continue contributing after the program ends?
-              </AccordionTrigger>
-              <AccordionContent className="text-slate-400 pb-4 text-sm sm:text-base leading-relaxed text-left">
-                Yes. The projects remain open source, and contributors are encouraged to stay involved with the community even after the program concludes.
-              </AccordionContent>
-            </AccordionItem>
+                <AccordionItem
+                  value="item-10"
+                  className="bg-slate-900/30 hover:bg-slate-900/50 transition-all duration-300 px-6 rounded-xl border border-slate-800/50 shadow-xl animate-fadeIn"
+                >
+                  <AccordionTrigger className="hover:no-underline font-semibold py-4 text-white hover:text-indigo-400 transition-colors duration-200 text-left text-base sm:text-lg">
+                    Can I continue contributing after the program ends?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-400 pb-4 text-sm sm:text-base leading-relaxed text-left">
+                    Yes. The projects remain open source, and contributors are encouraged to stay involved with the community even after the program concludes.
+                  </AccordionContent>
+                </AccordionItem>
+              </>
+            )}
           </Accordion>
+
+          <div className="mt-8 flex justify-center">
+            <button
+              onClick={() => setShowAllFaqs(!showAllFaqs)}
+              className="px-6 py-2.5 rounded-full border border-white/10 hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.06] text-xs font-semibold tracking-wider text-slate-300 hover:text-white transition-all cursor-pointer shadow-lg hover:scale-[1.02]"
+            >
+              {showAllFaqs ? "Show Less" : "Load More FAQs"}
+            </button>
+          </div>
         </motion.div>
       </section>
 

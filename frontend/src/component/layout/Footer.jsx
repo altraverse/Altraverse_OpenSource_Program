@@ -45,7 +45,7 @@ export default function Footer() {
               <img
                 src={logo}
                 alt="ASOC Logo"
-                className="h-10 w-10 object-contain transition-transform duration-300 group-hover:scale-105"
+                className="h-6 w-6 object-contain transition-transform duration-300 group-hover:scale-105"
               />
               <h2 className="font-black text-2xl tracking-tighter mb-4 textGradient inline-block">
                 ASOC
@@ -53,7 +53,7 @@ export default function Footer() {
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed mb-6">
               Empowering developers worldwide to learn, collaborate, and create
-              impact through open source.
+              impact through open source
             </p>
             <div className="flex gap-4">
               {/* <Link
@@ -277,8 +277,8 @@ export default function Footer() {
                   className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm w-full focus:outline-none focus:border-blue-500 transition-colors text-white"
                   required
                 />
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={submitting}
                   className="buttonGradient shrink-0"
                 >
