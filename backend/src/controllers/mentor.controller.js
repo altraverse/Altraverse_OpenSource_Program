@@ -67,7 +67,11 @@ const applyMentor = async (req, res) => {
     }
 
     // Trigger email alert to admin
-    sendAdminRoleNotificationEmail(name, req.user.email, "mentor");
+    try {
+      await sendAdminRoleNotificationEmail(name, req.user.email, "mentor");
+    } catch (err) {
+      console.error("[SMTP Error] Admin mentor notification dispatch failed:", err.message);
+    }
 
     res.status(201).json({
       success: true,
