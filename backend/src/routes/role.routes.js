@@ -11,8 +11,10 @@ const {
   downloadExcelFile,
 } = require("../controllers/role.controller");
 
+const { sensitiveLimiter } = require("../middleware/rateLimiter.middleware");
+
 // Route to submit application (protected)
-router.post("/apply", protect, applyRole);
+router.post("/apply", protect, sensitiveLimiter, applyRole);
 
 // Route to check own applications (protected)
 router.get("/my-applications", protect, getMyApplications);
