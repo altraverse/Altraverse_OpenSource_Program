@@ -17,6 +17,10 @@ import Community from "./components/pages/Community";
 import Resources from './components/pages/Resources.jsx';
 import AboutPage from './components/AboutPage';
 import BecomeMentor from './components/pages/BecomeMentor.jsx';
+import PartnersPage from './components/pages/PartnersPage.jsx';
+import PrivacyPolicy from './components/pages/PrivacyPolicy.jsx';
+import SupportPage from './components/pages/SupportPage.jsx';
+import TermsOfService from './components/pages/TermsOfService.jsx';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -43,6 +47,10 @@ function App() {
       <Route path='/roles/:roleId' element={<RoleDetails />} />
       <Route path='/resources' element={<Resources />} />
       <Route path='/become-mentor' element={<BecomeMentor />} />
+      <Route path='/partners' element={<PartnersPage />} />
+      <Route path='/privacy' element={<PrivacyPolicy />} />
+      <Route path='/support' element={<SupportPage />} />
+      <Route path='/terms' element={<TermsOfService />} />
 
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
