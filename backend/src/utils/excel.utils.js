@@ -8,6 +8,7 @@ const DATA_DIR = isVercel
   : path.join(__dirname, "..", "..", "data");
 const FILE_PATH = path.join(DATA_DIR, "mentor_applications.xlsx");
 const ROLE_FILE_PATH = path.join(DATA_DIR, "role_applications.xlsx");
+const NEWSLETTER_FILE_PATH = path.join(DATA_DIR, "newsletter_subscribers.xlsx");
 
 /**
  * Appends mentor application data to an Excel sheet.
@@ -133,8 +134,13 @@ const appendRoleApplication = (roleId, applicationData) => {
       newRow["Motivation"] = applicationData.motivation;
     } else if (roleId === "project-admin") {
       newRow["GitHub"] = applicationData.github;
-      newRow["Project Name"] = applicationData.projectName;
-      newRow["Repository URL"] = applicationData.repoUrl;
+      if (applicationData.projects && Array.isArray(applicationData.projects) && applicationData.projects.length > 0) {
+        newRow["Project Name"] = applicationData.projects.map(p => p.projectName).join(", ");
+        newRow["Repository URL"] = applicationData.projects.map(p => p.repoUrl).join(", ");
+      } else {
+        newRow["Project Name"] = applicationData.projectName;
+        newRow["Repository URL"] = applicationData.repoUrl;
+      }
       newRow["Motivation"] = applicationData.motivation;
     } else if (roleId === "sponsor") {
       newRow["Company"] = applicationData.company;
@@ -256,8 +262,81 @@ const updateExcelApplicationStatus = (roleId, email, status) => {
   }
 };
 
+/**
+ * Appends newsletter subscriber data to an Excel sheet.
+ * Creates the sheet if it doesn't exist.
+ * @param {string} email - Subscriber email
+ */
+const appendNewsletterSubscriber = (email) => {
+  try {
+    // Ensure the data directory exists
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+
+    const newRow = {
+      Timestamp: new Date().toLocaleString(),
+      Email: email.toLowerCase().trim(),
+    };
+
+    let workbook;
+    let worksheet;
+    let dataList = [];
+    const sheetName = "Subscribers";
+
+    if (fs.existsSync(NEWSLETTER_FILE_PATH)) {
+      // Read existing file
+      workbook = xlsx.readFile(NEWSLETTER_FILE_PATH);
+      if (workbook.SheetNames.includes(sheetName)) {
+        worksheet = workbook.Sheets[sheetName];
+        // Convert current sheet to JSON list
+        dataList = xlsx.utils.sheet_to_json(worksheet);
+      }
+    } else {
+      // Create new workbook
+      workbook = xlsx.utils.book_new();
+    }
+
+    // Check if duplicate in spreadsheet (redundancy check)
+    const alreadyExists = dataList.some(
+      (row) => row.Email && String(row.Email).toLowerCase() === email.toLowerCase().trim()
+    );
+
+    if (!alreadyExists) {
+      // Push the new row
+      dataList.push(newRow);
+
+      // Create a new sheet with all data rows
+      const newWorksheet = xlsx.utils.json_to_sheet(dataList);
+
+      // Set column widths for readability
+      const cols = [
+        { wch: 22 }, // Timestamp
+        { wch: 35 }, // Email
+      ];
+      newWorksheet["!cols"] = cols;
+
+      // Append/replace sheet in workbook
+      if (workbook.SheetNames.includes(sheetName)) {
+        workbook.Sheets[sheetName] = newWorksheet;
+      } else {
+        xlsx.utils.book_append_sheet(workbook, newWorksheet, sheetName);
+      }
+
+      // Write back to file system
+      xlsx.writeFile(workbook, NEWSLETTER_FILE_PATH);
+      console.log(`[Excel Util] Successfully logged subscriber ${email} to ${NEWSLETTER_FILE_PATH}`);
+    }
+    return true;
+  } catch (error) {
+    console.error("[Excel Util Error] Failed to write subscriber to Excel:", error);
+    return false;
+  }
+};
+
 module.exports = {
   appendMentorApplication,
   appendRoleApplication,
   updateExcelApplicationStatus,
+  appendNewsletterSubscriber,
 };
