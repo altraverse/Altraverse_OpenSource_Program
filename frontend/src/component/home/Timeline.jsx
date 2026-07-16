@@ -79,18 +79,18 @@ export default function Timeline() {
   const events = isPhase1 ? phase1Events : phase2Events;
 
   // Theming configuration
-  const themeColor = isPhase1 ? "indigo" : "amber";
-  const accentText = isPhase1 ? "text-indigo-400" : "text-amber-400";
-  const accentBg = isPhase1 ? "bg-indigo-500/10" : "bg-amber-500/10";
-  const accentBorder = isPhase1 ? "border-indigo-500/20" : "border-amber-500/20";
-  const hoverBorder = isPhase1 ? "hover:border-indigo-500/40" : "hover:border-amber-500/40";
-  const glowShadow = isPhase1 ? "shadow-[0_0_15px_rgba(99,102,241,0.3)]" : "shadow-[0_0_15px_rgba(245,158,11,0.3)]";
-  const borderNode = isPhase1 ? "border-indigo-500" : "border-amber-500";
-  const nodeIconText = isPhase1 ? "text-indigo-400" : "text-amber-400";
+  const themeColor = isPhase1 ? "indigo" : "cyan";
+  const accentText = isPhase1 ? "text-indigo-400" : "text-cyan-400";
+  const accentBg = isPhase1 ? "bg-indigo-500/10" : "bg-cyan-500/10";
+  const accentBorder = isPhase1 ? "border-indigo-500/20" : "border-cyan-500/20";
+  const hoverBorder = isPhase1 ? "hover:border-indigo-500/40" : "hover:border-cyan-500/40";
+  const glowShadow = isPhase1 ? "shadow-[0_0_15px_rgba(99,102,241,0.3)]" : "shadow-[0_0_15px_rgba(6,182,212,0.3)]";
+  const borderNode = isPhase1 ? "border-indigo-500" : "border-cyan-500";
+  const nodeIconText = isPhase1 ? "text-indigo-400" : "text-cyan-400";
   const lineGradient = isPhase1 
     ? "bg-gradient-to-b from-indigo-500 via-violet-500 to-indigo-500"
-    : "bg-gradient-to-b from-amber-500 via-orange-500 to-amber-500";
-  const hoverGlowLine = isPhase1 ? "via-indigo-500/20" : "via-amber-500/20";
+    : "bg-gradient-to-b from-cyan-500 via-sky-500 to-cyan-500";
+  const hoverGlowLine = isPhase1 ? "via-indigo-500/20" : "via-cyan-500/20";
 
   return (
     <section className="relative py-24 px-4 sm:px-6 lg:px-8 bg-[#06091b] overflow-hidden border-b border-white/5">
@@ -168,13 +168,17 @@ export default function Timeline() {
                 !isPhase1 ? "text-white" : "text-slate-400 hover:text-white"
               }`}
             >
-              <Trophy className="w-4 h-4 text-amber-400" />
+              <Trophy className="w-4 h-4 text-cyan-400" />
               Phase 2: Hackathon
             </button>
 
             {/* Glowing Active Slider background */}
             <motion.div
-              className="absolute top-1 bottom-1 rounded-full bg-gradient-to-r from-violet-600/20 to-indigo-600/20 border border-violet-500/30 shadow-[0_0_15px_rgba(139,92,246,0.25)] z-0"
+              className={`absolute top-1 bottom-1 rounded-full border z-0 transition-all duration-300 ${
+                isPhase1 
+                  ? "bg-violet-600/20 border-violet-500/30 shadow-[0_0_15px_rgba(139,92,246,0.25)]" 
+                  : "bg-cyan-600/20 border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.25)]"
+              }`}
               animate={{
                 left: isPhase1 ? "4px" : "50%",
                 width: "calc(50% - 4px)",
@@ -222,9 +226,7 @@ export default function Timeline() {
                     isEven ? "md:pl-10 md:pr-0" : "md:pl-0 md:pr-10"
                   }`}>
                     <div 
-                      className={`group relative p-4 sm:p-5 rounded-xl border border-white/[0.05] bg-[#0c102b]/20 hover:bg-[#0c102b]/40 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 ${hoverBorder} shadow-lg ${
-                        isEven ? "md:text-right" : "md:text-left"
-                      }`}
+                      className={`group relative p-4 sm:p-5 rounded-xl border border-white/[0.05] bg-[#0c102b]/20 hover:bg-[#0c102b]/40 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 ${hoverBorder} shadow-lg text-left`}
                     >
                       {/* Date Badge */}
                       <span className={`inline-block px-2.5 py-0.5 mb-2.5 text-xs font-semibold tracking-wider ${accentText} ${accentBg} border ${accentBorder} rounded-full transition-all duration-500`}>
@@ -238,7 +240,7 @@ export default function Timeline() {
 
                       {/* Event Subtitle / Notice */}
                       {event.subtitle && (
-                        <p className={`text-xs font-mono font-medium tracking-wide mb-2 ${isPhase1 ? 'text-violet-400/90' : 'text-amber-400/90'}`}>
+                        <p className={`text-xs font-mono font-medium tracking-wide mb-2 ${isPhase1 ? 'text-violet-400/90' : 'text-cyan-400/90'}`}>
                           {event.subtitle}
                         </p>
                       )}
