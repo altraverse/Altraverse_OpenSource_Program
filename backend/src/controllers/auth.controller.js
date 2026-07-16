@@ -92,10 +92,12 @@ const register = async (req, res) => {
 
     await user.save();
     
-    // Send email with OTP in the background (non-blocking)
-    sendOTPEmail(email, name, otp).catch((err) => {
-      console.error("[SMTP Error] Background registration OTP dispatch failed:", err.message);
-    });
+    // Send email with OTP (awaited for Serverless compatibility)
+    try {
+      await sendOTPEmail(email, name, otp);
+    } catch (err) {
+      console.error("[SMTP Error] Registration OTP dispatch failed:", err.message);
+    }
 
     res.status(200).json({
       success: true,
@@ -224,10 +226,12 @@ const resendOtp = async (req, res) => {
     user.otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
     await user.save();
 
-    // Send email with OTP in the background (non-blocking)
-    sendOTPEmail(email, user.name, otp).catch((err) => {
-      console.error("[SMTP Error] Background resend OTP dispatch failed:", err.message);
-    });
+    // Send email with OTP (awaited for Serverless compatibility)
+    try {
+      await sendOTPEmail(email, user.name, otp);
+    } catch (err) {
+      console.error("[SMTP Error] Resend OTP dispatch failed:", err.message);
+    }
 
     res.status(200).json({
       success: true,
