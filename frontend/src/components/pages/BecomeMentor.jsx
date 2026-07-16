@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { CheckCircle2, GraduationCap, Award, Gift, Sparkles, AlertCircle, ArrowLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,9 +6,11 @@ import Navbar from "../../component/layout/Navbar";
 import Footer from "../../components/footer";
 import { Button } from "@/components/ui/button";
 import API from "../../api/axios";
+import { useAuth } from "../../context/AuthContext";
 
 export default function BecomeMentor() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,6 +20,25 @@ export default function BecomeMentor() {
     motivation: "",
   });
   const [submitError, setSubmitError] = useState("");
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        name: prev.name || user.name || "",
+        email: user.email || "",
+      }));
+    }
+  }, [user]);
+
+  const handleGuestInteraction = (e) => {
+    if (!user) {
+      e.stopPropagation();
+      e.preventDefault();
+      alert("You must create an account or log in to apply as a mentor. Redirecting to register page...");
+      navigate("/register");
+    }
+  };
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -84,6 +105,11 @@ export default function BecomeMentor() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!user) {
+      alert("You must create an account or log in to apply as a mentor. Redirecting to register page...");
+      navigate("/register");
+      return;
+    }
     if (!validate()) return;
 
     setIsSubmitting(true);
@@ -218,7 +244,7 @@ export default function BecomeMentor() {
                   )}
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} onClickCapture={handleGuestInteraction} className="space-y-6">
                   {/* Name field */}
                   <div className="flex flex-col gap-2">
                     <label htmlFor="name" className="text-sm font-semibold text-slate-300">Full Name</label>
@@ -245,6 +271,7 @@ export default function BecomeMentor() {
                   <div className="flex flex-col gap-2">
                     <label htmlFor="email" className="text-sm font-semibold text-slate-300">Email Address</label>
                     <input
+                      readOnly={!!user}
                       type="email"
                       id="email"
                       name="email"
@@ -252,6 +279,8 @@ export default function BecomeMentor() {
                       onChange={handleInputChange}
                       placeholder="e.g. john@example.com"
                       className={`px-4 py-3 bg-slate-900/60 border rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ${
+                        user ? "cursor-not-allowed text-slate-400 opacity-70" : ""
+                      } ${
                         errors.email ? "border-rose-500/60 ring-1 ring-rose-500/40" : "border-white/10"
                       }`}
                     />
