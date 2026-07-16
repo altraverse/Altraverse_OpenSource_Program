@@ -87,28 +87,45 @@ export default function ProfilePage() {
                     <span>{user.email}</span>
                   </div>
 
-                  {/* Active Role pill badge */}
+                  {/* Active Role pill badges */}
                   <div className="w-full mt-2 pt-4 border-t border-white/[0.05]">
-                    <div className="text-[10px] uppercase font-mono tracking-widest text-slate-500 mb-2">Registered Role</div>
-                    <span className={`px-4 py-1.5 rounded-full text-xs font-extrabold font-mono tracking-wider uppercase inline-flex items-center gap-1.5 border ${
-                      user.role === "admin"
-                        ? "bg-indigo-500/10 text-indigo-300 border-indigo-500/20"
-                        : user.role === "contributor"
-                        ? "bg-blue-500/10 text-blue-300 border-blue-500/20"
-                        : user.role === "ambassador"
-                        ? "bg-rose-500/10 text-rose-300 border-rose-500/20"
-                        : user.role === "project-admin"
-                        ? "bg-purple-500/10 text-purple-300 border-purple-500/20"
-                        : user.role === "sponsor"
-                        ? "bg-amber-500/10 text-amber-300 border-amber-500/20"
-                        : user.role === "mentor"
-                        ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
-                        : "bg-slate-500/10 text-slate-300 border-slate-500/20"
-                    }`}>
-                      {user.role === "admin" && <Shield size={12} />}
-                      {user.role}
-                    </span>
+                    <div className="text-[10px] uppercase font-mono tracking-widest text-slate-500 mb-2">Registered Roles</div>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {(user.roles && user.roles.length > 0 ? user.roles : [user.role || "user"]).map((r) => (
+                        <span
+                          key={r}
+                          className={`px-3.5 py-1 rounded-full text-[10px] font-extrabold font-mono tracking-wider uppercase inline-flex items-center gap-1.5 border ${
+                            r === "admin"
+                              ? "bg-indigo-500/10 text-indigo-300 border-indigo-500/20"
+                              : r === "contributor"
+                              ? "bg-blue-500/10 text-blue-300 border-blue-500/20"
+                              : r === "ambassador"
+                              ? "bg-rose-500/10 text-rose-300 border-rose-500/20"
+                              : r === "project-admin"
+                              ? "bg-purple-500/10 text-purple-300 border-purple-500/20"
+                              : r === "sponsor"
+                              ? "bg-amber-500/10 text-amber-300 border-amber-500/20"
+                              : r === "mentor"
+                              ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
+                              : "bg-slate-500/10 text-slate-300 border-slate-500/20"
+                          }`}
+                        >
+                          {r === "admin" && <Shield size={10} />}
+                          {r.replace("-", " ")}
+                        </span>
+                      ))}
+                    </div>
                   </div>
+                  
+                  {/* Submit More Projects for Project Admin */}
+                  {(user.role === "project-admin" || (user.roles && user.roles.includes("project-admin"))) && (
+                    <Link
+                      to="/roles/project-admin"
+                      className="mt-6 w-full flex items-center justify-center gap-2.5 py-3 rounded-2xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-xs font-semibold text-purple-300 transition-all hover:scale-[1.02] cursor-pointer"
+                    >
+                      <span>+ Submit Additional Project</span>
+                    </Link>
+                  )}
                 </div>
 
                 {/* Secondary Info Metadata */}
@@ -228,10 +245,31 @@ export default function ProfilePage() {
                               <span className="text-slate-500">College:</span> <span className="text-slate-300">{app.college}</span>
                             </div>
                           )}
-                          {app.projectName && (
-                            <div>
-                              <span className="text-slate-500">Project:</span> <span className="text-slate-300">{app.projectName}</span>
+                           {app.projects && Array.isArray(app.projects) && app.projects.length > 0 ? (
+                            <div className="col-span-1 sm:col-span-2 mt-1">
+                              <span className="text-slate-500 block mb-1">Submitted Projects:</span>
+                              <div className="pl-3 border-l-2 border-purple-500/30 space-y-1">
+                                {app.projects.map((proj, pIdx) => (
+                                  <div key={pIdx} className="text-xs">
+                                    <span className="text-slate-300 font-semibold">{proj.projectName}</span>
+                                    {proj.repoUrl && (
+                                      <span className="text-slate-500">
+                                        {" - "}
+                                        <a href={proj.repoUrl} target="_blank" rel="noreferrer" className="text-indigo-400 hover:underline font-mono text-[11px]">
+                                          {proj.repoUrl}
+                                        </a>
+                                      </span>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
                             </div>
+                          ) : (
+                            app.projectName && (
+                              <div>
+                                <span className="text-slate-500">Project:</span> <span className="text-slate-300">{app.projectName}</span>
+                              </div>
+                            )
                           )}
                           {app.company && (
                             <div>
