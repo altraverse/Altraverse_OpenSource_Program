@@ -244,9 +244,62 @@ const sendUserRoleStatusEmail = async (userEmail, userName, roleId, status) => {
   }
 };
 
+/**
+ * Sends a confirmation email to a new newsletter subscriber.
+ * @param {string} email 
+ */
+const sendNewsletterSubscriptionEmail = async (email) => {
+  const isPlaceholderConfig = 
+    !process.env.SMTP_HOST || 
+    process.env.SMTP_USER === "placeholder" || 
+    !process.env.SMTP_USER;
+
+  if (isPlaceholderConfig) {
+    console.log("\n=============================================");
+    console.log(`[DEV NEWSLETTER LOG] Subscription Confirmation Email to: ${email}`);
+    console.log("=============================================\n");
+    return true;
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT) || 2525,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_FROM || '"Altraverse Open Source" <noreply@altraverse.com>',
+      to: email,
+      subject: "Welcome to the ASOC Newsletter! 📬",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+          <h2 style="color: #6a5cff; text-align: center;">ASOC Newsletter</h2>
+          <p>Hello,</p>
+          <p>Thank you for subscribing to the ASOC newsletter! You are now on the list to receive our latest updates, announcements, and developer news.</p>
+          <p>Stay tuned for exciting opportunities in open source!</p>
+          <hr style="border: 0; border-top: 1px solid #eee; margin-top: 30px;" />
+          <p style="font-size: 12px; color: #888; text-align: center;">This is an automated email. If you did not subscribe, please ignore this email.</p>
+        </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`[SMTP Newsletter Email Sent] Confirmation successfully sent to ${email}`);
+    return true;
+  } catch (error) {
+    console.error(`[SMTP Newsletter Email Failure] Failed to send email to ${email}:`, error.message);
+    return false;
+  }
+};
+
 module.exports = {
   generateOTP,
   sendOTPEmail,
   sendAdminRoleNotificationEmail,
   sendUserRoleStatusEmail,
+  sendNewsletterSubscriptionEmail,
 };
