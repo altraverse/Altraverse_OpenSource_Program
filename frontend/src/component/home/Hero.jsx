@@ -153,16 +153,16 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-col sm:flex-row gap-4 mt-6 w-full sm:w-auto"
           >
-            <Button onClick={() => navigate('/projects')} className="buttonGradient py-6 px-8 rounded-full font-semibold text-sm w-full sm:w-auto shadow-[0_4px_24px_rgba(99,102,241,0.3)] cursor-pointer">
+            <Button onClick={() => navigate('/projects')} className="buttonGradient py-6 px-8 rounded-full font-semibold text-sm w-full sm:w-auto shadow-[0_4px_24px_rgba(99,102,241,0.3)] hover:shadow-[0_6px_30px_rgba(99,102,241,0.5)] hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer">
               Explore Projects
             </Button>
             <Button
-              onClick={() => window.open('https://discord.gg', '_blank')}
+              onClick={() => window.open('https://chat.whatsapp.com/K9YQAz1PxAyDnB2Kw4lteJ?s=cl&p=a&mlu=0', '_blank')}
               variant="ghost"
-              className="border border-white/10 hover:border-white/20 hover:bg-white/[0.03] text-white py-6 px-8 rounded-full font-semibold text-sm w-full sm:w-auto flex items-center justify-center gap-2.5 cursor-pointer"
+              className="border border-white/10 hover:border-white/20 hover:bg-white text-white py-6 px-8 rounded-full font-semibold text-sm w-full sm:w-auto flex items-center justify-center gap-2.5 cursor-pointer"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M14.983 3l.123 .006c2.014 .214 3.527 .672 4.966 1.673a1 1 0 0 1 .371 .488c1.876 5.315 2.373 9.987 1.451 12.28c-1.003 2.005 -2.606 3.553 -4.394 3.553c-.732 0 -1.693 -.968 -2.328 -2.045a21.512 21.512 0 0 0 2.103 -.493a1 1 0 1 0 -.55 -1.924c-3.32 .95 -6.13 .95 -9.45 0a1 1 0 0 0 -.55 1.924c.717 .204 1.416 .37 2.103 .494c-.635 1.075 -1.596 2.044 -2.328 2.044c-1.788 0 -3.391 -1.548 -4.428 -3.629c-.888 -2.217 -.39 -6.89 1.485 -12.204a1 1 0 0 1 .371 -.488c1.439 -1.001 2.952 -1.459 4.966 -1.673a1 1 0 0 1 .935 .435l.063 .107l.651 1.285l.137 -.016a12.97 12.97 0 0 1 2.643 0l.134 .016l.65 -1.284a1 1 0 0 1 .754 -.54l.122 -.009zm-5.983 7a2 2 0 0 0 -1.977 1.697l-.018 .154l-.005 .149l.005 .15a2 2 0 1 0 1.995 -2.15zm6 0a2 2 0 0 0 -1.977 1.697l-.018 .154l-.005 .149l.005 .15a2 2 0 1 0 1.995 -2.15z" />
+                <path d="M12.012 2c-5.506 0-9.988 4.482-9.988 9.988 0 1.761.459 3.479 1.332 5.006l-1.354 4.954 5.074-1.331c1.472.802 3.125 1.223 4.819 1.225h.004c5.505 0 9.987-4.482 9.987-9.988 0-2.668-1.039-5.176-2.927-7.065-1.888-1.887-4.397-2.926-7.065-2.926zm5.823 13.064c-.242.684-1.201 1.25-1.656 1.298-.444.047-.872.247-2.884-.551-2.011-.798-3.303-2.842-3.403-2.975-.1-.134-.814-1.084-.814-2.068 0-.983.513-1.467.697-1.668.184-.2.4-.25.534-.25h.384c.125 0 .292-.047.459.359.167.406.571 1.391.621 1.492.05.101.083.219.017.352-.067.133-.1.219-.2.336-.1.117-.21.261-.3.35-.1.101-.205.21-.089.41.117.2.52 1.012.92 1.368.513.456.953.597 1.087.664.134.067.21.05.292-.046.082-.097.352-.41.444-.551.092-.142.184-.117.31-.071l1.272.597c.125.067.208.101.242.158.033.058.033.336-.075.687z" />
               </svg>
               Join Community
             </Button>
