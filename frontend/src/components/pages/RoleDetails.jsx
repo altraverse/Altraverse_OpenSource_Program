@@ -141,7 +141,8 @@ export default function RoleDetails() {
     company: "",
     tier: "Bronze Tier",
     motivation: "",
-    message: ""
+    message: "",
+    projects: [{ projectName: "", repoUrl: "" }]
   });
   
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -163,7 +164,9 @@ export default function RoleDetails() {
         try {
           const res = await API.get("/api/roles/my-applications");
           if (res.data.success && res.data.applications) {
-            const found = res.data.applications.find(app => app.roleId === roleId);
+            const found = res.data.applications.find(app => 
+              app.roleId === roleId && (roleId === "project-admin" ? app.status === "pending" : true)
+            );
             if (found) {
               setExistingApplication(found);
             }
@@ -215,8 +218,44 @@ export default function RoleDetails() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleProjectChange = (index, field, value) => {
+    setFormData((prev) => {
+      const updatedProjects = [...prev.projects];
+      updatedProjects[index] = { ...updatedProjects[index], [field]: value };
+      return { ...prev, projects: updatedProjects };
+    });
+  };
+
+  const addProjectField = () => {
+    setFormData((prev) => ({
+      ...prev,
+      projects: [...prev.projects, { projectName: "", repoUrl: "" }]
+    }));
+  };
+
+  const removeProjectField = (index) => {
+    setFormData((prev) => {
+      const updatedProjects = prev.projects.filter((_, i) => i !== index);
+      return { ...prev, projects: updatedProjects.length === 0 ? [{ projectName: "", repoUrl: "" }] : updatedProjects };
+    });
+  };
+
+  const handleGuestInteraction = (e) => {
+    if (!user) {
+      e.stopPropagation();
+      e.preventDefault();
+      alert("You must create an account or log in to apply for a role. Redirecting to register page...");
+      navigate("/register");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!user) {
+      alert("You must create an account or log in to apply for a role. Redirecting to register page...");
+      navigate("/register");
+      return;
+    }
     setLoading(true);
     setSubmitError("");
 
@@ -456,38 +495,62 @@ export default function RoleDetails() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-              <div className="flex flex-col">
-                <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Project Name</label>
-                <div className="relative">
-                  <Building className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
-                  <input
-                    required
-                    type="text"
-                    name="projectName"
-                    value={formData.projectName}
-                    onChange={handleInputChange}
-                    placeholder="E.g., TARS Web Core"
-                    className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-purple-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
-                  />
-                </div>
-              </div>
+            <div className="mb-6 border-b border-white/5 pb-4">
+              <h4 className="text-sm font-semibold text-white mb-4 flex items-center justify-between">
+                <span>Projects List</span>
+                <button
+                  type="button"
+                  onClick={addProjectField}
+                  className="px-3.5 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-xs font-semibold text-purple-300 transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  + Add More Project
+                </button>
+              </h4>
+              
+              {formData.projects.map((project, idx) => (
+                <div key={idx} className="relative p-4 rounded-xl border border-white/[0.05] bg-[#0c102b]/20 mb-4">
+                  {formData.projects.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeProjectField(idx)}
+                      className="absolute right-3 top-3 text-red-400/60 hover:text-red-400 text-xs transition-colors cursor-pointer"
+                    >
+                      Remove
+                    </button>
+                  )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="flex flex-col">
+                      <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Project Name {idx + 1}</label>
+                      <div className="relative">
+                        <Building className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                        <input
+                          required
+                          type="text"
+                          value={project.projectName}
+                          onChange={(e) => handleProjectChange(idx, "projectName", e.target.value)}
+                          placeholder="E.g., TARS Web Core"
+                          className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-purple-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
+                        />
+                      </div>
+                    </div>
 
-              <div className="flex flex-col">
-                <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Repository Link (GitHub)</label>
-                <div className="relative">
-                  <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
-                  <input
-                    required
-                    type="url"
-                    name="repoUrl"
-                    value={formData.repoUrl}
-                    onChange={handleInputChange}
-                    placeholder="https://github.com/org/repo"
-                    className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-purple-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
-                  />
+                    <div className="flex flex-col">
+                      <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Repository Link {idx + 1}</label>
+                      <div className="relative">
+                        <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                        <input
+                          required
+                          type="url"
+                          value={project.repoUrl}
+                          onChange={(e) => handleProjectChange(idx, "repoUrl", e.target.value)}
+                          placeholder="https://github.com/org/repo"
+                          className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-purple-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
 
             <div className="flex flex-col mb-4">
@@ -810,7 +873,7 @@ export default function RoleDetails() {
                       </div>
                     )}
 
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} onClickCapture={handleGuestInteraction}>
                       {renderForm()}
 
                       <button
