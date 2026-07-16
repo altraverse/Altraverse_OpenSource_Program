@@ -29,9 +29,6 @@ const Login = () => {
   
   const navigate = useNavigate();
 
-  const handleGoogleLogin = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
-  };
 
   const validate = () => {
     let newErrors = {};
@@ -279,25 +276,6 @@ const Login = () => {
                   )}
                 </button>
               </form>
-
-              <div className="relative flex py-5 items-center">
-                <div className="flex-grow border-t border-white/[0.06]"></div>
-                <span className="flex-shrink mx-4 text-slate-500 text-xs uppercase tracking-wider font-semibold">or</span>
-                <div className="flex-grow border-t border-white/[0.06]"></div>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleGoogleLogin}
-                className="cursor-pointer flex w-full items-center justify-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.08] px-4 py-3 font-semibold text-white transition-all hover:scale-[1.01] active:scale-[0.99] text-sm font-sans"
-              >
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/330px-Google_Favicon_2025.svg.png"
-                  alt="Google"
-                  className="h-4 w-4"
-                />
-                Continue with Google
-              </button>
 
               <p className="mt-6 text-center text-sm text-slate-400 font-light">
                 New contributor?{" "}

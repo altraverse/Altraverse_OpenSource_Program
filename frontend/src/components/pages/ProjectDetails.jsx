@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "motion/react";
 import { 
@@ -18,20 +18,57 @@ import {
 } from "lucide-react";
 import Navbar from "../../component/layout/Navbar";
 import Footer from "../footer";
-import { projectDetails } from "../../data/projectDetails";
+import API from "../../api/axios";
 import { colorMap } from "./OrganisationCard";
 
 export default function ProjectDetails() {
   const { id } = useParams();
-  const project = projectDetails[id];
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("dashboard"); // dashboard, issues, contributors, prs
 
-  if (!project) {
+  useEffect(() => {
+    const fetchProjectDetails = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const response = await API.get(`/api/projects/${id}`);
+        if (response.data.success) {
+          setProject(response.data.project);
+        } else {
+          setError("Project details not found.");
+        }
+      } catch (err) {
+        console.error("Error fetching project details:", err);
+        setError("Failed to load project details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjectDetails();
+  }, [id]);
+
+  if (loading) {
     return (
       <div style={{ background: "#06091b", minHeight: "100vh", color: "#fff" }} className="flex flex-col">
         <Navbar />
         <div className="flex-grow flex flex-col items-center justify-center pt-24">
-          <h2 className="text-2xl font-bold text-white mb-2">Project Not Found</h2>
+          <div className="h-10 w-10 border-4 border-indigo-500/25 border-t-indigo-500 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-white/40 text-xs font-mono">Loading repo statistics & issue logs...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !project) {
+    return (
+      <div style={{ background: "#06091b", minHeight: "100vh", color: "#fff" }} className="flex flex-col">
+        <Navbar />
+        <div className="flex-grow flex flex-col items-center justify-center pt-24">
+          <h2 className="text-2xl font-bold text-white mb-2">{error || "Project Not Found"}</h2>
           <p className="text-white/40 mb-6 font-light">The project you are looking for does not exist or has been removed.</p>
           <Link 
             to="/projects" 
