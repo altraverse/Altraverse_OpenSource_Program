@@ -129,7 +129,7 @@ export default function Register() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="w-full flex-1 text-center lg:text-left"
           >
-            <h1 className="text-5xl font-extrabold leading-tight md:text-6xl tracking-tight">
+            <h1 className="text-4xl font-extrabold leading-tight md:text-6xl tracking-tight">
               Create{" "}
               <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(167,139,250,0.3)]">
                 Account
@@ -140,7 +140,7 @@ export default function Register() {
               Join India's largest open source cohort movement.
             </p>
 
-            <div className="mt-10 space-y-6">
+            <div className="hidden md:flex mt-10 space-y-6 w-fit mx-auto lg:mx-0 flex-col items-start">
               {features.map((item, index) => {
                 const Icon = item.icon;
 
@@ -192,7 +192,7 @@ export default function Register() {
                 Register account
               </h2>
               <p className="mt-2 text-sm text-slate-400 font-light">
-                Glad to have you onboard! 🚀
+                Glad to have you onboard!
               </p>
 
               {serverError && (
@@ -220,9 +220,8 @@ export default function Register() {
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      className={`w-full pl-10 pr-4 py-3 bg-[#06091b]/60 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm text-white placeholder-slate-600 ${
-                        errors.name ? "border-red-500/50" : "border-white/[0.08]"
-                      }`}
+                      className={`w-full pl-10 pr-4 py-3 bg-[#06091b]/60 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm text-white placeholder-slate-600 ${errors.name ? "border-red-500/50" : "border-white/[0.08]"
+                        }`}
                       placeholder="John Doe"
                     />
                   </div>
@@ -245,9 +244,8 @@ export default function Register() {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className={`w-full pl-10 pr-4 py-3 bg-[#06091b]/60 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm text-white placeholder-slate-600 ${
-                        errors.email ? "border-red-500/50" : "border-white/[0.08]"
-                      }`}
+                      className={`w-full pl-10 pr-4 py-3 bg-[#06091b]/60 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm text-white placeholder-slate-600 ${errors.email ? "border-red-500/50" : "border-white/[0.08]"
+                        }`}
                       placeholder="you@example.com"
                     />
                   </div>
@@ -270,9 +268,8 @@ export default function Register() {
                       name="password"
                       value={formData.password}
                       onChange={handleInputChange}
-                      className={`w-full pl-10 pr-4 py-3 bg-[#06091b]/60 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm text-white placeholder-slate-600 ${
-                        errors.password ? "border-red-500/50" : "border-white/[0.08]"
-                      }`}
+                      className={`w-full pl-10 pr-4 py-3 bg-[#06091b]/60 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm text-white placeholder-slate-600 ${errors.password ? "border-red-500/50" : "border-white/[0.08]"
+                        }`}
                       placeholder="••••••••"
                     />
                   </div>

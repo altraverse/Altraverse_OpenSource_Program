@@ -296,7 +296,7 @@ export default function Navbar() {
                 ) : (
                   <div className="flex flex-col gap-2">
                     <Link
-                      to="/resources"
+                      to="/register"
                       onClick={() => setIsOpen(false)}
                       className="w-full text-center py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-xs font-bold text-white shadow-[0_4px_12px_rgba(99,102,241,0.2)] hover:opacity-95 transition-all"
                     >

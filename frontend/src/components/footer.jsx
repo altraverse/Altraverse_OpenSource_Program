@@ -43,17 +43,17 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="md:col-span-1">
-            <Link to="/" className="flex items-center gap-1 group">
+            <Link to="/" className="flex items-center gap-2 group">
               <img
                 src={logo}
                 alt="ASOC Logo"
-                className="h-10 w-10 object-contain transition-transform duration-300 group-hover:scale-105"
+                className="h-6 w-6 object-contain transition-transform duration-300 group-hover:scale-105"
               />
-              <h2 className="font-black text-2xl tracking-tighter  text-white inline-block">
+              <h2 className="font-black text-2xl tracking-tighter  text-white inline-block ">
                 ASOC
               </h2>
             </Link>
-            <p className="text-slate-400 text-sm leading-relaxed mb-6">
+            <p className="text-slate-400 text-sm leading-relaxed mb-6 mt-2">
               Empowering developers worldwide to learn, collaborate, and create
               impact through open source.
             </p>
@@ -276,8 +276,8 @@ export default function Footer() {
                   className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm w-full focus:outline-none focus:border-indigo-500 transition-colors text-white"
                   required
                 />
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={submitting}
                   className="buttonGradient shrink-0"
                 >

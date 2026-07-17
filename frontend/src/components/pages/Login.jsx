@@ -26,7 +26,7 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
-  
+
   const navigate = useNavigate();
 
 
@@ -113,13 +113,13 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-[#06091b] text-white overflow-x-hidden selection:bg-indigo-500/30 relative flex flex-col justify-between">
       {/* Background Mesh Glow Layers */}
-      <div 
+      <div
         className="absolute top-0 left-0 w-full h-[800px] pointer-events-none z-0 opacity-30"
-        style={{ background: "radial-gradient(ellipse 70% 50% at 30% 20%, rgba(91,63,214,0.22) 0%, transparent 65%)" }} 
+        style={{ background: "radial-gradient(ellipse 70% 50% at 30% 20%, rgba(91,63,214,0.22) 0%, transparent 65%)" }}
       />
-      <div 
+      <div
         className="absolute bottom-0 right-0 w-[800px] h-[800px] pointer-events-none z-0 opacity-20"
-        style={{ background: "radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 75%)" }} 
+        style={{ background: "radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 75%)" }}
       />
 
       {/* Interactive Network Background */}
@@ -133,7 +133,7 @@ const Login = () => {
       {/* Main Content Area */}
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-4 sm:px-6 lg:px-16 pt-32 pb-16">
         <main className="flex flex-1 flex-col items-center justify-between gap-12 lg:flex-row">
-          <motion.section 
+          <motion.section
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
@@ -150,7 +150,7 @@ const Login = () => {
               Continue your open source journey and make an impact together.
             </p>
 
-            <div className="mt-10 space-y-6">
+            <div className="hidden md:flex mt-10 space-y-6 w-fit mx-auto lg:mx-0 flex flex-col items-start">
               {features.map((item, index) => {
                 const Icon = item.icon;
 
@@ -180,7 +180,7 @@ const Login = () => {
             </div>
           </motion.section>
 
-          <motion.section 
+          <motion.section
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
@@ -196,11 +196,11 @@ const Login = () => {
             <div className="relative z-10">
               <h2 className="text-2xl font-bold tracking-tight text-white">Login to your account</h2>
               <p className="mt-2 text-sm text-slate-400 font-light">
-                Glad to see you again! 👋
+                Glad to see you again!
               </p>
 
               {serverError && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="mt-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center"
@@ -223,9 +223,8 @@ const Login = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className={`w-full pl-10 pr-4 py-3 bg-[#06091b]/60 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm text-white placeholder-slate-600 ${
-                        errors.email ? "border-red-500/50" : "border-white/[0.08]"
-                      }`}
+                      className={`w-full pl-10 pr-4 py-3 bg-[#06091b]/60 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm text-white placeholder-slate-600 ${errors.email ? "border-red-500/50" : "border-white/[0.08]"
+                        }`}
                       placeholder="you@example.com"
                     />
                   </div>
@@ -247,9 +246,8 @@ const Login = () => {
                       name="password"
                       value={formData.password}
                       onChange={handleInputChange}
-                      className={`w-full pl-10 pr-4 py-3 bg-[#06091b]/60 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm text-white placeholder-slate-600 ${
-                        errors.password ? "border-red-500/50" : "border-white/[0.08]"
-                      }`}
+                      className={`w-full pl-10 pr-4 py-3 bg-[#06091b]/60 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm text-white placeholder-slate-600 ${errors.password ? "border-red-500/50" : "border-white/[0.08]"
+                        }`}
                       placeholder="••••••••"
                     />
                   </div>
