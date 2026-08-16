@@ -119,21 +119,25 @@ const appendRoleApplication = (roleId, applicationData) => {
       Role: rolesMap[roleId] || "Participant",
       Name: applicationData.name,
       Email: applicationData.email,
+      Phone: applicationData.phone || "",
       Status: "Pending",
     };
 
     let newRow = { ...baseRow };
 
-    if (roleId === "contributor") {
+     if (roleId === "contributor") {
       newRow["GitHub"] = applicationData.github;
+      newRow["LinkedIn"] = applicationData.linkedin;
       newRow["Tech Stack"] = applicationData.techStack;
     } else if (roleId === "ambassador") {
       newRow["GitHub"] = applicationData.github;
+      newRow["LinkedIn"] = applicationData.linkedin;
       newRow["College"] = applicationData.college;
       newRow["Year"] = applicationData.year;
       newRow["Motivation"] = applicationData.motivation;
     } else if (roleId === "project-admin") {
       newRow["GitHub"] = applicationData.github;
+      newRow["LinkedIn"] = applicationData.linkedin;
       if (applicationData.projects && Array.isArray(applicationData.projects) && applicationData.projects.length > 0) {
         newRow["Project Name"] = applicationData.projects.map(p => p.projectName).join(", ");
         newRow["Repository URL"] = applicationData.projects.map(p => p.repoUrl).join(", ");

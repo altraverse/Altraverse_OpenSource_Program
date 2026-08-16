@@ -11,7 +11,8 @@ const { fetchRepoDetails, fetchRepoIssues } = require("../utils/github.utils");
  */
 const getAllProjects = async (req, res) => {
   try {
-    const projects = await Project.find()
+    const filter = req.query.all === 'true' ? {} : { isActive: { $ne: false } };
+    const projects = await Project.find(filter)
       .populate("projectAdmin", "name email githubUsername avatar")
       .lean();
 
@@ -34,6 +35,7 @@ const getAllProjects = async (req, res) => {
           stars: project.stars,
           forks: project.forks,
           date: `${issueCount} Issues open`,
+          isActive: project.isActive,
         };
       })
     );
@@ -276,25 +278,62 @@ const createProject = async (req, res) => {
  */
 const getProjectAdmins = async (req, res) => {
   try {
-    const admins = await User.find({ role: "project-admin" }, "name email githubUsername avatar").lean();
+    // We need to check which projects are already live to add indicator flags
+    const allLiveProjects = await Project.find({ isActive: { $ne: false } }, "githubUrl").lean();
+    const liveUrls = new Set(allLiveProjects.map(p => (p.githubUrl || "").trim().toLowerCase()));
+
+    const admins = await User.find({ 
+      $or: [
+        { role: "project-admin" },
+        { roles: "project-admin" }
+      ]
+    }, "name email githubUsername avatar").lean();
     
     // Enrich with their approved project admin application data
     const enrichedAdmins = await Promise.all(
       admins.map(async (admin) => {
-        const app = await RoleApplication.findOne({
+        const apps = await RoleApplication.find({
           userId: admin._id,
           roleId: "project-admin",
           status: "approved",
         }).lean();
 
+        let allProjects = [];
+        let techStack = "";
+        let description = "";
+        let liveCount = 0;
+
+        apps.forEach(app => {
+          if (app.projects && app.projects.length > 0) {
+            app.projects.forEach(p => {
+               const isLive = liveUrls.has((p.repoUrl || "").trim().toLowerCase());
+               if (isLive) liveCount++;
+               allProjects.push({ ...p, isLive });
+            });
+          } else if (app.projectName || app.repoUrl) {
+            const isLive = liveUrls.has((app.repoUrl || "").trim().toLowerCase());
+            if (isLive) liveCount++;
+            allProjects.push({ projectName: app.projectName, repoUrl: app.repoUrl, isLive });
+          }
+          if (!techStack && app.techStack) techStack = app.techStack;
+          if (!description && (app.motivation || app.message)) description = app.motivation || app.message;
+        });
+
+        let status = "none";
+        if (allProjects.length > 0) {
+           if (liveCount === allProjects.length) status = "all-live";
+           else if (liveCount > 0) status = "partial-live";
+        }
+
         return {
           ...admin,
-          application: app ? {
-            projectName: app.projectName || "",
-            repoUrl: app.repoUrl || "",
-            projects: app.projects || [],
-            techStack: app.techStack || "",
-            description: app.motivation || app.message || "",
+          application: apps.length > 0 ? {
+            projectName: allProjects[0]?.projectName || "",
+            repoUrl: allProjects[0]?.repoUrl || "",
+            projects: allProjects,
+            techStack,
+            description,
+            liveStatus: status,
           } : null,
         };
       })
@@ -313,9 +352,72 @@ const getProjectAdmins = async (req, res) => {
   }
 };
 
+/**
+ * Toggle project active status (Admin only)
+ * PATCH /api/projects/:id/toggle-active
+ */
+const toggleProjectActive = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const project = await Project.findById(id);
+    
+    if (!project) {
+      return res.status(404).json({ success: false, message: "Project not found" });
+    }
+
+    project.isActive = !project.isActive;
+    await project.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Project is now ${project.isActive ? 'active' : 'inactive'}`,
+      isActive: project.isActive
+    });
+  } catch (error) {
+    console.error("Toggle project error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+/**
+ * Update project details (Admin only)
+ * PUT /api/projects/:id
+ */
+const updateProject = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, tag, color, points, image, description } = req.body;
+
+    const project = await Project.findById(id);
+    if (!project) {
+      return res.status(404).json({ success: false, message: "Project not found" });
+    }
+
+    if (title) project.title = title;
+    if (tag) project.tag = tag;
+    if (color) project.color = color;
+    if (points !== undefined) project.points = points;
+    if (image !== undefined) project.image = image;
+    if (description) project.description = description;
+
+    await project.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Project updated successfully",
+      project
+    });
+  } catch (error) {
+    console.error("Update project error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 module.exports = {
   getAllProjects,
   getProjectById,
   createProject,
   getProjectAdmins,
+  toggleProjectActive,
+  updateProject,
 };

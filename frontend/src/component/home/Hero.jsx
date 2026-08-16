@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { GitBranch, Award, GitPullRequest } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Hero() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   // useEffect(() => {
   //
   //   window.particlesJS.load('hero', '/partical.json', function() {
@@ -111,7 +113,7 @@ export default function Hero() {
         style={{ top: 88, right: 80, width: 58, height: 58 }} />
 
       {/* Main Grid Layout */}
-      <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 min-h-screen grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10 w-full pt-28 sm:pt-32 lg:pt-24 pb-20">
+      <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 min-h-screen grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10 w-full pt-36 sm:pt-40 lg:pt-32 pb-20">
 
         {/* Left Column: Typography & CTAs (7 cols) */}
         <div className="lg:col-span-7 flex flex-col items-start text-left gap-5 relative z-10">
@@ -153,9 +155,22 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-col sm:flex-row gap-4 mt-6 w-full sm:w-auto"
           >
-            <Button onClick={() => navigate('/projects')} className="buttonGradient py-6 px-8 rounded-full font-semibold text-sm w-full sm:w-auto shadow-[0_4px_24px_rgba(99,102,241,0.3)] hover:shadow-[0_6px_30px_rgba(99,102,241,0.5)] hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer">
-              Explore Projects
-            </Button>
+            {!user ? (
+              <>
+                {/* Mobile only Login button */}
+                <Button onClick={() => navigate('/login')} className="flex items-center justify-center sm:hidden buttonGradient py-6 px-8 rounded-full font-semibold text-sm w-full shadow-[0_4px_24px_rgba(99,102,241,0.3)] hover:shadow-[0_6px_30px_rgba(99,102,241,0.5)] hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer text-center">
+                  Login
+                </Button>
+                {/* Desktop/Tablet only Explore Projects button */}
+                <Button onClick={() => navigate('/projects')} className="hidden sm:flex items-center justify-center buttonGradient py-6 px-8 rounded-full font-semibold text-sm w-auto shadow-[0_4px_24px_rgba(99,102,241,0.3)] hover:shadow-[0_6px_30px_rgba(99,102,241,0.5)] hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer">
+                  Explore Projects
+                </Button>
+              </>
+            ) : (
+              <Button onClick={() => navigate('/projects')} className="flex items-center justify-center buttonGradient py-6 px-8 rounded-full font-semibold text-sm w-full sm:w-auto shadow-[0_4px_24px_rgba(99,102,241,0.3)] hover:shadow-[0_6px_30px_rgba(99,102,241,0.5)] hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer">
+                Explore Projects
+              </Button>
+            )}
             <Button
               onClick={() => window.open('https://chat.whatsapp.com/K9YQAz1PxAyDnB2Kw4lteJ?s=cl&p=a&mlu=0', '_blank')}
               variant="ghost"

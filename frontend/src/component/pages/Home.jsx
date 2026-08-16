@@ -59,6 +59,36 @@ function Home() {
         style={{ background: "radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 75%)" }}
       />
 
+      {/* Top Marquee Announcement Strip */}
+      <div className="fixed top-0 left-0 right-0 z-50 w-full overflow-hidden bg-[#091b15]/90 border-b border-emerald-500/20 py-2 text-[10px] sm:text-xs tracking-wider text-emerald-300 backdrop-blur-md shadow-[0_2px_15px_rgba(16,185,129,0.1)]">
+        <style dangerouslySetInnerHTML={{
+          __html: `
+          @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+          }
+          .animate-marquee-custom {
+            display: flex;
+            width: max-content;
+            animation: marquee 30s linear infinite;
+          }
+          /* Push the floating navbar down when marquee is at the top on the home page */
+          .fixed.top-4.z-50.px-4 {
+            top: 44px !important;
+          }
+        `}} />
+        <div className="animate-marquee-custom whitespace-nowrap flex gap-12">
+          <span>💡 Announcement: You can enroll in multiple roles! Select the paths that match your passion.  </span>
+          <span>💡 Announcement: You can enroll in multiple roles! Select the paths that match your passion.  </span>
+          <span>💡 Announcement: You can enroll in multiple roles! Select the paths that match your passion.  </span>
+          <span>💡 Announcement: You can enroll in multiple roles! Select the paths that match your passion.  </span>
+          <span>💡 Announcement: You can enroll in multiple roles! Select the paths that match your passion.  </span>
+          <span>💡 Announcement: You can enroll in multiple roles! Select the paths that match your passion.  </span>
+          <span>💡 Announcement: You can enroll in multiple roles! Select the paths that match your passion.  </span>
+          <span>💡 Announcement: You can enroll in multiple roles! Select the paths that match your passion.  </span>
+        </div>
+      </div>
+
       {/* Navbar */}
       <Navbar />
 

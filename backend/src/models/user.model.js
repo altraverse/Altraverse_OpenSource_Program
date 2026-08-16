@@ -43,6 +43,15 @@ const userSchema = new mongoose.Schema(
       type: Date,
     },
 
+    resetPasswordOtp: {
+      type: String,
+      default: "",
+    },
+
+    resetPasswordOtpExpires: {
+      type: Date,
+    },
+
     avatar: {
       type: String,
       default: "",
@@ -87,6 +96,52 @@ const userSchema = new mongoose.Schema(
     githubUsername: {
       type: String,
       default: "",
+    },
+
+    points: {
+      type: Number,
+      default: 0,
+    },
+
+    pointsHistory: {
+      type: [
+        {
+          points: {
+            type: Number,
+            required: true,
+          },
+          reason: {
+            type: String,
+            required: true,
+          },
+          createdAt: {
+            type: Date,
+            default: Date.now,
+          },
+        },
+      ],
+      default: [],
+    },
+
+    solvedIssuesCount: {
+      type: Number,
+      default: 0,
+    },
+
+    referralCode: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+
+    referredBy: {
+      type: String,
+      default: "",
+    },
+
+    referralsCount: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true },

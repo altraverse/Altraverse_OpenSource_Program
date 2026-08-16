@@ -1,0 +1,12 @@
+[2026-07-27T09:57:00.068Z] updateProfile API entered
+[2026-07-27T09:57:00.203Z] Body: {"name":"Om Parkhii","college":"","githubUsername":"","skills":""}
+[2026-07-27T09:57:00.206Z] req.user info: ID=6a5d2457eda6badbdf14dd0b, Name=Om Parkhii
+[2026-07-27T09:57:00.574Z] User.findById complete. Found: yes
+[2026-07-27T09:57:00.685Z] Calling user.save()...
+[2026-07-27T09:57:00.976Z] user.save() complete!
+[2026-07-27T09:57:31.205Z] updateProfile API entered
+[2026-07-27T09:57:31.206Z] Body: {"name":"Om Parkhi","college":"","githubUsername":"","skills":""}
+[2026-07-27T09:57:31.207Z] req.user info: ID=6a5d2457eda6badbdf14dd0b, Name=Om Parkhii
+[2026-07-27T09:57:31.328Z] User.findById complete. Found: yes
+[2026-07-27T09:57:31.331Z] Calling user.save()...
+[2026-07-27T09:57:31.462Z] user.save() complete!

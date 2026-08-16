@@ -7,25 +7,20 @@ export default function MiniCard({ item, animDelay = 0 }) {
   const cm = colorMap[item.color];
 
   const handleClick = () => {
-    if (item.link) {
-      window.open(item.link, "_blank");
-    } else if (item.to) {
-      navigate(item.to);
-    }
+    navigate("/projects");
   };
 
   return (
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={handleClick}
-      className={`relative rounded-xl p-4 border card-glass cursor-pointer
+      className={`relative rounded-xl p-4 border card-glass 
                   transition-all duration-250 
                   ${hovered ? "-translate-y-0.5 shadow-card" : ""}`}
       style={{ animationDelay: `${animDelay}s`, animationFillMode: "both" }}
     >
       <div className="absolute top-0 right-0 w-[80px] h-[80px] pointer-events-none"
-           style={{ background: `radial-gradient(circle at 80% 20%, ${cm.glow} 0%, transparent 70%)` }} />
+        style={{ background: `radial-gradient(circle at 80% 20%, ${cm.glow} 0%, transparent 70%)` }} />
 
       {/* Number watermark */}
       <div className={`absolute bottom-2 right-3 font-display text-[32px] font-extrabold
@@ -56,10 +51,6 @@ export default function MiniCard({ item, animDelay = 0 }) {
 
         <div className="flex items-center justify-between">
           <span className="font-mono text-[9px] text-white/25">{item.date}</span>
-          <span className={`font-body text-[10px] transition-all duration-200
-                            ${hovered ? "translate-x-0.5 text-white/50" : "text-white/20"}`}>
-            View →
-          </span>
         </div>
       </div>
     </div>

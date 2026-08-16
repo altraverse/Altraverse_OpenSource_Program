@@ -7,6 +7,25 @@ const fs = require("fs");
 const path = require("path");
 const xlsx = require("xlsx");
 
+
+// Helper to generate a unique 6-character alphanumeric referral code for Ambassadors
+const generateReferralCode = async () => {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let isUnique = false;
+  let code = "";
+  while (!isUnique) {
+    code = "";
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    const existing = await User.findOne({ referralCode: code });
+    if (!existing) {
+      isUnique = true;
+    }
+  }
+  return code;
+};
+
 /**
  * Handle user application submission for specific roles
  * POST /api/roles/apply
@@ -45,12 +64,41 @@ const applyRole = async (req, res) => {
     }
 
     // Validate base fields required for any role application
-    const { name, email } = req.body;
-    if (!name || !email) {
+    const { name, email, phone, github, referredBy } = req.body;
+    if (!name || !email || !phone) {
       return res.status(400).json({
         success: false,
-        message: "Name and Email address are required fields",
+        message: "Name, Email address, and Mobile Number are required fields",
       });
+    }
+
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter a valid 10-digit mobile number.",
+      });
+    }
+
+    if (github) {
+      const githubInput = String(github).trim();
+      const githubLower = githubInput.toLowerCase();
+      if (githubLower.includes("/") || githubLower.includes(".")) {
+        if (!githubLower.includes("github.com")) {
+          return res.status(400).json({
+            success: false,
+            message: "Please enter a valid GitHub username or GitHub profile link.",
+          });
+        }
+        const parts = githubInput.split("github.com");
+        const path = parts[parts.length - 1].replace(/^\//, "").trim();
+        if (!path) {
+          return res.status(400).json({
+            success: false,
+            message: "Please enter your full GitHub profile link including your username.",
+          });
+        }
+      }
     }
 
     // Force application email to match registered user email for security/integrity
@@ -61,11 +109,31 @@ const applyRole = async (req, res) => {
       });
     }
 
+    let cleanCode = "";
+    if (referredBy) {
+      cleanCode = String(referredBy).trim().toUpperCase();
+      const ambassador = await User.findOne({ referralCode: cleanCode });
+      if (!ambassador) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid referral code. No Ambassador found with this token.",
+        });
+      }
+
+      // Also update the applicant user referredBy field if they don't already have one
+      const applicantUser = await User.findById(req.user._id);
+      if (applicantUser && !applicantUser.referredBy) {
+        applicantUser.referredBy = cleanCode;
+        await applicantUser.save();
+      }
+    }
+
     // 1. Save application data to MongoDB (default status is "pending")
     const appData = {
       userId: req.user._id,
       roleId,
       ...req.body,
+      referredBy: cleanCode,
       status: "pending",
     };
 
@@ -152,8 +220,34 @@ const getMyApplications = async (req, res) => {
  */
 const getAdminApplications = async (req, res) => {
   try {
-    const roleApps = await RoleApplication.find().populate("userId", "name email");
-    const mentorApps = await MentorApplication.find().populate("userId", "name email");
+    const skip = parseInt(req.query.skip) || 0;
+    const limit = parseInt(req.query.limit) || 10;
+    const filter = req.query.filter || "all";
+    const search = req.query.search ? req.query.search.trim().toLowerCase() : "";
+
+    let roleApps = [];
+    let mentorApps = [];
+
+    // Filter query for MongoDB
+    const roleQuery = {};
+    const mentorQuery = {};
+
+    if (filter === "pending" || filter === "approved" || filter === "rejected") {
+      roleQuery.status = filter;
+      mentorQuery.status = filter;
+    } else if (filter !== "all") {
+      roleQuery.roleId = filter;
+      mentorQuery.roleId = filter; 
+    }
+
+    if (filter === "all" || filter === "pending" || filter === "approved" || filter === "rejected") {
+      roleApps = await RoleApplication.find(roleQuery).populate("userId", "name email");
+      mentorApps = await MentorApplication.find(mentorQuery).populate("userId", "name email");
+    } else if (filter === "mentor") {
+      mentorApps = await MentorApplication.find().populate("userId", "name email");
+    } else {
+      roleApps = await RoleApplication.find(roleQuery).populate("userId", "name email");
+    }
 
     const formattedMentorApps = mentorApps.map((app) => ({
       _id: app._id,
@@ -173,9 +267,48 @@ const getAdminApplications = async (req, res) => {
       (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
     );
 
+    let filteredApps = allApps;
+    if (search) {
+      filteredApps = allApps.filter((app) => {
+        return (
+          app.name?.toLowerCase().includes(search) ||
+          app.email?.toLowerCase().includes(search) ||
+          app.roleId?.toLowerCase().includes(search) ||
+          app.github?.toLowerCase().includes(search) ||
+          app.college?.toLowerCase().includes(search) ||
+          app.techStack?.toLowerCase().includes(search) ||
+          app.projectName?.toLowerCase().includes(search) ||
+          app.repoUrl?.toLowerCase().includes(search) ||
+          app.linkedin?.toLowerCase().includes(search) ||
+          (app.projects && Array.isArray(app.projects) && app.projects.some(proj => 
+            proj.projectName?.toLowerCase().includes(search) || 
+            proj.repoUrl?.toLowerCase().includes(search)
+          ))
+        );
+      });
+    }
+
+    const paginatedApps = filteredApps.slice(skip, skip + limit);
+
+    // Calculate tab counts
+    const counts = {
+      all: await RoleApplication.countDocuments() + await MentorApplication.countDocuments(),
+      pending: await RoleApplication.countDocuments({ status: "pending" }) + await MentorApplication.countDocuments({ status: "pending" }),
+      approved: await RoleApplication.countDocuments({ status: "approved" }) + await MentorApplication.countDocuments({ status: "approved" }),
+      rejected: await RoleApplication.countDocuments({ status: "rejected" }) + await MentorApplication.countDocuments({ status: "rejected" }),
+      contributor: await RoleApplication.countDocuments({ roleId: "contributor" }),
+      ambassador: await RoleApplication.countDocuments({ roleId: "ambassador" }),
+      "project-admin": await RoleApplication.countDocuments({ roleId: "project-admin" }),
+      sponsor: await RoleApplication.countDocuments({ roleId: "sponsor" }),
+      mentor: await MentorApplication.countDocuments()
+    };
+
     res.status(200).json({
       success: true,
-      applications: allApps,
+      applications: paginatedApps,
+      hasMore: skip + paginatedApps.length < filteredApps.length,
+      totalCount: filteredApps.length,
+      counts
     });
   } catch (error) {
     console.error("Admin fetch applications error:", error);
@@ -233,6 +366,8 @@ const approveApplication = async (req, res) => {
     // Update the corresponding user's role
     const user = await User.findById(userId);
     if (user) {
+      const isNewRole = !user.roles?.includes(roleId) && user.role !== roleId;
+
       user.role = roleId;
       if (!user.roles) {
         user.roles = ["user"];
@@ -240,11 +375,51 @@ const approveApplication = async (req, res) => {
       if (!user.roles.includes(roleId)) {
         user.roles.push(roleId);
       }
+      if (roleId === "ambassador" && !user.referralCode) {
+        user.referralCode = await generateReferralCode();
+      }
       await user.save();
+
+      // If they were referred by an ambassador, award base referral points on first approval if not already awarded
+      const referralToken = application.referredBy || user.referredBy;
+      if (referralToken) {
+        try {
+          const ambassador = await User.findOne({ referralCode: referralToken });
+          if (ambassador && ambassador._id.toString() !== user._id.toString()) {
+            // Update referrals count dynamically to be accurate
+            ambassador.referralsCount = await User.countDocuments({ referredBy: referralToken });
+
+            if (!ambassador.pointsHistory) {
+              ambassador.pointsHistory = [];
+            }
+            
+            const signupReason = `20 points for referral signup of ${user.name}`;
+            const legacySignupReason = `50 points for referral signup of ${user.name}`;
+            const hasBasePoints = ambassador.pointsHistory.some(hist => 
+              hist.reason.includes(signupReason) || hist.reason.includes(legacySignupReason)
+            );
+            
+            if (!hasBasePoints) {
+              ambassador.points = (ambassador.points || 0) + 20;
+              ambassador.pointsHistory.push({
+                points: 20,
+                reason: signupReason,
+                createdAt: new Date()
+              });
+              await ambassador.save();
+              console.log(`[Referral Applied] Awarded base 20 points to Ambassador ${ambassador.name} for referral of ${user.name}`);
+            } else {
+              await ambassador.save();
+            }
+          }
+        } catch (err) {
+          console.error("[Referral Error] Failed to update referrals/points during role approval:", err.message);
+        }
+      }
 
       // Trigger status alert email to the approved user
       try {
-        await sendUserRoleStatusEmail(userEmail, user.name, roleId, "Approved");
+        await sendUserRoleStatusEmail(userEmail, user.name, roleId, "Approved", user.referralCode || "");
       } catch (err) {
         console.error("[SMTP Error] User role status dispatch failed:", err.message);
       }
@@ -422,6 +597,7 @@ const downloadExcelFile = async (req, res) => {
             Role: roleLabel,
             Name: app.name,
             Email: app.email,
+            Phone: app.phone || "",
             Status: app.status || "Pending",
           };
 
@@ -476,6 +652,222 @@ const downloadExcelFile = async (req, res) => {
   }
 };
 
+/**
+ * Fetch all users who have approved Ambassador or Contributor roles (Admin only)
+ * GET /api/roles/admin/approved-users
+ */
+const getApprovedUsers = async (req, res) => {
+  try {
+    const skip = parseInt(req.query.skip) || 0;
+    const limit = parseInt(req.query.limit) || 10;
+    const search = req.query.search ? req.query.search.trim().toLowerCase() : "";
+
+    const query = {
+      $or: [
+        { role: { $in: ["ambassador", "contributor"] } },
+        { roles: { $in: ["ambassador", "contributor"] } }
+      ]
+    };
+
+    let users = await User.find(
+      query,
+      "name email role roles points referralsCount referralCode"
+    ).sort({ name: 1 });
+
+    if (search) {
+      users = users.filter(usr => {
+        return (
+          usr.name?.toLowerCase().includes(search) ||
+          usr.email?.toLowerCase().includes(search) ||
+          usr.referralCode?.toLowerCase().includes(search) ||
+          (usr.roles && usr.roles.some(r => r.toLowerCase().includes(search))) ||
+          usr.role?.toLowerCase().includes(search)
+        );
+      });
+    }
+
+    const paginatedUsers = users.slice(skip, skip + limit);
+
+    res.status(200).json({
+      success: true,
+      users: paginatedUsers,
+      hasMore: skip + paginatedUsers.length < users.length
+    });
+  } catch (error) {
+    console.error("Admin fetch approved users error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to load approved users"
+    });
+  }
+};
+
+/**
+ * Award manual points to a user (Admin only)
+ * POST /api/roles/admin/award-points
+ */
+const awardPoints = async (req, res) => {
+  const { userId, points, reason } = req.body;
+
+  if (!userId || points === undefined) {
+    return res.status(400).json({
+      success: false,
+      message: "User ID and points value are required",
+    });
+  }
+
+  const pointsToAdd = parseInt(points);
+  if (isNaN(pointsToAdd)) {
+    return res.status(400).json({
+      success: false,
+      message: "Points must be a valid number",
+    });
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Award points
+    user.points = (user.points || 0) + pointsToAdd;
+    if (!user.pointsHistory) {
+      user.pointsHistory = [];
+    }
+    user.pointsHistory.push({
+      points: pointsToAdd,
+      reason: reason || "Manual award by Admin",
+    });
+    await user.save();
+
+    console.log(`[Manual Points] Admin ${req.user.email} awarded ${pointsToAdd} points to ${user.name} (Reason: ${reason || "none"})`);
+
+    res.status(200).json({
+      success: true,
+      message: `Successfully awarded ${pointsToAdd} points to ${user.name}.`,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        points: user.points
+      }
+    });
+  } catch (error) {
+    console.error("Admin award points error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error occurred while awarding points",
+    });
+  }
+};
+
+/**
+ * Fetch detailed profile, rank, points, and applications for a user
+ * GET /api/roles/admin/users/:userId/details
+ */
+const getUserDetailsForAdmin = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const targetUser = await User.findById(userId).lean();
+    if (!targetUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Fetch all applications by this user
+    const applications = await RoleApplication.find({ userId }).sort({ createdAt: -1 }).lean();
+
+    // Calculate rankings
+    // 1. Overall Rank
+    const allUsersSorted = await User.find({ points: { $gt: 0 } }, "_id points referralsCount")
+      .sort({ points: -1, referralsCount: -1 })
+      .lean();
+    const overallRankIndex = allUsersSorted.findIndex(u => String(u._id) === String(userId));
+    const overallRank = overallRankIndex !== -1 ? overallRankIndex + 1 : "Unranked";
+
+    // 2. Ambassador Rank
+    let ambassadorRank = "N/A";
+    if (targetUser.role === "ambassador" || (targetUser.roles && targetUser.roles.includes("ambassador"))) {
+      const allAmbassadorsSorted = await User.find({
+        $or: [{ role: "ambassador" }, { roles: "ambassador" }],
+        points: { $gt: 0 }
+      }, "_id points referralsCount")
+        .sort({ points: -1, referralsCount: -1 })
+        .lean();
+      const ambRankIndex = allAmbassadorsSorted.findIndex(u => String(u._id) === String(userId));
+      ambassadorRank = ambRankIndex !== -1 ? ambRankIndex + 1 : "Unranked";
+    }
+
+    // 3. Contributor Rank
+    let contributorRank = "N/A";
+    if (targetUser.role === "contributor" || (targetUser.roles && targetUser.roles.includes("contributor"))) {
+      const allContributorsSorted = await User.find({
+        $or: [{ role: "contributor" }, { roles: "contributor" }],
+        points: { $gt: 0 }
+      }, "_id points")
+        .sort({ points: -1 })
+        .lean();
+      const contRankIndex = allContributorsSorted.findIndex(u => String(u._id) === String(userId));
+      contributorRank = contRankIndex !== -1 ? contRankIndex + 1 : "Unranked";
+    }
+
+    let referralStats = null;
+    let referredUsersList = [];
+
+    if (targetUser.role === "ambassador" || (targetUser.roles && targetUser.roles.includes("ambassador"))) {
+      const referredUsers = await User.find({ referredBy: targetUser.referralCode })
+        .select("name email role roles isVerified createdAt")
+        .lean();
+      
+      const verifiedUsers = referredUsers.filter(u => u.isVerified);
+      const contributorCount = verifiedUsers.filter(u => u.roles.includes("contributor") || u.role === "contributor").length;
+      const projectAdminCount = verifiedUsers.filter(u => u.roles.includes("project-admin") || u.role === "project-admin").length;
+      const generalCount = verifiedUsers.length;
+
+      referralStats = {
+        verifiedSignups: generalCount,
+        contributors: contributorCount,
+        projectAdmins: projectAdminCount,
+      };
+
+      referredUsersList = referredUsers.map(u => ({
+        name: u.name,
+        email: u.email,
+        role: u.role,
+        roles: u.roles,
+        isVerified: u.isVerified,
+        createdAt: u.createdAt
+      }));
+    }
+
+    res.status(200).json({
+      success: true,
+      user: {
+        ...targetUser,
+        overallRank,
+        ambassadorRank,
+        contributorRank,
+        referralStats,
+        referredUsersList
+      },
+      applications
+    });
+  } catch (error) {
+    console.error("Get user details for admin error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error occurred while fetching user details",
+    });
+  }
+};
+
 module.exports = {
   applyRole,
   getMyApplications,
@@ -483,4 +875,7 @@ module.exports = {
   approveApplication,
   rejectApplication,
   downloadExcelFile,
+  getApprovedUsers,
+  awardPoints,
+  getUserDetailsForAdmin,
 };

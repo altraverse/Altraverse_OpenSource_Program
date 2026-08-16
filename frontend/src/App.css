@@ -210,3 +210,13 @@ background:#06091b;
   z-index: 1 !important;
   pointer-events: none;
 }
+
+/* Hide scrollbars for mobile tab bars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

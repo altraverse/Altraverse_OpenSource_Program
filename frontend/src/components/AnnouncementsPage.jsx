@@ -92,7 +92,7 @@ export default function AnnouncementsPage() {
       </section>
 
       {/* Stats bar */}
-      <StatsBar />
+      {/* <StatsBar /> */}
 
       <Footer />
     </div>

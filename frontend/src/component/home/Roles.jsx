@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { Code2, Megaphone, Terminal, Handshake, Check } from "lucide-react";
@@ -57,7 +58,7 @@ const rolesData = [
     role: "Project Admin",
     badge: "Repository Owner",
     icon: Terminal,
-    description: "Repository owners who manage their projects. Define project roadmaps, curate issues, and ensure code quality.",
+    description: "Repository owners who manage their projects. Define project roadmaps, curate issues, and ensure code quality. (A tiny platform listing fee of ₹30 applies)",
     colorTheme: "purple",
     glowClass: "group-hover:shadow-[0_0_30px_rgba(168,85,247,0.2)]",
     borderClass: "group-hover:border-purple-500/40",
@@ -105,6 +106,139 @@ const rolesData = [
   }
 ];
 
+function RoleCard({ roleInfo, index, navigate }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const Icon = roleInfo.icon;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+      whileHover={{ y: -6 }}
+      onClick={() => navigate(roleInfo.buttonLink)}
+      className={`group relative flex flex-col justify-between p-6 sm:p-7 rounded-2xl border border-white/5 bg-gradient-to-b ${roleInfo.gradient} backdrop-blur-md transition-all duration-300 ${roleInfo.borderClass} ${roleInfo.glowClass} shadow-xl h-full cursor-pointer`}
+    >
+      <div>
+        {/* Icon & Badge Row */}
+        <div className="flex items-center justify-between mb-6">
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center border ${roleInfo.iconBg} transition-transform duration-300 group-hover:scale-110`}>
+            <Icon className="w-6 h-6" />
+          </div>
+          <span className={`px-2.5 py-0.5 text-xs font-medium tracking-wide border rounded-full ${roleInfo.badgeBg}`}>
+            {roleInfo.badge}
+          </span>
+        </div>
+
+        {/* Title & Description */}
+        <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 group-hover:text-white transition-colors">
+          {roleInfo.role}
+        </h3>
+        <p className="text-slate-400 text-sm leading-relaxed mb-6 font-light">
+          {roleInfo.description}
+        </p>
+
+        {/* Desktop View (Always visible) */}
+        <div className="hidden sm:block">
+          <hr className="border-white/5 my-4" />
+          {/* Responsibilities list */}
+          <div className="space-y-2.5 mb-5">
+            <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Responsibilities</h4>
+            <ul className="space-y-2">
+              {roleInfo.responsibilities.map((resp, i) => (
+                <li key={i} className="flex items-start text-xs text-slate-400">
+                  <Check className="w-3.5 h-3.5 text-indigo-400/80 mr-2 mt-0.5 flex-shrink-0" />
+                  <span>{resp}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <hr className="border-white/5 my-4" />
+
+          {/* Perks/Benefits list */}
+          <div className="space-y-2.5">
+            <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Perks & Benefits</h4>
+            <ul className="space-y-2">
+              {roleInfo.benefits.map((benefit, i) => (
+                <li key={i} className="flex items-start text-xs text-slate-400">
+                  <Check className="w-3.5 h-3.5 text-emerald-400/80 mr-2 mt-0.5 flex-shrink-0" />
+                  <span>{benefit}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Mobile View (Collapsible with smooth animation) */}
+        <motion.div
+          initial={false}
+          animate={{
+            height: isExpanded ? "auto" : 0,
+            opacity: isExpanded ? 1 : 0
+          }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          className="overflow-hidden sm:hidden"
+        >
+          <hr className="border-white/5 my-4" />
+          {/* Responsibilities list */}
+          <div className="space-y-2.5 mb-5">
+            <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Responsibilities</h4>
+            <ul className="space-y-2">
+              {roleInfo.responsibilities.map((resp, i) => (
+                <li key={i} className="flex items-start text-xs text-slate-400">
+                  <Check className="w-3.5 h-3.5 text-indigo-400/80 mr-2 mt-0.5 flex-shrink-0" />
+                  <span>{resp}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <hr className="border-white/5 my-4" />
+
+          {/* Perks/Benefits list */}
+          <div className="space-y-2.5">
+            <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Perks & Benefits</h4>
+            <ul className="space-y-2">
+              {roleInfo.benefits.map((benefit, i) => (
+                <li key={i} className="flex items-start text-xs text-slate-400">
+                  <Check className="w-3.5 h-3.5 text-emerald-400/80 mr-2 mt-0.5 flex-shrink-0" />
+                  <span>{benefit}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </motion.div>
+
+        {/* Toggle Button for Mobile Only */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsExpanded(!isExpanded);
+          }}
+          className="sm:hidden text-indigo-400 hover:text-indigo-300 text-xs font-semibold mt-4 flex items-center gap-1 cursor-pointer"
+        >
+          {isExpanded ? "Read Less ↑" : "Read More ↓"}
+        </button>
+      </div>
+
+      {/* Dedicated Action Button */}
+      <div className="mt-8 pt-4 border-t border-white/5">
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(roleInfo.buttonLink);
+          }}
+          className={`w-full py-2.5 px-4 rounded-xl font-semibold text-xs text-center transition-all border duration-300 ${roleInfo.buttonStyle} cursor-pointer`}
+        >
+          {roleInfo.buttonText}
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function Roles() {
   const navigate = useNavigate();
 
@@ -149,84 +283,14 @@ export default function Roles() {
 
         {/* Roles Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-          {rolesData.map((roleInfo, index) => {
-            const Icon = roleInfo.icon;
-            return (
-              <motion.div
-                key={roleInfo.role}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -6 }}
-                onClick={() => navigate(roleInfo.buttonLink)}
-                className={`group relative flex flex-col justify-between p-6 sm:p-7 rounded-2xl border border-white/5 bg-gradient-to-b ${roleInfo.gradient} backdrop-blur-md transition-all duration-300 ${roleInfo.borderClass} ${roleInfo.glowClass} shadow-xl h-full cursor-pointer`}
-              >
-                <div>
-                  {/* Icon & Badge Row */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center border ${roleInfo.iconBg} transition-transform duration-300 group-hover:scale-110`}>
-                      <Icon className="w-6 h-6" />
-                    </div>
-                    <span className={`px-2.5 py-0.5 text-xs font-medium tracking-wide border rounded-full ${roleInfo.badgeBg}`}>
-                      {roleInfo.badge}
-                    </span>
-                  </div>
-
-                  {/* Title & Description */}
-                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 group-hover:text-white transition-colors">
-                    {roleInfo.role}
-                  </h3>
-                  <p className="text-slate-400 text-sm leading-relaxed mb-6 font-light">
-                    {roleInfo.description}
-                  </p>
-
-                  <hr className="border-white/5 my-4" />
-
-                  {/* Responsibilities list */}
-                  <div className="space-y-2.5 mb-5">
-                    <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Responsibilities</h4>
-                    <ul className="space-y-2">
-                      {roleInfo.responsibilities.map((resp, i) => (
-                        <li key={i} className="flex items-start text-xs text-slate-400">
-                          <Check className="w-3.5 h-3.5 text-indigo-400/80 mr-2 mt-0.5 flex-shrink-0" />
-                          <span>{resp}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <hr className="border-white/5 my-4" />
-
-                  {/* Perks/Benefits list */}
-                  <div className="space-y-2.5">
-                    <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Perks & Benefits</h4>
-                    <ul className="space-y-2">
-                      {roleInfo.benefits.map((benefit, i) => (
-                        <li key={i} className="flex items-start text-xs text-slate-400">
-                          <Check className="w-3.5 h-3.5 text-emerald-400/80 mr-2 mt-0.5 flex-shrink-0" />
-                          <span>{benefit}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Dedicated Action Button */}
-                <div className="mt-8 pt-4 border-t border-white/5">
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(roleInfo.buttonLink);
-                    }}
-                    className={`w-full py-2.5 px-4 rounded-xl font-semibold text-xs text-center transition-all border duration-300 ${roleInfo.buttonStyle} cursor-pointer`}
-                  >
-                    {roleInfo.buttonText}
-                  </button>
-                </div>
-              </motion.div>
-            );
-          })}
+          {rolesData.map((roleInfo, index) => (
+            <RoleCard
+              key={roleInfo.role}
+              roleInfo={roleInfo}
+              index={index}
+              navigate={navigate}
+            />
+          ))}
         </div>
       </div>
     </section>

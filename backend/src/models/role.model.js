@@ -23,7 +23,19 @@ const roleApplicationSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
+    phone: {
+      type: String,
+      trim: true,
+    },
     github: {
+      type: String,
+      trim: true,
+    },
+    linkedin: {
+      type: String,
+      trim: true,
+    },
+    referredBy: {
       type: String,
       trim: true,
     },

@@ -9,6 +9,9 @@ import {
   Laptop,
   Trophy,
   ArrowRight,
+  Award,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import API from "../../api/axios";
 import Navbar from "../../component/layout/Navbar";
@@ -24,6 +27,7 @@ export default function Register() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const validate = () => {
@@ -264,14 +268,21 @@ export default function Register() {
                       <Lock size={18} />
                     </span>
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       name="password"
                       value={formData.password}
                       onChange={handleInputChange}
-                      className={`w-full pl-10 pr-4 py-3 bg-[#06091b]/60 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm text-white placeholder-slate-600 ${errors.password ? "border-red-500/50" : "border-white/[0.08]"
+                      className={`w-full pl-10 pr-10 py-3 bg-[#06091b]/60 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm text-white placeholder-slate-600 ${errors.password ? "border-red-500/50" : "border-white/[0.08]"
                         }`}
                       placeholder="••••••••"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
                   </div>
                   {errors.password && (
                     <p className="mt-1.5 text-xs text-red-400">{errors.password}</p>

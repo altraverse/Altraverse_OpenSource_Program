@@ -88,6 +88,10 @@ const projectSchema = new mongoose.Schema(
         default: [],
       },
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

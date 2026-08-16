@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import { Globe, Phone, Mail, Award, Users2, ShieldCheck, ArrowRight } from "lucide-react";
 import infynixLogo from "../../assets/infynix_logo.png";
 import codenbuildLogo from "../../assets/codenbuild_logo.png";
+import workLyftLogo from "../../assets/workLyft .png";
 
 const LinkedinIcon = ({ className, size = 12 }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" width={size} height={size} className={className}>
@@ -21,8 +22,8 @@ const partnersData = [
     glowColor: "rgba(139,92,246,0.12)",
     logoInitials: "IT",
     logo: infynixLogo,
-    motto: "Empowering Future Innovators Through Technology.",
-    description: "Infynix Tech is a leading-edge technology firm focused on nurturing future talent. They provide hands-on experience, industry-aligned training curriculum, and practical project mentorship, bridging the gap between classroom theory and enterprise software engineering.",
+    motto: "Innovate • build • deliver",
+    description: "Empowering Students with Internships, Workshops, Startup Support, and Real-World Tech Opportunities.",
     ceo: "Tanvi Lohkar",
     cto: "Bhushan Angaitkar",
     phone: "+91 7588660669",
@@ -48,6 +49,40 @@ const partnersData = [
     website: "https://codenbuild.tech/",
     linkedin: "https://www.linkedin.com/company/codenbuild/",
     gradient: "from-emerald-500 to-teal-600"
+  },
+  {
+    id: 3,
+    name: "WorkLyft Solutions",
+    role: "Co-Sponsor / Partner",
+    badgeColor: "bg-sky-500/10 text-sky-300 border-sky-500/20",
+    glowColor: "rgba(14,165,233,0.10)",
+    logoInitials: "WL",
+    logo: workLyftLogo,
+    motto: "Empowering Talent. Accelerating Businesses.",
+    description: "WorkLyft Solutions is a technology-driven startup focused on empowering students through industry-oriented internships and professional training while helping businesses grow with innovative digital solutions. We specialize in custom software development, AI automation, web and mobile application development, and business digital transformation. Our mission is to bridge the gap between education and industry by creating opportunities for aspiring professionals and delivering impactful technology solutions to businesses.",
+    ceo: "Ayaan Sheikh",
+    cto: "Tuba Naaz",
+    phone: "+91 8007574169",
+    email: "worklyft.business@gmail.com",
+    website: "https://worklyft.in",
+    linkedin: "https://www.linkedin.com/company/worklyft",
+    gradient: "from-sky-500 to-blue-600"
+  },
+  {
+    id: 4,
+    name: "JJ28",
+    role: "Co-Sponsor",
+    badgeColor: "bg-amber-500/10 text-amber-300 border-amber-500/20",
+    glowColor: "rgba(245,158,11,0.10)",
+    logoInitials: "JJ",
+    motto: "Build with passion",
+    description: "Provide IT solution with IT collaborations.",
+    owner: "Jai Jadhav",
+    phone: "+91 80804 64582",
+    email: "jaijadhav28@gmail.com",
+    website: "https://jj28.netlify.app/",
+    linkedin: "https://www.linkedin.com/in/jj28/",
+    gradient: "from-amber-500 to-orange-600"
   },
   // {
   //   id: 3,
@@ -172,7 +207,7 @@ export default function PartnersPage() {
 
       {/* Partners Grid */}
       <section className="relative z-10 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="flex flex-wrap items-stretch justify-center gap-6">
+        <div className="flex flex-wrap items-stretch justify-start gap-6">
           {partnersData.map((partner, index) => (
             <motion.div
               key={partner.id}
@@ -223,17 +258,28 @@ export default function PartnersPage() {
                 {/* Leadership Section */}
                 <div className="border-t border-white/5 pt-3 mb-4 text-left">
                   <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-gray-500 block mb-2">
-                    Leadership Team
+                    {partner.owner ? "Sponsor / Owner" : "Leadership Team"}
                   </span>
                   <div className="flex gap-2 text-[11px]">
-                    <div className="flex-1 min-w-0">
-                      <span className="text-[8px] uppercase tracking-wider text-gray-500 block">CEO</span>
-                      <span className="font-semibold text-white/80 truncate block">{partner.ceo}</span>
-                    </div>
-                    <div className="flex-1 min-w-0 border-l border-white/5 pl-2.5">
-                      <span className="text-[8px] uppercase tracking-wider text-gray-500 block">CTO</span>
-                      <span className="font-semibold text-white/80 truncate block">{partner.cto}</span>
-                    </div>
+                    {partner.owner ? (
+                      <div className="flex-1 min-w-0">
+                        <span className="text-[8px] uppercase tracking-wider text-gray-500 block">Owner</span>
+                        <span className="font-semibold text-white/80 truncate block">{partner.owner}</span>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-[8px] uppercase tracking-wider text-gray-500 block">CEO</span>
+                          <span className="font-semibold text-white/80 truncate block">{partner.ceo}</span>
+                        </div>
+                        {partner.cto && (
+                          <div className="flex-1 min-w-0 border-l border-white/5 pl-2.5">
+                            <span className="text-[8px] uppercase tracking-wider text-gray-500 block">CTO</span>
+                            <span className="font-semibold text-white/80 truncate block">{partner.cto}</span>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -262,26 +308,49 @@ export default function PartnersPage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-2 pt-3 border-t border-white/5 mt-auto">
-                <a
-                  href={partner.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border border-white/5 hover:border-white/10 hover:bg-white/[0.02] text-[10px] font-semibold text-white transition-all cursor-pointer"
-                >
-                  <LinkedinIcon size={12} className="text-sky-400/80" />
-                  LinkedIn
-                </a>
-                <a
-                  href={partner.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-gradient-to-r ${partner.gradient} hover:opacity-95 text-[10px] font-bold text-white shadow-md transition-all cursor-pointer`}
-                >
-                  <Globe size={11} />
-                  Website
-                </a>
-              </div>
+              {(partner.linkedin || partner.website || partner.email || partner.phone) && (
+                <div className="flex items-center gap-2 pt-3 border-t border-white/5 mt-auto">
+                  {partner.linkedin ? (
+                    <a
+                      href={partner.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border border-white/5 hover:border-white/10 hover:bg-white/[0.02] text-[10px] font-semibold text-white transition-all cursor-pointer"
+                    >
+                      <LinkedinIcon size={12} className="text-sky-400/80" />
+                      LinkedIn
+                    </a>
+                  ) : partner.email ? (
+                    <a
+                      href={`mailto:${partner.email}`}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border border-white/5 hover:border-white/10 hover:bg-white/[0.02] text-[10px] font-semibold text-white transition-all cursor-pointer"
+                    >
+                      <Mail size={12} className="text-indigo-400/80" />
+                      Email
+                    </a>
+                  ) : null}
+
+                  {partner.website ? (
+                    <a
+                      href={partner.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-gradient-to-r ${partner.gradient} hover:opacity-95 text-[10px] font-bold text-white shadow-md transition-all cursor-pointer`}
+                    >
+                      <Globe size={11} />
+                      Website
+                    </a>
+                  ) : partner.phone ? (
+                    <a
+                      href={`tel:${partner.phone.replace(/\s+/g, '')}`}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-gradient-to-r ${partner.gradient} hover:opacity-95 text-[10px] font-bold text-white shadow-md transition-all cursor-pointer`}
+                    >
+                      <Phone size={11} />
+                      Call
+                    </a>
+                  ) : null}
+                </div>
+              )}
             </motion.div>
           ))}
         </div>

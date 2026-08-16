@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, LogOut, User, Shield, ArrowRight } from "lucide-react";
+import { Menu, X, LogOut, User, Shield, ArrowRight, Bell } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import logo from "../../assets/logo.png";
 import { motion, AnimatePresence } from "motion/react";
@@ -15,7 +15,7 @@ export default function Navbar() {
   const navLinks = [
     { to: "/about", label: "About" },
     { to: "/projects", label: "Projects" },
-    { to: "/announcement", label: "Announcements" },
+    { to: "/leaderboard", label: "Leaderboard" },
     { to: "/partners", label: "Partners" },
     { to: "/resources", label: "Resources" },
   ];
@@ -112,12 +112,23 @@ export default function Navbar() {
                               : user.role === "sponsor"
                                 ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
                                 : user.role === "mentor"
-                                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/20"
                                   : "bg-slate-500/20 text-slate-300 border border-slate-500/30"
                       }`}
                   >
                     {getDisplayRole(user)}
                   </span>
+                </Link>
+
+                {/* Bell Icon for Announcements (Authenticated) */}
+                <Link
+                  to="/announcement"
+                  className="p-2 rounded-full border border-white/10 hover:border-white/20 bg-white/[0.04] hover:bg-white/[0.08] text-gray-400 hover:text-white transition-all hover:scale-[1.05] cursor-pointer flex items-center justify-center relative"
+                  title="Announcements"
+                >
+                  <Bell size={13} />
+                  <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping" />
+                  <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-rose-500" />
                 </Link>
 
                 <button
@@ -139,6 +150,18 @@ export default function Navbar() {
                 >
                   Become a Mentor
                 </Link>
+
+                {/* Bell Icon for Announcements (Unauthenticated) */}
+                <Link
+                  to="/announcement"
+                  className="p-2 rounded-full border border-white/10 hover:border-white/20 bg-white/[0.04] hover:bg-white/[0.08] text-gray-400 hover:text-white transition-all hover:scale-[1.05] cursor-pointer flex items-center justify-center relative"
+                  title="Announcements"
+                >
+                  <Bell size={13} />
+                  <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping" />
+                  <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-rose-500" />
+                </Link>
+
                 <Link
                   to="/login"
                   className="rounded-full border border-white/10 px-4 py-2 text-xs font-medium text-white hover:bg-white/10 hover:border-white/30 transition-colors"
@@ -154,6 +177,17 @@ export default function Navbar() {
               </>
             )}
           </div>
+
+          {/* Mobile Announcement Bell */}
+          <Link
+            to="/announcement"
+            className="lg:hidden p-2 rounded-full border border-white/10 bg-white/[0.04] text-gray-400 hover:text-white transition-all cursor-pointer flex items-center justify-center relative"
+            title="Announcements"
+          >
+            <Bell size={15} />
+            <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping" />
+            <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-rose-500" />
+          </Link>
 
           {/* Mobile/Tablet Menu Toggle Button */}
           <button

@@ -4,21 +4,24 @@ import API from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { Clock, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { 
-  ArrowLeft, 
-  Code2, 
-  Megaphone, 
-  Terminal, 
-  Handshake, 
-  Check, 
+import {
+  ArrowLeft,
+  Code2,
+  Megaphone,
+  Terminal,
+  Handshake,
+  Check,
   Send,
   User,
   Mail,
+  Phone,
   GitBranch,
   Building,
   GraduationCap,
   MessageSquare,
-  Globe
+  Globe,
+  Sparkles,
+  Award
 } from "lucide-react";
 import Navbar from "../../component/layout/Navbar";
 import Footer from "../footer";
@@ -83,7 +86,7 @@ const roleMetadata = {
     textClass: "text-purple-400",
     pillClass: "bg-purple-500/10 text-purple-300 border border-purple-500/20",
     buttonStyle: "bg-purple-600 hover:bg-purple-500 shadow-[0_4px_20px_rgba(168,85,247,0.3)]",
-    tagline: "Scale your open-source projects with high-quality global contributions.",
+    tagline: "Scale your open-source projects with high-quality global contributions. (A tiny platform listing fee of ₹29 applies)",
     responsibilities: [
       "Submit your project codebase with setup instructions",
       "Curate, tag, and organize beginner-friendly issues",
@@ -132,7 +135,9 @@ export default function RoleDetails() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     github: "",
+    linkedin: "",
     college: "",
     year: "1st Year",
     techStack: "",
@@ -142,9 +147,10 @@ export default function RoleDetails() {
     tier: "Bronze Tier",
     motivation: "",
     message: "",
+    referredBy: "",
     projects: [{ projectName: "", repoUrl: "" }]
   });
-  
+
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -164,7 +170,7 @@ export default function RoleDetails() {
         try {
           const res = await API.get("/api/roles/my-applications");
           if (res.data.success && res.data.applications) {
-            const found = res.data.applications.find(app => 
+            const found = res.data.applications.find(app =>
               app.roleId === roleId && (roleId === "project-admin" ? app.status === "pending" : true)
             );
             if (found) {
@@ -199,8 +205,8 @@ export default function RoleDetails() {
         <div className="flex-grow flex flex-col items-center justify-center pt-24">
           <h2 className="text-2xl font-bold text-white mb-2">Role Page Not Found</h2>
           <p className="text-white/40 mb-6 font-light">The role track you are seeking does not exist.</p>
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="flex items-center gap-2 px-6 py-2.5 rounded-full border border-white/20 text-sm text-gray-300 hover:text-white hover:border-white transition-all"
           >
             <ArrowLeft size={16} /> Back to Home
@@ -215,7 +221,11 @@ export default function RoleDetails() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    let finalValue = name === "referredBy" ? value.toUpperCase() : value;
+    if (name === "phone") {
+      finalValue = value.replace(/\D/g, "").slice(0, 10);
+    }
+    setFormData((prev) => ({ ...prev, [name]: finalValue }));
   };
 
   const handleProjectChange = (index, field, value) => {
@@ -249,12 +259,48 @@ export default function RoleDetails() {
     }
   };
 
+  const getCommunityLink = () => {
+    switch (role.id) {
+      case "ambassador":
+        return "https://chat.whatsapp.com/EAdchNhcP3qJVJzPngA3kI?s=cl&p=a&ilr=0&amv=0";
+      case "contributor":
+        return "https://chat.whatsapp.com/Jx1UMmN1o6p78989XPTN9t?s=cl&p=a&ilr=0&amv=0";
+      case "project-admin":
+        return "https://chat.whatsapp.com/KB8KwTO5qof6nz9S6Fh6v8?s=cl&p=a&ilr=0&amv=0";
+      default:
+        return null;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
       alert("You must create an account or log in to apply for a role. Redirecting to register page...");
       navigate("/register");
       return;
+    }
+    if (!formData.phone || formData.phone.length !== 10) {
+      setSubmitError("Please enter a valid 10-digit mobile number.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    if (formData.github) {
+      const githubInput = formData.github.trim();
+      const githubLower = githubInput.toLowerCase();
+      if (githubLower.includes("/") || githubLower.includes(".")) {
+        if (!githubLower.includes("github.com")) {
+          setSubmitError("Please enter a valid GitHub username or GitHub profile link.");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          return;
+        }
+        const parts = githubInput.split("github.com");
+        const path = parts[parts.length - 1].replace(/^\//, "").trim();
+        if (!path) {
+          setSubmitError("Please enter your full GitHub profile link including your username (e.g., github.com/username).");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          return;
+        }
+      }
     }
     setLoading(true);
     setSubmitError("");
@@ -324,6 +370,24 @@ export default function RoleDetails() {
             </div>
 
             <div className="flex flex-col mb-4">
+              <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Mobile Number</label>
+              <div className="relative">
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                <input
+                  required
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  placeholder="Enter 10-digit mobile number"
+                  maxLength={10}
+                  pattern="[0-9]{10}"
+                  className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-blue-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col mb-4">
               <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">GitHub Username / Profile URL</label>
               <div className="relative">
                 <GitBranch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
@@ -339,7 +403,22 @@ export default function RoleDetails() {
               </div>
             </div>
 
-            <div className="flex flex-col mb-6">
+            <div className="flex flex-col mb-4">
+              <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">LinkedIn Profile URL (Optional)</label>
+              <div className="relative">
+                <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                <input
+                  type="url"
+                  name="linkedin"
+                  value={formData.linkedin}
+                  onChange={handleInputChange}
+                  placeholder="linkedin.com/in/username"
+                  className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-blue-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col mb-4">
               <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Preferred Tech Stack (Comma Separated)</label>
               <div className="relative">
                 <Code2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
@@ -350,6 +429,21 @@ export default function RoleDetails() {
                   value={formData.techStack}
                   onChange={handleInputChange}
                   placeholder="React, TypeScript, Go, Rust..."
+                  className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-blue-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col mb-6">
+              <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Referral Code (Optional)</label>
+              <div className="relative">
+                <Award className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                <input
+                  type="text"
+                  name="referredBy"
+                  value={formData.referredBy}
+                  onChange={handleInputChange}
+                  placeholder="E.G. REF123"
                   className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-blue-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
                 />
               </div>
@@ -392,6 +486,24 @@ export default function RoleDetails() {
               </div>
             </div>
 
+            <div className="flex flex-col mb-4">
+              <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Mobile Number</label>
+              <div className="relative">
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                <input
+                  required
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  placeholder="Enter 10-digit mobile number"
+                  maxLength={10}
+                  pattern="[0-9]{10}"
+                  className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-rose-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
+                />
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
               <div className="sm:col-span-2 flex flex-col">
                 <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">College / University Name</label>
@@ -427,22 +539,36 @@ export default function RoleDetails() {
             </div>
 
             <div className="flex flex-col mb-4">
-              <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">GitHub Username</label>
+              <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">GitHub Username (Optional)</label>
               <div className="relative">
                 <GitBranch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
                 <input
-                  required
                   type="text"
                   name="github"
                   value={formData.github}
                   onChange={handleInputChange}
-                  placeholder="github.com/username"
+                  placeholder="github.com/username (optional)"
                   className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-rose-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
                 />
               </div>
             </div>
 
-            <div className="flex flex-col mb-6">
+            <div className="flex flex-col mb-4">
+              <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">LinkedIn Profile URL (Optional)</label>
+              <div className="relative">
+                <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                <input
+                  type="url"
+                  name="linkedin"
+                  value={formData.linkedin}
+                  onChange={handleInputChange}
+                  placeholder="linkedin.com/in/username"
+                  className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-rose-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col mb-4">
               <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Why do you want to represent ASOC? (Short Answer)</label>
               <div className="relative">
                 <MessageSquare className="absolute left-3.5 top-3 text-white/30" size={16} />
@@ -454,6 +580,21 @@ export default function RoleDetails() {
                   onChange={handleInputChange}
                   placeholder="Tell us why you would be a great fit to advocate for open-source on your campus."
                   className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-rose-500/50 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white/90 outline-none transition-all resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col mb-6">
+              <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Referral Code (Optional)</label>
+              <div className="relative">
+                <Award className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                <input
+                  type="text"
+                  name="referredBy"
+                  value={formData.referredBy}
+                  onChange={handleInputChange}
+                  placeholder="E.G. REF123"
+                  className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-rose-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
                 />
               </div>
             </div>
@@ -495,6 +636,39 @@ export default function RoleDetails() {
               </div>
             </div>
 
+            <div className="flex flex-col mb-4">
+              <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Mobile Number</label>
+              <div className="relative">
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                <input
+                  required
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  placeholder="Enter 10-digit mobile number"
+                  maxLength={10}
+                  pattern="[0-9]{10}"
+                  className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-purple-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col mb-4">
+              <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">LinkedIn Profile URL (Optional)</label>
+              <div className="relative">
+                <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                <input
+                  type="url"
+                  name="linkedin"
+                  value={formData.linkedin}
+                  onChange={handleInputChange}
+                  placeholder="linkedin.com/in/username"
+                  className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-purple-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
+                />
+              </div>
+            </div>
+
             <div className="mb-6 border-b border-white/5 pb-4">
               <h4 className="text-sm font-semibold text-white mb-4 flex items-center justify-between">
                 <span>Projects List</span>
@@ -506,7 +680,7 @@ export default function RoleDetails() {
                   + Add More Project
                 </button>
               </h4>
-              
+
               {formData.projects.map((project, idx) => (
                 <div key={idx} className="relative p-4 rounded-xl border border-white/[0.05] bg-[#0c102b]/20 mb-4">
                   {formData.projects.length > 1 && (
@@ -569,7 +743,7 @@ export default function RoleDetails() {
               </div>
             </div>
 
-            <div className="flex flex-col mb-6">
+            <div className="flex flex-col mb-4">
               <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Brief Project Description</label>
               <div className="relative">
                 <MessageSquare className="absolute left-3.5 top-3 text-white/30" size={16} />
@@ -581,6 +755,21 @@ export default function RoleDetails() {
                   onChange={handleInputChange}
                   placeholder="Describe your project, open-source scope, and what kind of issues contributors will solve."
                   className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-purple-500/50 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white/90 outline-none transition-all resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col mb-6">
+              <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Referral Code (Optional)</label>
+              <div className="relative">
+                <Award className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                <input
+                  type="text"
+                  name="referredBy"
+                  value={formData.referredBy}
+                  onChange={handleInputChange}
+                  placeholder="E.G. REF123"
+                  className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-purple-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
                 />
               </div>
             </div>
@@ -619,6 +808,24 @@ export default function RoleDetails() {
                     className="w-full bg-[#0c102b]/60 border border-white/[0.05] rounded-xl py-3 pl-10 pr-4 text-sm text-white/40 outline-none cursor-not-allowed font-mono"
                   />
                 </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col mb-4">
+              <label className="text-xs text-white/50 mb-2 font-mono uppercase tracking-wider">Mobile Number</label>
+              <div className="relative">
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                <input
+                  required
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  placeholder="Enter 10-digit mobile number"
+                  maxLength={10}
+                  pattern="[0-9]{10}"
+                  className="w-full bg-[#0c102b]/40 border border-white/[0.08] hover:border-white/15 focus:border-amber-500/50 rounded-xl py-3 pl-10 pr-4 text-sm text-white/90 outline-none transition-all"
+                />
               </div>
             </div>
 
@@ -681,21 +888,21 @@ export default function RoleDetails() {
     <div style={{ background: "#06091b", minHeight: "100vh", color: "#fff" }} className="relative overflow-hidden font-body flex flex-col justify-between">
       {/* Background Starfield and Orb */}
       <div className="absolute inset-0 starfield pointer-events-none opacity-40" />
-      <div 
+      <div
         className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[450px] pointer-events-none z-0"
-        style={{ 
-          background: `radial-gradient(ellipse at 50% 0%, ${role.glow} 0%, transparent 70%)` 
-        }} 
+        style={{
+          background: `radial-gradient(ellipse at 50% 0%, ${role.glow} 0%, transparent 70%)`
+        }}
       />
 
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-6 pt-32 pb-24 relative z-10 w-full flex-grow flex flex-col justify-center">
-        
+
         {/* Back Link */}
         <div className="mb-8">
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="inline-flex items-center gap-2 font-mono text-xs text-white/40 hover:text-white transition-colors duration-200 group"
           >
             <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform duration-200" />
@@ -705,7 +912,7 @@ export default function RoleDetails() {
 
         {/* Roles Details Splitting Row */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start w-full">
-          
+
           {/* Left Column: Role Information (5 columns) */}
           <div className="lg:col-span-5 flex flex-col gap-6">
             <div>
@@ -714,7 +921,7 @@ export default function RoleDetails() {
                   {role.badge}
                 </span>
               </div>
-              
+
               <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-4">
                 {role.title} Track
               </h1>
@@ -722,6 +929,13 @@ export default function RoleDetails() {
               <p className="text-white/50 text-[14px] leading-relaxed font-light mb-4">
                 {role.tagline}
               </p>
+
+              {role.id === "project-admin" && (
+                <div className="mt-4 p-4 rounded-2xl bg-purple-500/5 border border-purple-500/10 text-xs text-purple-300/90 leading-relaxed font-sans flex items-start gap-2.5">
+                  <Sparkles size={14} className="text-purple-400 animate-pulse mt-0.5 flex-shrink-0" />
+                  <span>A nominal, one-time repository listing fee of <strong>₹29</strong> applies to list projects on the ASOC portal.</span>
+                </div>
+              )}
             </div>
 
             <hr className="border-white/[0.05]" />
@@ -758,9 +972,9 @@ export default function RoleDetails() {
           {/* Right Column: Interactive Form Card (7 columns) */}
           <div className="lg:col-span-7 w-full">
             <div className="bg-[#0c102b]/40 border border-white/[0.05] rounded-3xl p-6 sm:p-8 backdrop-blur-md relative overflow-hidden shadow-2xl">
-              
+
               {/* Form card background glow */}
-              <div 
+              <div
                 className="absolute -bottom-10 -left-10 w-44 h-44 opacity-25 pointer-events-none blur-3xl rounded-full"
                 style={{ backgroundColor: role.color === "rose" ? "#ec4899" : role.color === "purple" ? "#a855f7" : role.color === "amber" ? "#f59e0b" : "#3b82f6" }}
               />
@@ -814,9 +1028,22 @@ export default function RoleDetails() {
                         <div>
                           <span className="text-slate-500 font-mono">Registered Email:</span> {existingApplication.email}
                         </div>
+                        {existingApplication.phone && (
+                          <div>
+                            <span className="text-slate-500 font-mono">Mobile Number:</span> {existingApplication.phone}
+                          </div>
+                        )}
                         {existingApplication.github && (
                           <div>
                             <span className="text-slate-500 font-mono">GitHub Profile:</span> {existingApplication.github}
+                          </div>
+                        )}
+                        {existingApplication.linkedin && (
+                          <div>
+                            <span className="text-slate-500 font-mono">LinkedIn Profile:</span>{" "}
+                            <a href={existingApplication.linkedin.startsWith("http") ? existingApplication.linkedin : `https://linkedin.com/in/${existingApplication.linkedin}`} target="_blank" rel="noreferrer" className="text-indigo-400 hover:underline">
+                              {existingApplication.linkedin}
+                            </a>
                           </div>
                         )}
                         {existingApplication.college && (
@@ -831,6 +1058,48 @@ export default function RoleDetails() {
                         )}
                       </div>
                     </div>
+
+                    {/* Google Form Payment Callout */}
+                    {role.id === "project-admin" && (
+                      <div className="mb-6 p-5 rounded-2xl bg-purple-500/10 border-2 border-purple-500/30 text-left max-w-md relative overflow-hidden shadow-[0_0_25px_rgba(168,85,247,0.15)]">
+                        <div className="absolute right-0 top-0 w-24 h-24 bg-purple-500/20 rounded-full blur-xl pointer-events-none" />
+                        <h4 className="text-sm font-bold text-purple-300 flex items-center gap-1.5 mb-2 font-mono uppercase tracking-wider">
+                          ⚠️ Action Required: Complete Verification
+                        </h4>
+                        <p className="text-xs text-white/95 leading-relaxed font-light mb-4">
+                          To get your project listed and approved on the ASOC portal, you must complete the payment of <strong>₹29</strong> and upload your payment screenshot using the link below:
+                        </p>
+                        <a
+                          href="https://forms.gle/hTHgYCkGetRtExqB8"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-bold text-white shadow-lg shadow-purple-500/30 transition duration-200 cursor-pointer w-full justify-center"
+                        >
+                          Fill Payment Form & Upload Screenshot
+                        </a>
+                      </div>
+                    )}
+
+                    {/* Join WhatsApp Community Callout */}
+                    {getCommunityLink() && (
+                      <div className="mb-8 p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/15 text-left max-w-md relative overflow-hidden">
+                        <div className="absolute right-0 top-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl pointer-events-none" />
+                        <h4 className="text-sm font-semibold text-emerald-400 flex items-center gap-1.5 mb-2 font-mono uppercase tracking-wider">
+                          💬 Connect with peers
+                        </h4>
+                        <p className="text-xs text-white/70 leading-relaxed font-light mb-4">
+                          Join the official WhatsApp community track for the <strong className="text-emerald-300">{role.title}</strong> role to receive direct support, announcements, and connect with other members!
+                        </p>
+                        <a
+                          href={getCommunityLink()}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white shadow-lg transition duration-200"
+                        >
+                          Join {role.title} Community
+                        </a>
+                      </div>
+                    )}
 
                     <div className="flex gap-4">
                       <Link
@@ -904,11 +1173,74 @@ export default function RoleDetails() {
                     </div>
 
                     <h2 className="text-2xl font-bold text-white mb-3">Application Submitted!</h2>
-                    <p className="text-white/50 text-sm leading-relaxed max-w-md font-light mb-8">
-                      Thank you, <strong className="text-white/80 font-semibold">{formData.name}</strong>. 
+                    <p className="text-white/50 text-sm leading-relaxed max-w-md font-light mb-6">
+                      Thank you, <strong className="text-white/80 font-semibold">{formData.name}</strong>.
                       Your application as a <strong className={role.textClass}>{role.title}</strong> has been received successfully.
                       We will review details and get back to you at <span className="text-white/70 font-mono text-xs">{formData.email}</span> shortly.
                     </p>
+
+                    {/* Google Form Payment Callout */}
+                    {role.id === "project-admin" && (
+                      <div className="mb-8 p-5 rounded-2xl bg-purple-500/10 border-2 border-purple-500/30 text-left max-w-md relative overflow-hidden shadow-[0_0_25px_rgba(168,85,247,0.15)]">
+                        <div className="absolute right-0 top-0 w-24 h-24 bg-purple-500/20 rounded-full blur-xl pointer-events-none" />
+                        <h4 className="text-sm font-bold text-purple-300 flex items-center gap-1.5 mb-2 font-mono uppercase tracking-wider">
+                          ⚠️ Action Required: Complete Verification
+                        </h4>
+                        <p className="text-xs text-white/95 leading-relaxed font-light mb-4">
+                          To get your project listed and approved on the ASOC portal, you must complete the payment of <strong>₹29</strong> and upload your payment screenshot using the link below:
+                        </p>
+                        <a
+                          href="https://forms.gle/hTHgYCkGetRtExqB8"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-bold text-white shadow-lg shadow-purple-500/30 transition duration-200 cursor-pointer w-full justify-center"
+                        >
+                          Fill Payment Form & Upload Screenshot
+                        </a>
+                      </div>
+                    )}
+
+                    {/* Badge Promotion Callout */}
+                    {(role.id === "contributor" || role.id === "ambassador" || role.id === "project-admin") && (
+                      <div className="mb-8 p-5 rounded-2xl bg-indigo-500/5 border border-indigo-500/15 text-left max-w-md relative overflow-hidden">
+                        <div className="absolute right-0 top-0 w-24 h-24 bg-indigo-500/10 rounded-full blur-xl pointer-events-none" />
+                        <h4 className="text-sm font-semibold text-indigo-300 flex items-center gap-1.5 mb-2 font-mono uppercase tracking-wider">
+                          🎁 Post badge for perks!
+                        </h4>
+                        <p className="text-xs text-white/70 leading-relaxed font-light">
+                          {role.id === "project-admin" ? (
+                            <>
+                              Once approved, you'll receive your official <strong className="text-indigo-200">ASOC badge</strong> via email. Share it on LinkedIn, tag <strong className="text-indigo-200">Altraverse</strong>, and add this role in your experience section to claim exclusive perks and platform recognition!
+                            </>
+                          ) : (
+                            <>
+                              Once approved, you'll receive your official <strong className="text-indigo-200">ASOC badge</strong> via email. Share it on LinkedIn, tag <strong className="text-indigo-200">Altraverse</strong>, and add this role in your experience section to claim <strong className="text-indigo-200">30 bonus points</strong> and start rising on the leaderboard!
+                            </>
+                          )}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Join WhatsApp Community Callout */}
+                    {getCommunityLink() && (
+                      <div className="mb-8 p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/15 text-left max-w-md relative overflow-hidden">
+                        <div className="absolute right-0 top-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl pointer-events-none" />
+                        <h4 className="text-sm font-semibold text-emerald-400 flex items-center gap-1.5 mb-2 font-mono uppercase tracking-wider">
+                          💬 Connect with peers
+                        </h4>
+                        <p className="text-xs text-white/70 leading-relaxed font-light mb-4">
+                          Join the official WhatsApp community track for the <strong className="text-emerald-300">{role.title}</strong> role to receive direct support, announcements, and connect with other members!
+                        </p>
+                        <a
+                          href={getCommunityLink()}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white shadow-lg transition duration-200"
+                        >
+                          Join {role.title} Community
+                        </a>
+                      </div>
+                    )}
 
                     <div className="flex gap-4">
                       <Link

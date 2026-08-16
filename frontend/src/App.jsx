@@ -9,11 +9,15 @@ import RoleDetails from './components/pages/RoleDetails';
 import Login from "./components/pages/Login";
 import Register from "./components/pages/Register";
 import VerifyOTP from "./components/pages/VerifyOTP";
+import ForgotPassword from "./components/pages/ForgotPassword";
 import RolesPage from "./components/pages/RolesPage";
 import AdminDashboard from "./components/pages/AdminDashboard";
+import UserDetails from "./components/pages/UserDetails";
 import ProfilePage from "./components/pages/ProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Community from "./components/pages/Community";
+import AmbassadorLeaderboard from "./components/pages/AmbassadorLeaderboard";
+import LeaderboardPage from "./components/pages/LeaderboardPage.jsx";
 import Resources from './components/pages/Resources.jsx';
 import AboutPage from './components/AboutPage';
 import BecomeMentor from './components/pages/BecomeMentor.jsx';
@@ -37,61 +41,82 @@ function App() {
     <>
       <ScrollToTop />
       <Routes>
-      <Route path='/' element={<Home />} />
-      <Route path='/announcement' element={<AnnouncementsPage />} />
+        <Route path='/' element={<Home />} />
+        <Route path='/announcement' element={<AnnouncementsPage />} />
 
-      <Route path='/about' element={<AboutPage />} />
+        <Route path='/about' element={<AboutPage />} />
 
-      <Route path='/projects' element={<Project />} />
-      <Route path='/projects/:id' element={<ProjectDetails />} />
-      <Route path='/roles/:roleId' element={<RoleDetails />} />
-      <Route path='/resources' element={<Resources />} />
-      <Route path='/become-mentor' element={<BecomeMentor />} />
-      <Route path='/partners' element={<PartnersPage />} />
-      <Route path='/privacy' element={<PrivacyPolicy />} />
-      <Route path='/support' element={<SupportPage />} />
-      <Route path='/terms' element={<TermsOfService />} />
+        <Route path='/projects' element={<Project />} />
+        <Route path='/projects/:id' element={<ProjectDetails />} />
+        <Route path='/roles/:roleId' element={<RoleDetails />} />
+        <Route path='/resources' element={<Resources />} />
+        <Route path='/become-mentor' element={<BecomeMentor />} />
+        <Route path='/partners' element={<PartnersPage />} />
+        <Route path='/privacy' element={<PrivacyPolicy />} />
+        <Route path='/support' element={<SupportPage />} />
+        <Route path='/terms' element={<TermsOfService />} />
 
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/verify-otp" element={<VerifyOTP />} />
-      <Route
-        path="/roles"
-        element={
-          <ProtectedRoute>
-            <RolesPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute>
-            <AdminDashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute>
-            <ProfilePage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/community"
-        element={
-          <ProtectedRoute>
-            <Community />
-          </ProtectedRoute>
-        }
-      />
-      {/* <Route path='/resources' element={<ResourcePage />} />*/}
-      {    /* <Route path='/about' element={<About />} />  */}
-      {/* <Route path='/project' element={<Project />} />   */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/verify-otp" element={<VerifyOTP />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route
+          path="/roles"
+          element={
+            <ProtectedRoute>
+              <RolesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users/:userId"
+          element={
+            <ProtectedRoute>
+              <UserDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/community"
+          element={
+            <ProtectedRoute>
+              <Community />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/leaderboard"
+          element={<LeaderboardPage />}
+        />
+        <Route
+          path="/ambassador-leaderboard"
+          element={
+            // <ProtectedRoute>
+            <AmbassadorLeaderboard />
+            // </ProtectedRoute>
+          }
+        />
+        {/* <Route path='/resources' element={<ResourcePage />} />*/}
+        {    /* <Route path='/about' element={<About />} />  */}
+        {/* <Route path='/project' element={<Project />} />   */}
 
-    </Routes>
+      </Routes>
     </>
   );
 }

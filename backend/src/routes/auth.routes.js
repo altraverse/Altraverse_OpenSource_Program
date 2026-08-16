@@ -11,6 +11,10 @@ const {
   verifyOtp,
   resendOtp,
   login,
+  applyReferral,
+  forgotPassword,
+  resetPassword,
+  updateProfile,
 } = require("../controllers/auth.controller");
 
 // Google OAuth
@@ -36,10 +40,14 @@ router.post("/register", register);
 router.post("/verify-otp", verifyOtp);
 router.post("/resend-otp", resendOtp);
 router.post("/login", login);
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password", resetPassword);
 
 // Authenticated session state
 router.get("/me", protect, getMe);
+router.put("/profile", protect, updateProfile);
 router.post("/join-community", protect, joinCommunity);
-router.post("/logout", logout);
+router.post("/apply-referral", protect, applyReferral);
+router.post("/logout", protect, logout);
 
 module.exports = router;
