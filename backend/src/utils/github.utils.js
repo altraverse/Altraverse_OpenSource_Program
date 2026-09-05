@@ -1,9 +1,9 @@
 const https = require("https");
 
 /**
- * Make an authenticated or unauthenticated GET request to the GitHub API.
+ * Make an authenticated or unauthenticated GET request to the GitHub API with automatic fallback.
  */
-const githubRequest = (path) => {
+const makeRequest = (path, useAuth = true) => {
   return new Promise((resolve, reject) => {
     const options = {
       hostname: "api.github.com",
@@ -14,8 +14,8 @@ const githubRequest = (path) => {
       },
     };
 
-    if (process.env.GITHUB_TOKEN) {
-      options.headers["Authorization"] = `token ${process.env.GITHUB_TOKEN}`;
+    if (useAuth && process.env.GITHUB_TOKEN && process.env.GITHUB_TOKEN.trim() !== "") {
+      options.headers["Authorization"] = `token ${process.env.GITHUB_TOKEN.trim()}`;
     }
 
     const req = https.request(options, (res) => {
@@ -25,12 +25,21 @@ const githubRequest = (path) => {
         data += chunk;
       });
 
-      res.on("end", () => {
+      res.on("end", async () => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
           try {
             resolve(JSON.parse(data));
           } catch (err) {
             reject(new Error("Failed to parse GitHub response"));
+          }
+        } else if (res.statusCode === 401 && useAuth) {
+          // Token is invalid/expired (Bad credentials); retry unauthenticated immediately
+          console.warn(`[GitHub API] Token returned 401 for ${path}. Retrying unauthenticated...`);
+          try {
+            const fallbackData = await makeRequest(path, false);
+            resolve(fallbackData);
+          } catch (retryErr) {
+            reject(retryErr);
           }
         } else {
           try {
@@ -50,6 +59,9 @@ const githubRequest = (path) => {
     req.end();
   });
 };
+
+const githubRequest = (path) => makeRequest(path, true);
+
 
 /**
  * Fetch basic repository statistics (Stars, Forks).
