@@ -9,6 +9,8 @@ const {
   getProjectAdmins,
   toggleProjectActive,
   updateProject,
+  getWebhookConfig,
+  regenerateWebhookSecret,
 } = require("../controllers/project.controller");
 
 // Public endpoints to display projects and details
@@ -20,5 +22,8 @@ router.post("/", protect, allowRoles("admin"), createProject);
 router.put("/:id", protect, allowRoles("admin"), updateProject);
 router.patch("/:id/toggle-active", protect, allowRoles("admin"), toggleProjectActive);
 router.get("/admins/list", protect, allowRoles("admin"), getProjectAdmins);
+router.get("/:id/webhook-config", protect, allowRoles("admin"), getWebhookConfig);
+router.post("/:id/regenerate-webhook-secret", protect, allowRoles("admin"), regenerateWebhookSecret);
 
 module.exports = router;
+

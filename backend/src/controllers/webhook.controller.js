@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const Project = require("../models/project.model");
 const Issue = require("../models/issue.model");
+const User = require("../models/user.model");
 const { fetchRepoDetails } = require("../utils/github.utils");
 
 /**
@@ -24,19 +25,32 @@ const verifySignature = (rawBody, secret, signatureHeader) => {
 };
 
 /**
- * Helper to determine difficulty and points from labels array in payload
+ * Helper to determine difficulty and points from title and labels array in payload
  */
-const parseDifficultyAndPoints = (labels) => {
+const parseDifficultyAndPoints = (title, labels) => {
+  // 1. Try to parse points from the title suffix (e.g. "- 10", "- 20", "- 30", "- 40", "- 50")
+  const match = String(title || "").match(/-\s*(\d+)\s*$/);
+  if (match) {
+    const pts = parseInt(match[1]);
+    if ([10, 20, 30, 40, 50].includes(pts)) {
+      let difficulty = "Medium";
+      if (pts <= 20) difficulty = "Easy";
+      else if (pts >= 40) difficulty = "Hard";
+      return { difficulty, points: pts };
+    }
+  }
+
+  // 2. Fall back to label-based parsing on 10/30/50 scale
   const labelNames = (labels || []).map((l) => l.name.toLowerCase());
   
   if (labelNames.some((l) => l.includes("easy") || l.includes("good first issue") || l.includes("beginner"))) {
-    return { difficulty: "Easy", points: 50 };
+    return { difficulty: "Easy", points: 10 };
   }
   if (labelNames.some((l) => l.includes("hard") || l.includes("advanced") || l.includes("complex"))) {
-    return { difficulty: "Hard", points: 150 };
+    return { difficulty: "Hard", points: 50 };
   }
   
-  return { difficulty: "Medium", points: 100 };
+  return { difficulty: "Medium", points: 30 };
 };
 
 /**
@@ -100,6 +114,12 @@ const handleGithubWebhook = async (req, res) => {
 
     console.log(`[Webhook] Processing event '${event}' for project '${project.title}' (${repoOwner}/${repoName})`);
 
+    // Handle GitHub Webhook Ping event (sent when testing/saving Webhook in GitHub repo settings)
+    if (event === "ping") {
+      console.log(`[Webhook] Ping test successful for project '${project.title}'`);
+      return res.status(200).json({ success: true, message: "Pong! Webhook configured successfully." });
+    }
+
     // 3. Process event types
     if (event === "issues") {
       const action = payload.action;
@@ -110,7 +130,7 @@ const handleGithubWebhook = async (req, res) => {
       }
 
       if (action === "opened" || action === "reopened" || action === "edited") {
-        const { difficulty, points } = parseDifficultyAndPoints(gitIssue.labels);
+        const { difficulty, points } = parseDifficultyAndPoints(gitIssue.title, gitIssue.labels);
         
         await Issue.findOneAndUpdate(
           { projectId: project._id, number: gitIssue.number },
@@ -138,6 +158,76 @@ const handleGithubWebhook = async (req, res) => {
       } else if (action === "deleted") {
         await Issue.deleteOne({ projectId: project._id, number: gitIssue.number });
         console.log(`[Webhook] Deleted issue #${gitIssue.number}`);
+      }
+
+    } else if (event === "pull_request") {
+      const action = payload.action;
+      const pr = payload.pull_request;
+
+      if (action === "closed" && pr && pr.merged) {
+        const githubUsername = pr.user.login;
+        const prBody = pr.body || "";
+        const prTitle = pr.title || "";
+
+        console.log(`[Webhook] Processing merged PR #${pr.number} by ${githubUsername} for project ${project.title}`);
+
+        // Find linked issues in PR body & title using common GitHub closing keywords
+        const issueNumbers = [];
+        const linkRegex = /(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\s+#(\d+)/gi;
+        let match;
+        const textToSearch = `${prTitle} ${prBody}`;
+        while ((match = linkRegex.exec(textToSearch)) !== null) {
+          const num = parseInt(match[1]);
+          if (!issueNumbers.includes(num)) {
+            issueNumbers.push(num);
+          }
+        }
+
+        console.log(`[Webhook] Detected linked issue numbers: ${issueNumbers.join(", ")}`);
+
+        let pointsEarned = 0;
+        let closedIssuesCount = 0;
+
+        for (const issueNum of issueNumbers) {
+          const issue = await Issue.findOne({ projectId: project._id, number: issueNum });
+          if (issue) {
+            if (issue.status !== "Closed") {
+              issue.status = "Closed";
+              await issue.save();
+              pointsEarned += issue.points || 0;
+              closedIssuesCount++;
+            }
+          }
+        }
+
+        // Award points to the contributor if registered
+        if (pointsEarned > 0) {
+          const contributor = await User.findOne({
+            githubUsername: { $regex: new RegExp(`^${githubUsername}$`, "i") },
+          });
+
+          if (contributor) {
+            contributor.points = (contributor.points || 0) + pointsEarned;
+            contributor.solvedIssuesCount = (contributor.solvedIssuesCount || 0) + closedIssuesCount;
+            
+            if (!contributor.pointsHistory) contributor.pointsHistory = [];
+            contributor.pointsHistory.push({
+              points: pointsEarned,
+              reason: `Merged PR #${pr.number} in ${project.title} (${closedIssuesCount} issues resolved)`,
+              createdAt: new Date()
+            });
+
+            await contributor.save();
+            console.log(`[Webhook] Awarded ${pointsEarned} points to user ${contributor.name} (${githubUsername}). New balance: ${contributor.points}`);
+          } else {
+            console.warn(`[Webhook] PR contributor '${githubUsername}' is not registered on the platform. Points not awarded.`);
+          }
+        }
+
+        // Increment project stats (prsMerged)
+        project.detailedStats = project.detailedStats || {};
+        project.detailedStats.prsMerged = (project.detailedStats.prsMerged || 0) + 1;
+        await project.save();
       }
 
     } else if (event === "watch" || event === "fork") {

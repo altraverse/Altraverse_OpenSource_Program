@@ -19,7 +19,12 @@ export default function OrganisationsPage() {
         setError("");
         const response = await API.get("/api/projects");
         if (response.data.success) {
-          setOrganisations(response.data.projects);
+          const sorted = [...(response.data.projects || [])].sort((a, b) => {
+            const countA = a.openIssueCount !== undefined ? a.openIssueCount : (parseInt(a.date) || 0);
+            const countB = b.openIssueCount !== undefined ? b.openIssueCount : (parseInt(b.date) || 0);
+            return countB - countA;
+          });
+          setOrganisations(sorted);
         }
       } catch (err) {
         console.error("Error fetching projects:", err);

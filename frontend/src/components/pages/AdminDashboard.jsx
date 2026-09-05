@@ -19,7 +19,11 @@ import {
   Users,
   Search,
   X,
-  Edit
+  Edit,
+  Key,
+  RefreshCw,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import Navbar from "../../component/layout/Navbar";
 import Footer from "../../components/footer";
@@ -74,6 +78,8 @@ export default function AdminDashboard() {
   const [submittingProject, setSubmittingProject] = useState(false);
   const [webhookConfig, setWebhookConfig] = useState(null);
   const [copiedText, setCopiedText] = useState("");
+  const [showSecretToken, setShowSecretToken] = useState(false);
+  const [regeneratingSecret, setRegeneratingSecret] = useState(false);
 
   // Support Tickets State
   const [tickets, setTickets] = useState([]);
@@ -174,7 +180,12 @@ export default function AdminDashboard() {
       setFetchingProjects(true);
       const response = await API.get("/api/projects?all=true");
       if (response.data.success) {
-        setProjects(response.data.projects);
+        const sorted = [...(response.data.projects || [])].sort((a, b) => {
+          const countA = a.openIssueCount !== undefined ? a.openIssueCount : (parseInt(a.date) || 0);
+          const countB = b.openIssueCount !== undefined ? b.openIssueCount : (parseInt(b.date) || 0);
+          return countB - countA;
+        });
+        setProjects(sorted);
       }
     } catch (err) {
       console.error(err);
@@ -200,7 +211,45 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleEditProjectClick = (project) => {
+  const handleViewWebhookConfig = async (projectId) => {
+    try {
+      const response = await API.get(`/api/projects/${projectId}/webhook-config`);
+      if (response.data.success) {
+        setWebhookConfig(response.data.webhookConfig);
+      }
+    } catch (err) {
+      console.error("Fetch webhook config error:", err);
+      alert(err.response?.data?.message || "Failed to fetch webhook config.");
+    }
+  };
+
+  const handleRegenerateWebhookSecret = async (projectId) => {
+    if (!window.confirm("Are you sure you want to regenerate the Webhook Secret Token? The previous secret token will immediately stop working on GitHub.")) {
+      return;
+    }
+    try {
+      setRegeneratingSecret(true);
+      const response = await API.post(`/api/projects/${projectId}/regenerate-webhook-secret`);
+      if (response.data.success) {
+        setWebhookConfig(response.data.webhookConfig);
+        if (editingProject && (editingProject.id === projectId || editingProject._id === projectId)) {
+          setEditingProject((prev) => ({
+            ...prev,
+            webhookSecret: response.data.webhookConfig.secret,
+            payloadUrl: response.data.webhookConfig.payloadUrl,
+          }));
+        }
+        alert("Webhook secret token regenerated successfully! Please update the secret token in GitHub repository webhook settings.");
+      }
+    } catch (err) {
+      console.error("Regenerate webhook secret error:", err);
+      alert(err.response?.data?.message || "Failed to regenerate webhook secret token.");
+    } finally {
+      setRegeneratingSecret(false);
+    }
+  };
+
+  const handleEditProjectClick = async (project) => {
     setEditingProject({
       id: project.id,
       title: project.title,
@@ -209,8 +258,26 @@ export default function AdminDashboard() {
       points: project.points,
       image: project.image,
       description: project.description,
+      githubUrl: project.githubUrl,
+      webhookSecret: "",
+      payloadUrl: "",
     });
     setShowEditModal(true);
+    setShowSecretToken(false);
+
+    try {
+      const response = await API.get(`/api/projects/${project.id}/webhook-config`);
+      if (response.data.success) {
+        setEditingProject((prev) => ({
+          ...prev,
+          webhookSecret: response.data.webhookConfig.secret,
+          payloadUrl: response.data.webhookConfig.payloadUrl,
+          githubUrl: response.data.webhookConfig.githubUrl || project.githubUrl,
+        }));
+      }
+    } catch (err) {
+      console.error("Failed to load project webhook config for edit:", err);
+    }
   };
 
   const handleUpdateProject = async (e) => {
@@ -1236,6 +1303,13 @@ export default function AdminDashboard() {
                                     )}
                                   </button>
                                   <button
+                                    onClick={() => handleViewWebhookConfig(project.id)}
+                                    className="p-1.5 bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20 hover:text-white border border-indigo-500/20 rounded-lg transition cursor-pointer"
+                                    title="View Webhook & Secret Token"
+                                  >
+                                    <Key size={16} />
+                                  </button>
+                                  <button
                                     onClick={() => handleEditProjectClick(project)}
                                     className="p-1.5 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg transition cursor-pointer"
                                     title="Edit Project"
@@ -1315,6 +1389,13 @@ export default function AdminDashboard() {
                                       <X size={14} /> Hidden
                                     </>
                                   )}
+                                </button>
+                                <button
+                                  onClick={() => handleViewWebhookConfig(project.id)}
+                                  className="p-1.5 bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20 hover:text-white border border-indigo-500/20 rounded-lg transition cursor-pointer"
+                                  title="View Webhook & Secret Token"
+                                >
+                                  <Key size={16} />
                                 </button>
                                 <button
                                   onClick={() => handleEditProjectClick(project)}
@@ -1787,6 +1868,19 @@ export default function AdminDashboard() {
                       </button>
                     </div>
                   </div>
+
+                  {/* Regenerate Secret Button */}
+                  {webhookConfig.projectId && (
+                    <button
+                      type="button"
+                      onClick={() => handleRegenerateWebhookSecret(webhookConfig.projectId)}
+                      disabled={regeneratingSecret}
+                      className="w-full mt-2 py-2.5 px-4 bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-300 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 font-mono"
+                    >
+                      <RefreshCw size={14} className={regeneratingSecret ? "animate-spin" : ""} />
+                      {regeneratingSecret ? "Regenerating..." : "Regenerate Webhook Secret Token"}
+                    </button>
+                  )}
                 </div>
 
                 <div className="mt-8 border-t border-white/[0.05] pt-5 flex items-center gap-3">
@@ -2119,6 +2213,84 @@ export default function AdminDashboard() {
                       onChange={(e) => setEditingProject({ ...editingProject, description: e.target.value })}
                       className="w-full bg-slate-950/50 border border-white/5 hover:border-white/15 focus:border-indigo-500 text-slate-200 text-xs rounded-xl px-4 py-3 focus:outline-none transition"
                     />
+                  </div>
+
+                  {/* GitHub Webhook Configuration & Token Regeneration Section */}
+                  <div className="mt-6 pt-4 border-t border-white/[0.08]">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-400 font-mono flex items-center gap-2">
+                        <Key size={14} /> GitHub Webhook Configuration
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={() => handleRegenerateWebhookSecret(editingProject.id)}
+                        disabled={regeneratingSecret}
+                        className="px-2.5 py-1 bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-300 rounded-lg text-[10px] font-bold font-mono uppercase tracking-wider transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                      >
+                        <RefreshCw size={12} className={regeneratingSecret ? "animate-spin" : ""} />
+                        Regenerate Token
+                      </button>
+                    </div>
+
+                    {editingProject.payloadUrl ? (
+                      <div className="space-y-3 bg-slate-950/40 border border-white/5 rounded-2xl p-3.5">
+                        <div>
+                          <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-1">
+                            GitHub Webhook Payload URL
+                          </label>
+                          <div className="flex bg-slate-900 border border-white/5 rounded-xl overflow-hidden p-1">
+                            <input
+                              type="text"
+                              readOnly
+                              value={editingProject.payloadUrl}
+                              className="flex-grow bg-transparent text-xs text-slate-300 font-mono px-2 focus:outline-none min-w-0"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleCopy(editingProject.payloadUrl, "edit_url")}
+                              className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold flex items-center gap-1 shrink-0 cursor-pointer"
+                            >
+                              {copiedText === "edit_url" ? <Check size={12} /> : <Copy size={12} />} Copy
+                            </button>
+                          </div>
+                        </div>
+
+                        {editingProject.webhookSecret && (
+                          <div>
+                            <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-1">
+                              Webhook Secret Token
+                            </label>
+                            <div className="flex bg-slate-900 border border-white/5 rounded-xl overflow-hidden p-1">
+                              <input
+                                type={showSecretToken ? "text" : "password"}
+                                readOnly
+                                value={editingProject.webhookSecret}
+                                className="flex-grow bg-transparent text-xs text-slate-300 font-mono px-2 focus:outline-none min-w-0"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowSecretToken(!showSecretToken)}
+                                className="px-2 py-1 text-slate-400 hover:text-white text-xs mr-1 cursor-pointer"
+                                title={showSecretToken ? "Hide Secret" : "Show Secret"}
+                              >
+                                {showSecretToken ? <EyeOff size={14} /> : <Eye size={14} />}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleCopy(editingProject.webhookSecret, "edit_secret")}
+                                className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold flex items-center gap-1 shrink-0 cursor-pointer"
+                              >
+                                {copiedText === "edit_secret" ? <Check size={12} /> : <Copy size={12} />} Copy
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-slate-400 font-mono bg-slate-950/30 p-3 rounded-xl border border-white/5">
+                        Loading webhook details...
+                      </div>
+                    )}
                   </div>
 
                   {/* Form Actions */}

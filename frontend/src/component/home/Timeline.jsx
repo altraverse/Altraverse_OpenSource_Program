@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-import { 
-  Calendar, 
-  CheckCircle2, 
-  Code, 
-  FileInput, 
-  Award, 
-  ShieldAlert, 
-  Users2, 
-  Trophy, 
-  Terminal, 
-  Sparkles 
+import {
+  Calendar,
+  CheckCircle2,
+  Code,
+  FileInput,
+  Award,
+  ShieldAlert,
+  Users2,
+  Trophy,
+  Terminal,
+  Sparkles
 } from "lucide-react";
 
 const phase1Events = [
@@ -28,7 +28,7 @@ const phase1Events = [
     icon: Code,
   },
   {
-    date: "20 September",
+    date: "30 August",
     title: "Contributor Registration Closes",
     description: "Final deadline to register as a contributor. Make sure all your details are up to date.",
     icon: ShieldAlert,
@@ -87,7 +87,7 @@ export default function Timeline() {
   const glowShadow = isPhase1 ? "shadow-[0_0_15px_rgba(99,102,241,0.3)]" : "shadow-[0_0_15px_rgba(6,182,212,0.3)]";
   const borderNode = isPhase1 ? "border-indigo-500" : "border-cyan-500";
   const nodeIconText = isPhase1 ? "text-indigo-400" : "text-cyan-400";
-  const lineGradient = isPhase1 
+  const lineGradient = isPhase1
     ? "bg-gradient-to-b from-indigo-500 via-violet-500 to-indigo-500"
     : "bg-gradient-to-b from-cyan-500 via-sky-500 to-cyan-500";
   const hoverGlowLine = isPhase1 ? "via-indigo-500/20" : "via-cyan-500/20";
@@ -95,15 +95,15 @@ export default function Timeline() {
   return (
     <section className="relative py-24 px-4 sm:px-6 lg:px-8 bg-[#06091b] overflow-hidden border-b border-white/5">
       {/* Decorative Atmospheric Cosmic Glows */}
-      <div 
+      <div
         className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[300px] pointer-events-none opacity-30 blur-[100px] transition-all duration-700"
         style={{
-          background: isPhase1 
+          background: isPhase1
             ? "radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 80%)"
             : "radial-gradient(circle, rgba(6,182,212,0.08) 0%, transparent 80%)"
         }}
       />
-      <div 
+      <div
         className="absolute bottom-1/4 left-1/3 w-80 h-80 pointer-events-none opacity-20 blur-[100px] transition-all duration-700"
         style={{
           background: isPhase1
@@ -129,7 +129,7 @@ export default function Timeline() {
             <div className={`h-px w-8 bg-gradient-to-l ${isPhase1 ? 'from-violet-400' : 'from-cyan-400'} to-transparent`} />
           </motion.div>
 
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -138,8 +138,8 @@ export default function Timeline() {
           >
             Program <span className="gradient-text">Timeline</span>
           </motion.h2>
-          
-          <motion.p 
+
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -155,18 +155,16 @@ export default function Timeline() {
           <div className="relative flex p-1 bg-[#0c102b]/60 border border-white/[0.06] rounded-full backdrop-blur-md">
             <button
               onClick={() => setActivePhase("phase1")}
-              className={`relative px-6 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 z-10 flex items-center gap-2 ${
-                isPhase1 ? "text-white" : "text-slate-400 hover:text-white"
-              }`}
+              className={`relative px-6 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 z-10 flex items-center gap-2 ${isPhase1 ? "text-white" : "text-slate-400 hover:text-white"
+                }`}
             >
               <Sparkles className="w-4 h-4 text-violet-400" />
               Phase 1: Open Source
             </button>
             <button
               onClick={() => setActivePhase("phase2")}
-              className={`relative px-6 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 z-10 flex items-center gap-2 ${
-                !isPhase1 ? "text-white" : "text-slate-400 hover:text-white"
-              }`}
+              className={`relative px-6 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 z-10 flex items-center gap-2 ${!isPhase1 ? "text-white" : "text-slate-400 hover:text-white"
+                }`}
             >
               <Trophy className="w-4 h-4 text-cyan-400" />
               Phase 2: Hackathon
@@ -174,11 +172,10 @@ export default function Timeline() {
 
             {/* Glowing Active Slider background */}
             <motion.div
-              className={`absolute top-1 bottom-1 rounded-full border z-0 transition-all duration-300 ${
-                isPhase1 
-                  ? "bg-violet-600/20 border-violet-500/30 shadow-[0_0_15px_rgba(139,92,246,0.25)]" 
-                  : "bg-cyan-600/20 border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.25)]"
-              }`}
+              className={`absolute top-1 bottom-1 rounded-full border z-0 transition-all duration-300 ${isPhase1
+                ? "bg-violet-600/20 border-violet-500/30 shadow-[0_0_15px_rgba(139,92,246,0.25)]"
+                : "bg-cyan-600/20 border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.25)]"
+                }`}
               animate={{
                 left: isPhase1 ? "4px" : "50%",
                 width: "calc(50% - 4px)",
@@ -194,7 +191,7 @@ export default function Timeline() {
           <div className={`absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 ${lineGradient} md:-translate-x-1/2 opacity-20 transition-all duration-500`} />
 
           {/* Timeline Items */}
-          <motion.div 
+          <motion.div
             key={activePhase}
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -212,9 +209,8 @@ export default function Timeline() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-100px" }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className={`relative flex flex-col md:flex-row items-start ${
-                    isEven ? "md:flex-row-reverse" : ""
-                  }`}
+                  className={`relative flex flex-col md:flex-row items-start ${isEven ? "md:flex-row-reverse" : ""
+                    }`}
                 >
                   {/* Glowing Node Dot on Timeline */}
                   <div className={`absolute left-4 md:left-1/2 w-7 h-7 rounded-full bg-[#070b1e] border-2 ${borderNode} ${glowShadow} flex items-center justify-center -translate-x-1/2 z-20 transition-all duration-500`}>
@@ -222,10 +218,9 @@ export default function Timeline() {
                   </div>
 
                   {/* Left / Right Card Spacing */}
-                  <div className={`w-full md:w-1/2 pl-12 ${
-                    isEven ? "md:pl-10 md:pr-0" : "md:pl-0 md:pr-10"
-                  }`}>
-                    <div 
+                  <div className={`w-full md:w-1/2 pl-12 ${isEven ? "md:pl-10 md:pr-0" : "md:pl-0 md:pr-10"
+                    }`}>
+                    <div
                       className={`group relative p-4 sm:p-5 rounded-xl border border-white/[0.05] bg-[#0c102b]/20 hover:bg-[#0c102b]/40 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 ${hoverBorder} shadow-lg text-left`}
                     >
                       {/* Date Badge */}
