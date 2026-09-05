@@ -16,6 +16,7 @@ const webhookRoutes = require("./src/routes/webhook.routes");
 const supportRoutes = require("./src/routes/support.routes");
 const newsletterRoutes = require("./src/routes/newsletter.routes");
 const ambassadorLeaderboardRoutes = require("./src/routes/ambassadorLeaderboard.routes");
+const leaderboardRoutes = require("./src/routes/leaderboard.routes");
 
 connectDB().then(() => {
   backfillPointsHistory();
@@ -70,6 +71,7 @@ app.use("/api/webhooks/github", webhookRoutes);
 app.use("/api/support", supportRoutes);
 app.use("/api/newsletter", newsletterRoutes);
 app.use("/api/leaderboard/ambassador", ambassadorLeaderboardRoutes);
+app.use("/api/leaderboard", leaderboardRoutes);
 
 const PORT = process.env.PORT || 5000;
 

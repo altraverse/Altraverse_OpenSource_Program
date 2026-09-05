@@ -122,12 +122,10 @@ const userSchema = new mongoose.Schema(
       ],
       default: [],
     },
-
     solvedIssuesCount: {
       type: Number,
       default: 0,
     },
-
     referralCode: {
       type: String,
       unique: true,

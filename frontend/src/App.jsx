@@ -15,9 +15,10 @@ import AdminDashboard from "./components/pages/AdminDashboard";
 import UserDetails from "./components/pages/UserDetails";
 import ProfilePage from "./components/pages/ProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Community from "./components/pages/Community";
+// import Community from "./components/pages/Community";
 import AmbassadorLeaderboard from "./components/pages/AmbassadorLeaderboard";
 import LeaderboardPage from "./components/pages/LeaderboardPage.jsx";
+import Leaderboard from "./components/pages/Leaderboard";
 import Resources from './components/pages/Resources.jsx';
 import AboutPage from './components/AboutPage';
 import BecomeMentor from './components/pages/BecomeMentor.jsx';
@@ -92,17 +93,25 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
+        {/* <Route
           path="/community"
           element={
             <ProtectedRoute>
               <Community />
             </ProtectedRoute>
           }
-        />
+        /> */}
         <Route
           path="/leaderboard"
           element={<LeaderboardPage />}
+        />
+        <Route
+          path="/contributor-leaderboard"
+          element={
+            <ProtectedRoute>
+              <Leaderboard />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/ambassador-leaderboard"

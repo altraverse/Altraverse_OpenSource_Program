@@ -307,6 +307,14 @@ export default function ProfilePage() {
                     </div>
                   )}
 
+                  {/* Go to Leaderboard Link */}
+                  <Link
+                    to="/contributor-leaderboard"
+                    className="mt-4 w-full flex items-center justify-center gap-2.5 py-3 rounded-2xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-xs font-semibold text-indigo-300 transition-all hover:scale-[1.02] cursor-pointer"
+                  >
+                    <Trophy size={14} className="text-yellow-500" />
+                    <span>Go to Contributor Leaderboard</span>
+                  </Link>
                   {/* Submit More Projects for Project Admin */}
                   {(user.role === "project-admin" || (user.roles && user.roles.includes("project-admin"))) && (
                     <Link
@@ -452,6 +460,10 @@ export default function ProfilePage() {
                   </Link>
                   <Link to="/ambassador-leaderboard" className="flex items-center justify-between text-xs text-slate-400 hover:text-white transition group py-1.5">
                     <span>Ambassador Leaderboard</span>
+                    <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition" />
+                  </Link>
+                  <Link to="/contributor-leaderboard" className="flex items-center justify-between text-xs text-slate-400 hover:text-white transition group py-1.5">
+                    <span>Contributor Leaderboard</span>
                     <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition" />
                   </Link>
                 </div>
