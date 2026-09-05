@@ -24,6 +24,159 @@ export const colorMap = {
   }
 };
 
+// Hash string to number for deterministic styling
+const hashString = (str = "") => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+};
+
+// Preset palette combinations for dynamic SVG banners
+const BANNER_THEMES = [
+  { bg: "from-indigo-950 via-purple-900/40 to-[#06091b]", accent: "#8b5cf6", secondary: "#ec4899", grid: "rgba(139, 92, 246, 0.15)" },
+  { bg: "from-emerald-950 via-teal-900/40 to-[#06091b]", accent: "#10b981", secondary: "#06b6d4", grid: "rgba(16, 185, 129, 0.15)" },
+  { bg: "from-cyan-950 via-blue-900/40 to-[#06091b]", accent: "#06b6d4", secondary: "#3b82f6", grid: "rgba(6, 182, 212, 0.15)" },
+  { bg: "from-fuchsia-950 via-pink-900/40 to-[#06091b]", accent: "#d946ef", secondary: "#8b5cf6", grid: "rgba(217, 70, 239, 0.15)" },
+  { bg: "from-amber-950 via-orange-900/40 to-[#06091b]", accent: "#f59e0b", secondary: "#ef4444", grid: "rgba(245, 158, 11, 0.15)" },
+  { bg: "from-rose-950 via-red-900/40 to-[#06091b]", accent: "#f43f5e", secondary: "#fb923c", grid: "rgba(244, 63, 94, 0.15)" },
+  { bg: "from-violet-950 via-sky-900/40 to-[#06091b]", accent: "#6366f1", secondary: "#38bdf8", grid: "rgba(99, 102, 241, 0.15)" },
+  { bg: "from-teal-950 via-emerald-900/40 to-[#06091b]", accent: "#14b8a6", secondary: "#a3e635", grid: "rgba(20, 184, 166, 0.15)" }
+];
+
+const PRESET_BANNERS = {
+  "learnsphere": "/banners/learnsphere.png",
+  "ai money mentor": "/banners/ai_money_mentor.png",
+  "money mentor": "/banners/ai_money_mentor.png",
+  "mentroid": "/banners/mentroid.png",
+  "agritech": "/banners/agritech.png",
+  "ember": "/banners/ember_renting.png",
+  "smart city": "/banners/smart_city_analyzer.png",
+  "city analyzer": "/banners/smart_city_analyzer.png"
+};
+
+const getTitleInitials = (title = "") => {
+  const cleanTitle = title.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[-_]/g, " ");
+  const words = cleanTitle.trim().split(/\s+/).filter(Boolean);
+  if (words.length === 1) {
+    return words[0].slice(0, 2).toUpperCase();
+  }
+  return words.slice(0, 3).map(w => w[0]).join("").toUpperCase();
+};
+
+function ProjectBanner({ title = "", image = "", tag = "" }) {
+  const lowerTitle = title.toLowerCase();
+
+  // 1. Check if item has a unique custom image (not the default Unsplash placeholder)
+  if (image && !image.includes("photo-1618005182384-a83a8bd57fbe") && !image.includes("smart_city_analyzer.png")) {
+    return (
+      <img
+        src={image}
+        alt={title}
+        loading="lazy"
+        className="w-full h-full object-cover transition-transform duration-500 ease-out transform scale-100 group-hover:scale-105 filter brightness-[0.85] group-hover:brightness-100"
+      />
+    );
+  }
+
+  // 2. Check for matched generated static banner
+  const matchedKey = Object.keys(PRESET_BANNERS).find(key => lowerTitle.includes(key));
+  if (matchedKey) {
+    return (
+      <img
+        src={PRESET_BANNERS[matchedKey]}
+        alt={title}
+        loading="lazy"
+        className="w-full h-full object-cover transition-transform duration-500 ease-out transform scale-100 group-hover:scale-105 filter brightness-[0.85] group-hover:brightness-100"
+      />
+    );
+  }
+
+  // 3. Fallback: Dynamic Clean Procedural SVG Tech Banner for ANY of 20+ projects
+  const hash = hashString(title);
+  const theme = BANNER_THEMES[hash % BANNER_THEMES.length];
+  const patternType = hash % 5;
+  const initials = getTitleInitials(title);
+
+  return (
+    <div className={`relative w-full h-full bg-gradient-to-br ${theme.bg} overflow-hidden flex items-center justify-between px-5 select-none`}>
+      {/* Background SVG Geometric Pattern */}
+      <svg className="absolute inset-0 w-full h-full opacity-35 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id={`grid-${hash}`} width="24" height="24" patternUnits="userSpaceOnUse">
+            <path d="M 24 0 L 0 0 0 24" fill="none" stroke={theme.grid} strokeWidth="0.8" />
+          </pattern>
+          <radialGradient id={`glow-${hash}`} cx="70%" cy="30%" r="60%">
+            <stop offset="0%" stopColor={theme.accent} stopOpacity="0.4" />
+            <stop offset="100%" stopColor="transparent" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+
+        <rect width="100%" height="100%" fill={`url(#grid-${hash})`} />
+        <rect width="100%" height="100%" fill={`url(#glow-${hash})`} />
+
+        {/* Dynamic Pattern Overlays based on Title Hash */}
+        {patternType === 0 && (
+          <g stroke={theme.accent} strokeWidth="1" fill="none" opacity="0.5">
+            <circle cx="80%" cy="40%" r="35" strokeDasharray="4,4" />
+            <circle cx="80%" cy="40%" r="20" />
+            <line x1="0" y1="100%" x2="100%" y2="0" stroke={theme.secondary} strokeWidth="0.5" opacity="0.3" />
+          </g>
+        )}
+        {patternType === 1 && (
+          <g fill={theme.accent} opacity="0.3">
+            <polygon points="220,10 260,30 220,50 180,30" />
+            <polygon points="220,55 260,75 220,95 180,75" opacity="0.5" />
+            <circle cx="50" cy="80" r="4" fill={theme.secondary} />
+            <circle cx="70" cy="80" r="4" fill={theme.accent} />
+          </g>
+        )}
+        {patternType === 2 && (
+          <g stroke={theme.secondary} strokeWidth="1.2" fill="none" opacity="0.4">
+            <path d="M 150 0 Q 200 60 300 30 T 400 100" />
+            <path d="M 120 20 Q 180 80 280 50 T 380 120" stroke={theme.accent} />
+          </g>
+        )}
+        {patternType === 3 && (
+          <g fill={theme.accent} opacity="0.25">
+            <rect x="70%" y="15%" width="40" height="40" rx="8" transform="rotate(15 220 30)" />
+            <rect x="75%" y="45%" width="25" height="25" rx="4" transform="rotate(-20 240 60)" fill={theme.secondary} />
+          </g>
+        )}
+        {patternType === 4 && (
+          <g stroke={theme.accent} strokeWidth="0.8" opacity="0.4" fill="none">
+            <line x1="20%" y1="0" x2="80%" y2="100%" strokeDasharray="2 4" />
+            <line x1="40%" y1="0" x2="100%" y2="80%" strokeDasharray="2 4" stroke={theme.secondary} />
+            <circle cx="85%" cy="50%" r="25" />
+          </g>
+        )}
+      </svg>
+
+      {/* Title Initials Monogram Badge */}
+      <div className="relative z-10 flex items-center justify-between w-full">
+        <div className="flex flex-col">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-white/40">
+            {tag || "PROJECT"}
+          </span>
+          <span className="text-lg font-black tracking-wider bg-gradient-to-r from-white via-white/90 to-white/60 bg-clip-text text-transparent font-display">
+            {initials}
+          </span>
+        </div>
+
+        {/* Minimal Tech Icon Graphic */}
+        <div 
+          className="w-9 h-9 rounded-xl flex items-center justify-center border border-white/10 backdrop-blur-md shadow-inner"
+          style={{ backgroundColor: `${theme.accent}20` }}
+        >
+          <div className="w-2.5 h-2.5 rounded-full animate-pulse" style={{ backgroundColor: theme.accent }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function OrganisationCard({ item, animDelay = 0 }) {
   const [hovered, setHovered] = useState(false);
   const navigate = useNavigate();
@@ -56,14 +209,9 @@ export default function OrganisationCard({ item, animDelay = 0 }) {
 
       {/* Top Section: Visual Banner Showcase */}
       <div className="relative h-28 w-full overflow-hidden border-b border-white/[0.04] bg-[#06091b]">
-        <img
-          src={item.image}
-          alt={item.title}
-          loading="lazy"
-          className="w-full h-full object-cover transition-transform duration-500 ease-out transform scale-100 group-hover:scale-105 filter brightness-[0.85] group-hover:brightness-100 will-change-transform"
-        />
+        <ProjectBanner title={item.title} image={item.image} tag={item.tag} />
         {/* Absolute vignette blending filter */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#06091b]/90 via-[#06091b]/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#06091b]/90 via-[#06091b]/20 to-transparent pointer-events-none" />
       </div>
 
       {/* Middle Section: Main Project Metadata */}
@@ -100,7 +248,7 @@ export default function OrganisationCard({ item, animDelay = 0 }) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499c.173-.434.764-.434.938 0l2.69 6.734 7.135.586c.476.039.666.623.313.954l-5.38 5.038 1.563 7.043c.104.468-.401.834-.81.595L12 20.13l-6.331 3.528c-.41.238-.91-.128-.81-.595l1.562-7.043-5.38-5.038c-.354-.33-.163-.915.313-.954l7.136-.586 2.69-6.734z" />
             </svg>
             <span className="font-mono text-[11px] font-medium text-white/60 group-hover:text-white/80 transition-colors duration-300">
-              {item.stars} <span className="text-[9px] text-white/30">stars</span>
+              {item.stars !== undefined && item.stars !== null ? item.stars : 0} <span className="text-[9px] text-white/30">stars</span>
             </span>
           </div>
 
@@ -110,7 +258,7 @@ export default function OrganisationCard({ item, animDelay = 0 }) {
               <path d="M18 15V9a4 4 0 0 0-4-4H9M6 9v6" />
             </svg>
             <span className="font-mono text-[11px] font-medium text-white/60 group-hover:text-white/80 transition-colors duration-300">
-              {item.forks} <span className="text-[9px] text-white/30">forks</span>
+              {item.forks !== undefined && item.forks !== null ? item.forks : 0} <span className="text-[9px] text-white/30">forks</span>
             </span>
           </div>
         </div>

@@ -69,20 +69,33 @@ const fetchRepoDetails = async (owner, repo) => {
 };
 
 /**
- * Helper to determine difficulty and point value from labels.
+ * Helper to determine difficulty and point value from title and labels.
  */
-const parseDifficultyAndPoints = (labels) => {
-  const labelNames = labels.map((l) => l.name.toLowerCase());
+const parseDifficultyAndPoints = (title, labels) => {
+  // 1. Try to parse points from the title suffix (e.g. "- 10", "- 20", "- 30", "- 40", "- 50")
+  const match = String(title || "").match(/-\s*(\d+)\s*$/);
+  if (match) {
+    const pts = parseInt(match[1]);
+    if ([10, 20, 30, 40, 50].includes(pts)) {
+      let difficulty = "Medium";
+      if (pts <= 20) difficulty = "Easy";
+      else if (pts >= 40) difficulty = "Hard";
+      return { difficulty, points: pts };
+    }
+  }
+
+  // 2. Fall back to label-based parsing on 10/30/50 scale
+  const labelNames = (labels || []).map((l) => l.name.toLowerCase());
   
   if (labelNames.some((l) => l.includes("easy") || l.includes("good first issue") || l.includes("beginner"))) {
-    return { difficulty: "Easy", points: 50 };
+    return { difficulty: "Easy", points: 10 };
   }
   if (labelNames.some((l) => l.includes("hard") || l.includes("advanced") || l.includes("complex"))) {
-    return { difficulty: "Hard", points: 150 };
+    return { difficulty: "Hard", points: 50 };
   }
   
-  // Default to Medium
-  return { difficulty: "Medium", points: 100 };
+  // Default to Medium / 30
+  return { difficulty: "Medium", points: 30 };
 };
 
 /**
@@ -118,7 +131,7 @@ const fetchRepoIssues = async (owner, repo) => {
     return rawIssues
       .filter((issue) => !issue.pull_request) // Filter out PRs
       .map((issue) => {
-        const { difficulty, points } = parseDifficultyAndPoints(issue.labels);
+        const { difficulty, points } = parseDifficultyAndPoints(issue.title, issue.labels);
         return {
           githubIssueId: issue.id,
           number: issue.number,
@@ -137,7 +150,64 @@ const fetchRepoIssues = async (owner, repo) => {
   }
 };
 
+/**
+ * Fetch contributors for a repository.
+ */
+const fetchRepoContributors = async (owner, repo) => {
+  try {
+    const rawContributors = await githubRequest(`/repos/${owner}/${repo}/contributors?per_page=30`);
+    if (!Array.isArray(rawContributors)) return [];
+
+    return rawContributors
+      .filter((c) => c.type !== "Bot" && !c.login?.includes("[bot]"))
+      .map((c) => ({
+        username: c.login,
+        name: c.login,
+        avatar: c.avatar_url || `https://github.com/${c.login}.png`,
+        avatar_url: c.avatar_url,
+        contributions: c.contributions || 0,
+        profileUrl: c.html_url || `https://github.com/${c.login}`,
+        type: c.type || "User",
+      }));
+  } catch (error) {
+    console.warn(`Error fetching repo contributors for ${owner}/${repo}:`, error.message);
+    return [];
+  }
+};
+
+/**
+ * Fetch recently merged or closed pull requests for a repository.
+ */
+const fetchRepoPullRequests = async (owner, repo) => {
+  try {
+    const rawPrs = await githubRequest(`/repos/${owner}/${repo}/pulls?state=closed&per_page=15`);
+    if (!Array.isArray(rawPrs)) return [];
+
+    return rawPrs.map((pr) => {
+      const isMerged = !!pr.merged_at;
+      return {
+        id: `#${pr.number}`,
+        number: pr.number,
+        title: pr.title,
+        author: pr.user ? pr.user.login : "contributor",
+        authorAvatar: pr.user ? pr.user.avatar_url : "",
+        authorUrl: pr.user ? pr.user.html_url : "",
+        date: formatRelativeDate(pr.merged_at || pr.closed_at || pr.created_at),
+        status: isMerged ? "Merged" : "Closed",
+        points: isMerged ? 100 : 0,
+        link: pr.html_url,
+      };
+    });
+  } catch (error) {
+    console.warn(`Error fetching repo pull requests for ${owner}/${repo}:`, error.message);
+    return [];
+  }
+};
+
 module.exports = {
   fetchRepoDetails,
   fetchRepoIssues,
+  fetchRepoContributors,
+  fetchRepoPullRequests,
 };
+

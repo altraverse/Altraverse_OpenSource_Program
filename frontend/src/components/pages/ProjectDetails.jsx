@@ -87,12 +87,12 @@ export default function ProjectDetails() {
   // Render Stats Grid
   const renderStats = () => {
     const stats = [
-      { icon: <Star className="text-yellow-500/80" size={18} />, label: "Stars", value: project.stars },
-      { icon: <GitFork className="text-blue-400/80" size={18} />, label: "Forks", value: project.forks },
-      { icon: <Users className="text-purple-400/80" size={18} />, label: "Contributors", value: project.detailedStats.contributors },
-      { icon: <CircleDot className="text-red-400/80" size={18} />, label: "Open Issues", value: project.detailedStats.openIssues },
-      { icon: <GitPullRequest className="text-emerald-400/80" size={18} />, label: "PRs Merged", value: project.detailedStats.prsMerged },
-      { icon: <Layers className="text-cyan-400/80" size={18} />, label: "Commits", value: project.detailedStats.totalCommits }
+      { icon: <Star className="text-yellow-500/80" size={18} />, label: "Stars", value: project.stars !== undefined && project.stars !== null ? project.stars : 0 },
+      { icon: <GitFork className="text-blue-400/80" size={18} />, label: "Forks", value: project.forks !== undefined && project.forks !== null ? project.forks : 0 },
+      { icon: <Users className="text-purple-400/80" size={18} />, label: "Contributors", value: project.detailedStats?.contributors ?? project.contributors?.length ?? 0 },
+      { icon: <CircleDot className="text-red-400/80" size={18} />, label: "Open Issues", value: project.detailedStats?.openIssues ?? project.issues?.length ?? 0 },
+      { icon: <GitPullRequest className="text-emerald-400/80" size={18} />, label: "PRs Merged", value: project.detailedStats?.prsMerged ?? project.prs?.length ?? 0 },
+      { icon: <Layers className="text-cyan-400/80" size={18} />, label: "Commits", value: project.detailedStats?.totalCommits ?? 15 }
     ];
 
     return (
@@ -168,7 +168,7 @@ export default function ProjectDetails() {
                 {project.tag}
               </span>
               <span className="font-mono text-xs text-white/30">
-                Lines of Code: <strong className="text-white/60 font-medium">{project.detailedStats.linesOfCode}</strong>
+                Lines of Code: <strong className="text-white/60 font-medium">{project.detailedStats?.linesOfCode || "5.4K"}</strong>
               </span>
             </div>
             
@@ -184,7 +184,7 @@ export default function ProjectDetails() {
             <div className="flex flex-wrap items-center gap-2 pt-2">
               <Code size={14} className="text-white/30 mr-1" />
               <span className="font-mono text-[10px] text-white/30 uppercase tracking-wider mr-2">Tech Stack:</span>
-              {project.detailedStats.techStack.map((tech, idx) => (
+              {(project.detailedStats?.techStack || ["JavaScript"]).map((tech, idx) => (
                 <span 
                   key={idx}
                   className="font-mono text-[10px] text-white/60 bg-white/[0.03] border border-white/[0.08] px-2.5 py-1 rounded-md"
@@ -203,9 +203,9 @@ export default function ProjectDetails() {
         <div className="flex border-b border-white/[0.06] mb-8 overflow-x-auto whitespace-nowrap scrollbar-none">
           {[
             { id: "dashboard", label: "Dashboard" },
-            { id: "issues", label: `Open Issues (${project.issues.length})` },
-            { id: "contributors", label: `Contributors (${project.contributors.length})` },
-            { id: "prs", label: `Merged PRs (${project.prs.length})` }
+            { id: "issues", label: `Open Issues (${project.issues?.length || 0})` },
+            { id: "contributors", label: `Contributors (${project.contributors?.length || 0})` },
+            { id: "prs", label: `Merged PRs (${project.prs?.length || 0})` }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -233,49 +233,58 @@ export default function ProjectDetails() {
                     <CircleDot size={18} className="text-red-400" />
                     Featured Open Issues
                   </h3>
-                  <button onClick={() => setActiveTab("issues")} className="text-xs text-white/40 hover:text-white transition-colors font-mono">
+                  <button onClick={() => setActiveTab("issues")} className="text-xs text-white/40 hover:text-white transition-colors font-mono cursor-pointer">
                     VIEW ALL →
                   </button>
                 </div>
                 
-                {project.issues.slice(0, 3).map((issue) => (
-                  <motion.div
-                    key={issue.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="bg-[#0c102b]/40 border border-white/[0.04] rounded-2xl p-5 hover:border-white/[0.1] hover:bg-[#0c102b]/60 transition-all duration-300 flex flex-col sm:flex-row justify-between sm:items-center gap-4"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2.5 mb-2">
-                        <span className="font-mono text-[10px] text-white/30">{issue.id}</span>
-                        <span className={`font-mono text-[8px] font-bold tracking-[0.1em] uppercase px-2 py-0.5 rounded-full ${getDifficultyPill(issue.difficulty)}`}>
-                          {issue.difficulty}
-                        </span>
-                        <span className="font-mono text-[9px] text-white/20 flex items-center gap-1">
-                          <Calendar size={10} /> {issue.date}
-                        </span>
+                {project.issues && project.issues.length > 0 ? (
+                  project.issues.slice(0, 3).map((issue) => (
+                    <motion.div
+                      key={issue.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="bg-[#0c102b]/40 border border-white/[0.04] rounded-2xl p-5 hover:border-white/[0.1] hover:bg-[#0c102b]/60 transition-all duration-300 flex flex-col sm:flex-row justify-between sm:items-center gap-4"
+                    >
+                      <div>
+                        <div className="flex items-center gap-2.5 mb-2">
+                          <span className="font-mono text-[10px] text-white/30">{issue.number ? `#${issue.number}` : issue.id}</span>
+                          <span className={`font-mono text-[8px] font-bold tracking-[0.1em] uppercase px-2 py-0.5 rounded-full ${getDifficultyPill(issue.difficulty)}`}>
+                            {issue.difficulty}
+                          </span>
+                          <span className="font-mono text-[9px] text-white/20 flex items-center gap-1">
+                            <Calendar size={10} /> {issue.date}
+                          </span>
+                        </div>
+                        <h4 className="font-medium text-sm text-white/80 leading-snug hover:text-white transition-colors">
+                          {issue.title}
+                        </h4>
                       </div>
-                      <h4 className="font-medium text-sm text-white/80 leading-snug hover:text-white transition-colors">
-                        {issue.title}
-                      </h4>
-                    </div>
 
-                    <div className="flex items-center gap-4 sm:self-center self-end">
-                      <div className="flex flex-col items-end">
-                        <span className={`font-mono text-sm font-bold ${cm.text}`}>+{issue.points} PTS</span>
-                        <span className="text-[10px] text-white/25">Reward Points</span>
+                      <div className="flex items-center gap-4 sm:self-center self-end">
+                        <div className="flex flex-col items-end">
+                          <span className={`font-mono text-sm font-bold ${cm.text}`}>+{issue.points} PTS</span>
+                          <span className="text-[10px] text-white/25">Reward Points</span>
+                        </div>
+                        {issue.link && (
+                          <a 
+                            href={issue.link} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="p-2.5 rounded-full bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.1] hover:border-white/20 text-white/60 hover:text-white transition-all"
+                            title="View on GitHub"
+                          >
+                            <ExternalLink size={14} />
+                          </a>
+                        )}
                       </div>
-                      <a 
-                        href={issue.link} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="p-2.5 rounded-full bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.1] hover:border-white/20 text-white/60 hover:text-white transition-all"
-                      >
-                        <ExternalLink size={14} />
-                      </a>
-                    </div>
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 rounded-2xl bg-[#0c102b]/20 border border-white/[0.04] text-xs text-white/40 font-mono">
+                    No open issues at the moment.
+                  </div>
+                )}
               </div>
 
               {/* Right Side: Contributors & PR Activity */}
@@ -288,32 +297,61 @@ export default function ProjectDetails() {
                       <Users size={16} className="text-purple-400" />
                       Active Contributors
                     </h3>
-                    <button onClick={() => setActiveTab("contributors")} className="text-[10px] text-white/40 hover:text-white transition-colors font-mono">
+                    <button onClick={() => setActiveTab("contributors")} className="text-[10px] text-white/40 hover:text-white transition-colors font-mono cursor-pointer">
                       SEE ALL
                     </button>
                   </div>
 
                   <div className="flex flex-col gap-3">
-                    {project.contributors.slice(0, 3).map((c, idx) => (
-                      <div key={idx} className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div 
-                            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white uppercase"
-                            style={{ backgroundColor: c.avatarColor || "#8b5cf6" }}
-                          >
-                            {c.name.charAt(0)}
+                    {project.contributors && project.contributors.length > 0 ? (
+                      project.contributors.slice(0, 4).map((c, idx) => (
+                        <div key={idx} className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="relative w-8 h-8 rounded-full bg-[#131947] border border-white/10 flex items-center justify-center text-xs font-bold text-white overflow-hidden flex-shrink-0">
+                              {c.avatar || c.avatar_url ? (
+                                <img 
+                                  src={c.avatar || c.avatar_url} 
+                                  alt={c.name || c.username} 
+                                  className="w-full h-full object-cover" 
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                  }}
+                                />
+                              ) : null}
+                              <span 
+                                className="absolute inset-0 flex items-center justify-center uppercase -z-10 text-[11px] font-bold" 
+                                style={{ backgroundColor: c.avatarColor || "#8b5cf6" }}
+                              >
+                                {(c.name || c.username || "C").charAt(0)}
+                              </span>
+                            </div>
+                            <div className="min-w-0">
+                              <div className="text-xs font-medium text-white/85 truncate max-w-[130px]">{c.name || c.username}</div>
+                              {c.username ? (
+                                <a
+                                  href={`https://github.com/${c.username}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[10px] text-indigo-400/80 hover:text-indigo-300 hover:underline flex items-center gap-0.5 font-mono"
+                                >
+                                  @{c.username} <ExternalLink size={8} />
+                                </a>
+                              ) : (
+                                <div className="text-[10px] text-white/30">Contributor</div>
+                              )}
+                            </div>
                           </div>
-                          <div>
-                            <div className="text-xs font-medium text-white/80">{c.name}</div>
-                            <div className="text-[10px] text-white/30">@{c.username}</div>
+                          <div className="text-right flex-shrink-0">
+                            <div className="text-xs font-mono font-bold text-white/85">+{c.points || 0} PTS</div>
+                            <div className="text-[9px] text-white/30">{c.prCount || 1} {c.prCount === 1 ? 'PR' : 'PRs'} merged</div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-xs font-mono font-bold text-white/85">+{c.points} PTS</div>
-                          <div className="text-[9px] text-white/30">{c.prCount} PRs merged</div>
-                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-4 text-xs text-white/40">
+                        No active contributors yet.
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
 
@@ -324,32 +362,55 @@ export default function ProjectDetails() {
                       <GitPullRequest size={16} className="text-emerald-400" />
                       Merged PRs
                     </h3>
-                    <button onClick={() => setActiveTab("prs")} className="text-[10px] text-white/40 hover:text-white transition-colors font-mono">
+                    <button onClick={() => setActiveTab("prs")} className="text-[10px] text-white/40 hover:text-white transition-colors font-mono cursor-pointer">
                       SEE ALL
                     </button>
                   </div>
 
                   <div className="flex flex-col gap-3.5">
-                    {project.prs.slice(0, 3).map((pr, idx) => (
-                      <div key={idx} className="flex items-start gap-2.5">
-                        <CheckCircle2 size={14} className="text-emerald-500 mt-0.5 flex-shrink-0" />
-                        <div className="flex-grow min-w-0">
-                          <h4 className="text-xs font-medium text-white/80 leading-snug line-clamp-1">
-                            {pr.title}
-                          </h4>
-                          <div className="flex items-center gap-1.5 mt-1 font-mono text-[9px] text-white/30">
-                            <span>{pr.id}</span>
-                            <span>·</span>
-                            <span>by @{pr.author}</span>
-                            <span>·</span>
-                            <span>{pr.date}</span>
+                    {project.prs && project.prs.length > 0 ? (
+                      project.prs.slice(0, 3).map((pr, idx) => (
+                        <div key={idx} className="flex items-start gap-2.5">
+                          <CheckCircle2 size={14} className="text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <div className="flex-grow min-w-0">
+                            <h4 className="text-xs font-medium text-white/80 leading-snug line-clamp-1">
+                              {pr.link ? (
+                                <a href={pr.link} target="_blank" rel="noopener noreferrer" className="hover:text-white hover:underline">
+                                  {pr.title}
+                                </a>
+                              ) : (
+                                pr.title
+                              )}
+                            </h4>
+                            <div className="flex items-center gap-1.5 mt-1 font-mono text-[9px] text-white/30">
+                              <span>{pr.id}</span>
+                              <span>·</span>
+                              {pr.author ? (
+                                <a 
+                                  href={`https://github.com/${pr.author}`} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer" 
+                                  className="hover:text-indigo-400"
+                                >
+                                  by @{pr.author}
+                                </a>
+                              ) : (
+                                <span>by @contributor</span>
+                              )}
+                              <span>·</span>
+                              <span>{pr.date}</span>
+                            </div>
+                          </div>
+                          <div className="font-mono text-[10px] text-emerald-400 font-bold whitespace-nowrap">
+                            +{pr.points || 0}
                           </div>
                         </div>
-                        <div className="font-mono text-[10px] text-emerald-400 font-bold whitespace-nowrap">
-                          +{pr.points}
-                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-4 text-xs text-white/40">
+                        No merged pull requests yet.
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
 
@@ -361,56 +422,65 @@ export default function ProjectDetails() {
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-white/40 text-xs font-mono uppercase tracking-wide">
-                  Showing {project.issues.length} available open issues
+                  Showing {project.issues?.length || 0} available open issues
                 </span>
               </div>
-              {project.issues.map((issue) => (
-                <motion.div
-                  key={issue.id}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-[#0c102b]/40 border border-white/[0.04] rounded-2xl p-6 hover:border-white/[0.1] hover:bg-[#0c102b]/60 transition-all duration-300 flex flex-col sm:flex-row justify-between sm:items-center gap-4"
-                >
-                  <div>
-                    <div className="flex items-center gap-2.5 mb-2">
-                      <span className="font-mono text-xs text-white/30">{issue.id}</span>
-                      <span className={`font-mono text-[9px] font-bold tracking-[0.1em] uppercase px-2 py-0.5 rounded-full ${getDifficultyPill(issue.difficulty)}`}>
-                        {issue.difficulty}
-                      </span>
-                      <span className="font-mono text-xs text-white/20 flex items-center gap-1">
-                        <Calendar size={12} /> {issue.date}
-                      </span>
+              {project.issues && project.issues.length > 0 ? (
+                project.issues.map((issue) => (
+                  <motion.div
+                    key={issue.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-[#0c102b]/40 border border-white/[0.04] rounded-2xl p-6 hover:border-white/[0.1] hover:bg-[#0c102b]/60 transition-all duration-300 flex flex-col sm:flex-row justify-between sm:items-center gap-4"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2.5 mb-2">
+                        <span className="font-mono text-xs text-white/30">{issue.number ? `#${issue.number}` : issue.id}</span>
+                        <span className={`font-mono text-[9px] font-bold tracking-[0.1em] uppercase px-2 py-0.5 rounded-full ${getDifficultyPill(issue.difficulty)}`}>
+                          {issue.difficulty}
+                        </span>
+                        <span className="font-mono text-xs text-white/20 flex items-center gap-1">
+                          <Calendar size={12} /> {issue.date}
+                        </span>
+                      </div>
+                      <h4 className="font-semibold text-base text-white/85 hover:text-white transition-colors leading-snug">
+                        {issue.title}
+                      </h4>
+                      <p className="text-xs text-white/40 mt-1 font-light">
+                        Click the external link icon to read requirements and submit your solution on Github.
+                      </p>
                     </div>
-                    <h4 className="font-semibold text-base text-white/85 hover:text-white transition-colors leading-snug">
-                      {issue.title}
-                    </h4>
-                    <p className="text-xs text-white/40 mt-1 font-light">
-                      Click the external link icon to read requirements and submit your solution on Github.
-                    </p>
-                  </div>
 
-                  <div className="flex items-center gap-4 sm:self-center self-end">
-                    <div className="flex flex-col items-end">
-                      <span className={`font-mono text-base font-bold ${cm.text}`}>+{issue.points} PTS</span>
-                      <span className="text-[10px] text-white/25">Reward Points</span>
+                    <div className="flex items-center gap-4 sm:self-center self-end">
+                      <div className="flex flex-col items-end">
+                        <span className={`font-mono text-base font-bold ${cm.text}`}>+{issue.points} PTS</span>
+                        <span className="text-[10px] text-white/25">Reward Points</span>
+                      </div>
+                      {issue.link && (
+                        <a 
+                          href={issue.link} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="p-3 rounded-full bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.1] hover:border-white/20 text-white/60 hover:text-white transition-all"
+                          title="View on GitHub"
+                        >
+                          <ExternalLink size={16} />
+                        </a>
+                      )}
                     </div>
-                    <a 
-                      href={issue.link} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="p-3 rounded-full bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.1] hover:border-white/20 text-white/60 hover:text-white transition-all"
-                    >
-                      <ExternalLink size={16} />
-                    </a>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))
+              ) : (
+                <div className="text-center py-12 rounded-2xl bg-[#0c102b]/20 border border-white/[0.04] text-sm text-white/40 font-mono">
+                  No open issues available for this repository.
+                </div>
+              )}
             </div>
           )}
 
           {activeTab === "contributors" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {project.contributors.map((c, idx) => (
+              {(project.contributors || []).map((c, idx) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, scale: 0.98 }}
@@ -418,27 +488,48 @@ export default function ProjectDetails() {
                   transition={{ delay: idx * 0.05 }}
                   className="bg-[#0c102b]/40 border border-white/[0.04] hover:border-white/[0.08] rounded-2xl p-5 flex flex-col items-center text-center transition-all duration-300"
                 >
-                  <div 
-                    className="w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold text-white uppercase mb-3 shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
-                    style={{ backgroundColor: c.avatarColor || "#8b5cf6" }}
-                  >
-                    {c.name.charAt(0)}
+                  <div className="relative w-14 h-14 rounded-full bg-[#131947] border border-white/10 flex items-center justify-center text-lg font-bold text-white uppercase mb-3 shadow-[0_4px_16px_rgba(0,0,0,0.5)] overflow-hidden">
+                    {c.avatar || c.avatar_url ? (
+                      <img 
+                        src={c.avatar || c.avatar_url} 
+                        alt={c.name || c.username} 
+                        className="w-full h-full object-cover" 
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : null}
+                    <span 
+                      className="absolute inset-0 flex items-center justify-center uppercase -z-10 text-base font-bold" 
+                      style={{ backgroundColor: c.avatarColor || "#8b5cf6" }}
+                    >
+                      {(c.name || c.username || "C").charAt(0)}
+                    </span>
                   </div>
                   
-                  <div className="font-semibold text-sm text-white/90">{c.name}</div>
-                  <div className="text-xs text-white/40 mb-3">@{c.username}</div>
+                  <div className="font-semibold text-sm text-white/90 truncate max-w-full px-1">{c.name || c.username}</div>
+                  {c.username && (
+                    <a 
+                      href={`https://github.com/${c.username}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-xs text-indigo-400/80 hover:text-indigo-300 hover:underline mb-3 inline-flex items-center gap-1 font-mono"
+                    >
+                      @{c.username} <ExternalLink size={10} />
+                    </a>
+                  )}
                   
                   <div className="px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.06] text-[10px] font-mono text-white/50 mb-4">
-                    {c.role}
+                    {c.role || "Contributor"}
                   </div>
 
                   <div className="w-full grid grid-cols-2 gap-2 pt-3 border-t border-white/[0.03]">
                     <div className="text-center border-r border-white/[0.04]">
-                      <div className="text-xs font-mono font-bold text-white/80">+{c.points}</div>
+                      <div className="text-xs font-mono font-bold text-white/80">+{c.points || 0}</div>
                       <div className="text-[9px] text-white/30 uppercase tracking-wide">Points</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-xs font-mono font-bold text-white/80">{c.prCount}</div>
+                      <div className="text-xs font-mono font-bold text-white/80">{c.prCount || 1}</div>
                       <div className="text-[9px] text-white/30 uppercase tracking-wide">PRs</div>
                     </div>
                   </div>
@@ -451,10 +542,10 @@ export default function ProjectDetails() {
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-white/40 text-xs font-mono uppercase tracking-wide">
-                  Showing {project.prs.length} pull requests merged recently
+                  Showing {project.prs?.length || 0} pull requests merged recently
                 </span>
               </div>
-              {project.prs.map((pr, idx) => (
+              {(project.prs || []).map((pr, idx) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, y: 6 }}
@@ -465,12 +556,29 @@ export default function ProjectDetails() {
                     <CheckCircle2 size={16} className="text-emerald-400 flex-shrink-0" />
                     <div>
                       <h4 className="text-sm font-semibold text-white/90 leading-tight">
-                        {pr.title}
+                        {pr.link ? (
+                          <a href={pr.link} target="_blank" rel="noopener noreferrer" className="hover:text-white hover:underline">
+                            {pr.title}
+                          </a>
+                        ) : (
+                          pr.title
+                        )}
                       </h4>
                       <div className="flex items-center gap-2 mt-1 font-mono text-xs text-white/30">
                         <span className="text-white/50 font-bold">{pr.id}</span>
                         <span>·</span>
-                        <span>merged by @{pr.author}</span>
+                        {pr.author ? (
+                          <a 
+                            href={`https://github.com/${pr.author}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="hover:text-indigo-400"
+                          >
+                            merged by @{pr.author}
+                          </a>
+                        ) : (
+                          <span>merged by @contributor</span>
+                        )}
                         <span>·</span>
                         <span>{pr.date}</span>
                       </div>
@@ -480,11 +588,11 @@ export default function ProjectDetails() {
                   <div className="text-right flex items-center gap-3">
                     <div className="hidden sm:block">
                       <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-400 uppercase tracking-wider">
-                        {pr.status}
+                        {pr.status || "Merged"}
                       </span>
                     </div>
                     <div className="bg-[#0c102b]/60 border border-white/[0.05] rounded-lg px-3 py-1.5 text-center">
-                      <div className="text-xs font-mono font-bold text-emerald-400">+{pr.points}</div>
+                      <div className="text-xs font-mono font-bold text-emerald-400">+{pr.points || 0}</div>
                       <div className="text-[8px] text-white/20 uppercase font-mono tracking-wider">PTS</div>
                     </div>
                   </div>
