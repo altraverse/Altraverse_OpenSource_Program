@@ -1,4 +1,4 @@
-import './App.css';
+﻿import './App.css';
 import { useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Home from './component/pages/Home.jsx';
@@ -93,38 +93,18 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* <Route
-          path="/community"
-          element={
-            <ProtectedRoute>
-              <Community />
-            </ProtectedRoute>
-          }
-        /> */}
         <Route
           path="/leaderboard"
           element={<LeaderboardPage />}
         />
         <Route
           path="/contributor-leaderboard"
-          element={
-            <ProtectedRoute>
-              <Leaderboard />
-            </ProtectedRoute>
-          }
+          element={<Leaderboard />}
         />
         <Route
           path="/ambassador-leaderboard"
-          element={
-            // <ProtectedRoute>
-            <AmbassadorLeaderboard />
-            // </ProtectedRoute>
-          }
+          element={<AmbassadorLeaderboard />}
         />
-        {/* <Route path='/resources' element={<ResourcePage />} />*/}
-        {    /* <Route path='/about' element={<About />} />  */}
-        {/* <Route path='/project' element={<Project />} />   */}
-
       </Routes>
     </>
   );

@@ -25,7 +25,9 @@ import {
   Terminal,
   ShieldAlert,
   Send,
-  Users
+  Users,
+  ExternalLink,
+  GitPullRequest
 } from "lucide-react";
 
 export default function UserDetails() {
@@ -593,6 +595,62 @@ export default function UserDetails() {
                 </div>
               )}
             </div>
+
+            {/* Code Contributions & Merged Pull Requests Card */}
+            {(profile.role === "contributor" ||
+              (profile.roles && profile.roles.includes("contributor")) ||
+              (profile.solvedIssuesCount && profile.solvedIssuesCount > 0) ||
+              (profile.contributorContributions && profile.contributorContributions.length > 0)) && (
+              <div className="bg-[#0c102b]/40 border border-white/[0.05] rounded-3xl p-6 sm:p-8 backdrop-blur-md shadow-2xl relative">
+                <div className="absolute top-0 left-0 h-[2px] w-full bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
+                <div className="flex items-start justify-between gap-4 mb-1">
+                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                    <GitPullRequest className="text-blue-400" size={20} /> Code Contributions & Merged PRs
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-300 border border-blue-500/20">
+                      {profile.solvedIssuesCount || 0} Merged
+                    </span>
+                  </div>
+                </div>
+                <p className="text-xs text-slate-400 mb-6 font-light">
+                  GitHub pull requests merged and points awarded to this Contributor.
+                </p>
+
+                {(!profile.contributorContributions || profile.contributorContributions.length === 0) ? (
+                  <div className="py-8 text-center text-slate-500 border border-dashed border-white/5 rounded-2xl bg-slate-950/20">
+                    <p className="text-xs font-light">No merged pull requests logged yet.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
+                    {[...profile.contributorContributions].reverse().map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="p-4 rounded-xl bg-slate-900/30 border border-white/5 hover:border-white/10 transition duration-200 flex items-center justify-between gap-4"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+                            <GitPullRequest size={15} />
+                          </div>
+                          <div>
+                            <div className="text-xs font-bold text-white line-clamp-1">{item.reason}</div>
+                            <div className="text-[10px] text-slate-500 font-mono mt-0.5">
+                              {new Date(item.createdAt).toLocaleDateString()}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs font-extrabold">
+                            +{item.points} PTS
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Referred Developers Card */}
             {(profile.role === "ambassador" || (profile.roles && profile.roles.includes("ambassador"))) && (
