@@ -585,7 +585,14 @@ const updateProfile = async (req, res) => {
 
     if (name !== undefined) user.name = name;
     if (college !== undefined) user.college = college;
-    if (githubUsername !== undefined) user.githubUsername = githubUsername;
+    if (githubUsername !== undefined) {
+      let clean = String(githubUsername).trim().replace(/^@/, "");
+      if (clean.toLowerCase().includes("github.com")) {
+        const parts = clean.split(/github\.com\/?/i);
+        clean = (parts[parts.length - 1] || "").replace(/^\//, "").split("/")[0].split("?")[0].trim();
+      }
+      user.githubUsername = clean;
+    }
     if (avatar !== undefined) user.avatar = avatar;
 
     if (skills !== undefined) {

@@ -4,6 +4,7 @@ const User = require("../models/user.model");
 const RoleApplication = require("../models/role.model");
 const crypto = require("crypto");
 const { fetchRepoDetails, fetchRepoIssues, fetchRepoContributors, fetchRepoPullRequests } = require("../utils/github.utils");
+const { syncProjectPullRequests } = require("../utils/sync.utils");
 
 const getProjectBanner = (title, image) => {
   if (image && !image.includes("photo-1618005182384-a83a8bd57fbe") && !image.includes("smart_city_analyzer.png")) {
@@ -212,11 +213,15 @@ const getProjectById = async (req, res) => {
       });
     }
 
-    // Fetch live Pull Requests from GitHub
+    // Fetch live Pull Requests from GitHub and sync contributor points in background
     let prsList = [];
     if (project.githubOwner && project.githubRepo) {
       try {
         prsList = await fetchRepoPullRequests(project.githubOwner, project.githubRepo);
+        // Synchronize merged PRs with database points asynchronously
+        syncProjectPullRequests(project).catch((syncErr) =>
+          console.warn("[Background Project PR Sync Error]:", syncErr.message)
+        );
       } catch (err) {
         console.warn("Could not fetch GitHub pull requests:", err.message);
       }
