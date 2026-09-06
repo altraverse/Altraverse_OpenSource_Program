@@ -84,11 +84,13 @@ const fetchRepoDetails = async (owner, repo) => {
  * Helper to determine difficulty and point value from title and labels.
  */
 const parseDifficultyAndPoints = (title, labels) => {
-  // 1. Try to parse points from the title suffix (e.g. "- 10", "- 20", "- 30", "- 40", "- 50")
-  const match = String(title || "").match(/-\s*(\d+)\s*$/);
-  if (match) {
-    const pts = parseInt(match[1]);
-    if ([10, 20, 30, 40, 50].includes(pts)) {
+  const strTitle = String(title || "").trim();
+
+  // 1. Try to parse points from the title suffix (e.g. "- 10", "- 20", "- 30", "- 40", "- 50", "- 10 pts", "- 100 points")
+  const suffixMatch = strTitle.match(/-\s*(\d+)\s*(?:pts?|points?)?\s*$/i);
+  if (suffixMatch) {
+    const pts = parseInt(suffixMatch[1], 10);
+    if (!isNaN(pts) && pts > 0) {
       let difficulty = "Medium";
       if (pts <= 20) difficulty = "Easy";
       else if (pts >= 40) difficulty = "Hard";
@@ -96,14 +98,54 @@ const parseDifficultyAndPoints = (title, labels) => {
     }
   }
 
-  // 2. Fall back to label-based parsing on 10/30/50 scale
-  const labelNames = (labels || []).map((l) => l.name.toLowerCase());
+  // 2. Try bracketed points (e.g. "[10 pts]", "[20 points]", "[30]")
+  const bracketMatch = strTitle.match(/\[\s*(\d+)\s*(?:pts?|points?)?\s*\]/i);
+  if (bracketMatch) {
+    const pts = parseInt(bracketMatch[1], 10);
+    if (!isNaN(pts) && pts > 0) {
+      let difficulty = "Medium";
+      if (pts <= 20) difficulty = "Easy";
+      else if (pts >= 40) difficulty = "Hard";
+      return { difficulty, points: pts };
+    }
+  }
+
+  // 3. Try points in title (e.g. "Points: 30", "30 points", "pts: 20")
+  const colonMatch = strTitle.match(/(?:points?|pts?)\s*[:=-]\s*(\d+)/i) || strTitle.match(/(\d+)\s*(?:points|pts)\b/i);
+  if (colonMatch) {
+    const pts = parseInt(colonMatch[1], 10);
+    if (!isNaN(pts) && pts > 0) {
+      let difficulty = "Medium";
+      if (pts <= 20) difficulty = "Easy";
+      else if (pts >= 40) difficulty = "Hard";
+      return { difficulty, points: pts };
+    }
+  }
+
+  // 4. Fall back to label-based parsing on 10/20/30/40/50 scale
+  const labelNames = (labels || []).map((l) => (typeof l === "string" ? l : l.name || "").toLowerCase());
   
-  if (labelNames.some((l) => l.includes("easy") || l.includes("good first issue") || l.includes("beginner"))) {
+  for (const lbl of labelNames) {
+    const lblMatch = lbl.match(/(\d+)\s*(?:pts?|points?)/i);
+    if (lblMatch) {
+      const pts = parseInt(lblMatch[1], 10);
+      if (!isNaN(pts) && pts > 0) {
+        let difficulty = "Medium";
+        if (pts <= 20) difficulty = "Easy";
+        else if (pts >= 40) difficulty = "Hard";
+        return { difficulty, points: pts };
+      }
+    }
+  }
+
+  if (labelNames.some((l) => l.includes("easy") || l.includes("good first issue") || l.includes("beginner") || l.includes("level 1") || l.includes("level-1"))) {
     return { difficulty: "Easy", points: 10 };
   }
-  if (labelNames.some((l) => l.includes("hard") || l.includes("advanced") || l.includes("complex"))) {
+  if (labelNames.some((l) => l.includes("hard") || l.includes("advanced") || l.includes("complex") || l.includes("level 3") || l.includes("level-3"))) {
     return { difficulty: "Hard", points: 50 };
+  }
+  if (labelNames.some((l) => l.includes("medium") || l.includes("intermediate") || l.includes("level 2") || l.includes("level-2"))) {
+    return { difficulty: "Medium", points: 30 };
   }
   
   // Default to Medium / 30
@@ -192,21 +234,25 @@ const fetchRepoContributors = async (owner, repo) => {
  */
 const fetchRepoPullRequests = async (owner, repo) => {
   try {
-    const rawPrs = await githubRequest(`/repos/${owner}/${repo}/pulls?state=closed&per_page=15`);
+    const rawPrs = await githubRequest(`/repos/${owner}/${repo}/pulls?state=closed&per_page=30`);
     if (!Array.isArray(rawPrs)) return [];
 
     return rawPrs.map((pr) => {
       const isMerged = !!pr.merged_at;
+      const { points } = parseDifficultyAndPoints(pr.title, pr.labels);
       return {
         id: `#${pr.number}`,
         number: pr.number,
         title: pr.title,
+        body: pr.body || "",
+        labels: pr.labels || [],
         author: pr.user ? pr.user.login : "contributor",
         authorAvatar: pr.user ? pr.user.avatar_url : "",
         authorUrl: pr.user ? pr.user.html_url : "",
         date: formatRelativeDate(pr.merged_at || pr.closed_at || pr.created_at),
+        merged_at: pr.merged_at,
         status: isMerged ? "Merged" : "Closed",
-        points: isMerged ? 100 : 0,
+        points: isMerged ? points : 0,
         link: pr.html_url,
       };
     });
@@ -221,5 +267,7 @@ module.exports = {
   fetchRepoIssues,
   fetchRepoContributors,
   fetchRepoPullRequests,
+  parseDifficultyAndPoints,
+  formatRelativeDate,
 };
 

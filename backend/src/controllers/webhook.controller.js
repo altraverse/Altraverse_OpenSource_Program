@@ -2,7 +2,8 @@ const crypto = require("crypto");
 const Project = require("../models/project.model");
 const Issue = require("../models/issue.model");
 const User = require("../models/user.model");
-const { fetchRepoDetails } = require("../utils/github.utils");
+const RoleApplication = require("../models/role.model");
+const { fetchRepoDetails, parseDifficultyAndPoints } = require("../utils/github.utils");
 
 /**
  * timing-safe signature verification for GitHub webhooks
@@ -22,35 +23,6 @@ const verifySignature = (rawBody, secret, signatureHeader) => {
   } catch {
     return false;
   }
-};
-
-/**
- * Helper to determine difficulty and points from title and labels array in payload
- */
-const parseDifficultyAndPoints = (title, labels) => {
-  // 1. Try to parse points from the title suffix (e.g. "- 10", "- 20", "- 30", "- 40", "- 50")
-  const match = String(title || "").match(/-\s*(\d+)\s*$/);
-  if (match) {
-    const pts = parseInt(match[1]);
-    if ([10, 20, 30, 40, 50].includes(pts)) {
-      let difficulty = "Medium";
-      if (pts <= 20) difficulty = "Easy";
-      else if (pts >= 40) difficulty = "Hard";
-      return { difficulty, points: pts };
-    }
-  }
-
-  // 2. Fall back to label-based parsing on 10/30/50 scale
-  const labelNames = (labels || []).map((l) => l.name.toLowerCase());
-  
-  if (labelNames.some((l) => l.includes("easy") || l.includes("good first issue") || l.includes("beginner"))) {
-    return { difficulty: "Easy", points: 10 };
-  }
-  if (labelNames.some((l) => l.includes("hard") || l.includes("advanced") || l.includes("complex"))) {
-    return { difficulty: "Hard", points: 50 };
-  }
-  
-  return { difficulty: "Medium", points: 30 };
 };
 
 /**
@@ -200,25 +172,60 @@ const handleGithubWebhook = async (req, res) => {
           }
         }
 
+        // If no linked issue points detected, parse PR title/labels directly
+        if (pointsEarned === 0) {
+          const prParsed = parseDifficultyAndPoints(prTitle, pr.labels);
+          pointsEarned = prParsed.points || 30;
+          closedIssuesCount = 1;
+        }
+
         // Award points to the contributor if registered
         if (pointsEarned > 0) {
+          const cleanUsername = String(githubUsername || "").replace(/^@/, "").trim();
           const contributor = await User.findOne({
-            githubUsername: { $regex: new RegExp(`^${githubUsername}$`, "i") },
+            $or: [
+              { githubUsername: { $regex: new RegExp(`^@?${cleanUsername}$`, "i") } },
+              { githubUsername: { $regex: new RegExp(`github\\.com/${cleanUsername}(?:/|$)`, "i") } },
+            ],
           });
 
           if (contributor) {
-            contributor.points = (contributor.points || 0) + pointsEarned;
-            contributor.solvedIssuesCount = (contributor.solvedIssuesCount || 0) + closedIssuesCount;
-            
-            if (!contributor.pointsHistory) contributor.pointsHistory = [];
-            contributor.pointsHistory.push({
-              points: pointsEarned,
-              reason: `Merged PR #${pr.number} in ${project.title} (${closedIssuesCount} issues resolved)`,
-              createdAt: new Date()
-            });
+            const reasonTag = `PR #${pr.number}`;
+            const alreadyAwarded = (contributor.pointsHistory || []).some(
+              (h) => h.reason && h.reason.includes(reasonTag) && (h.reason.includes(project.title) || h.reason.includes(project.githubRepo))
+            );
 
-            await contributor.save();
-            console.log(`[Webhook] Awarded ${pointsEarned} points to user ${contributor.name} (${githubUsername}). New balance: ${contributor.points}`);
+            if (!alreadyAwarded) {
+              contributor.points = (contributor.points || 0) + pointsEarned;
+              contributor.solvedIssuesCount = (contributor.solvedIssuesCount || 0) + (closedIssuesCount || 1);
+              
+              // Automatically upgrade / unlock contributor role for leaderboard
+              if (!contributor.roles) contributor.roles = ["user"];
+              if (!contributor.roles.includes("contributor")) {
+                contributor.roles.push("contributor");
+              }
+              if (contributor.role === "user" || !contributor.role) {
+                contributor.role = "contributor";
+              }
+
+              // Also approve pending role application for contributor
+              await RoleApplication.updateMany(
+                { userId: contributor._id, roleId: "contributor", status: "pending" },
+                { $set: { status: "approved" } }
+              );
+
+              if (!contributor.pointsHistory) contributor.pointsHistory = [];
+              contributor.pointsHistory.push({
+                points: pointsEarned,
+                reason: `Merged PR #${pr.number}: "${prTitle}" in ${project.title} (${closedIssuesCount} issue(s) resolved)`,
+                createdAt: new Date()
+              });
+
+              await contributor.save();
+              console.log(`[Webhook] Awarded ${pointsEarned} points to user ${contributor.name} (${cleanUsername}). New balance: ${contributor.points}`);
+            } else {
+              console.log(`[Webhook] PR #${pr.number} points already awarded to ${contributor.name}. Skipping.`);
+            }
           } else {
             console.warn(`[Webhook] PR contributor '${githubUsername}' is not registered on the platform. Points not awarded.`);
           }
