@@ -128,6 +128,22 @@ const applyRole = async (req, res) => {
       }
     }
 
+    // Ensure applicant User has githubUsername synced from github field if provided
+    if (github) {
+      let cleanGithub = String(github).trim().replace(/^@/, "");
+      if (cleanGithub.toLowerCase().includes("github.com")) {
+        const parts = cleanGithub.split(/github\.com\/?/i);
+        cleanGithub = (parts[parts.length - 1] || "").replace(/^\//, "").split("/")[0].split("?")[0].trim();
+      }
+      if (cleanGithub) {
+        const applicantUser = await User.findById(req.user._id);
+        if (applicantUser && (!applicantUser.githubUsername || applicantUser.githubUsername.includes("http") || applicantUser.githubUsername.includes("@"))) {
+          applicantUser.githubUsername = cleanGithub;
+          await applicantUser.save();
+        }
+      }
+    }
+
     // 1. Save application data to MongoDB (default status is "pending")
     const appData = {
       userId: req.user._id,
@@ -847,6 +863,41 @@ const getUserDetailsForAdmin = async (req, res) => {
       }));
     }
 
+    let contributorStats = null;
+    let contributorContributions = [];
+
+    if (
+      targetUser.role === "contributor" ||
+      (targetUser.roles && targetUser.roles.includes("contributor")) ||
+      (targetUser.solvedIssuesCount && targetUser.solvedIssuesCount > 0)
+    ) {
+      contributorContributions = (targetUser.pointsHistory || [])
+        .filter((h) => {
+          const r = (h.reason || "").toLowerCase();
+          return (
+            r.includes("merged pr") ||
+            r.includes("pr #") ||
+            r.includes("solved issue") ||
+            r.includes("pull request") ||
+            r.includes("issue")
+          );
+        })
+        .map((h) => ({
+          points: h.points,
+          reason: h.reason,
+          createdAt: h.createdAt,
+        }));
+
+      contributorStats = {
+        solvedIssuesCount: targetUser.solvedIssuesCount || 0,
+        githubUsername: targetUser.githubUsername || "",
+        totalPullRequestsPoints: contributorContributions.reduce(
+          (sum, c) => sum + (c.points || 0),
+          0
+        ),
+      };
+    }
+
     res.status(200).json({
       success: true,
       user: {
@@ -855,7 +906,9 @@ const getUserDetailsForAdmin = async (req, res) => {
         ambassadorRank,
         contributorRank,
         referralStats,
-        referredUsersList
+        referredUsersList,
+        contributorStats,
+        contributorContributions
       },
       applications
     });

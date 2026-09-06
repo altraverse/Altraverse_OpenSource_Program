@@ -1,6 +1,42 @@
 const User = require("../models/user.model");
 
 /**
+ * Helper to calculate ambassador-specific referral points
+ */
+const getAmbassadorPoints = (user) => {
+  let ap = 0;
+  if (user.pointsHistory && Array.isArray(user.pointsHistory) && user.pointsHistory.length > 0) {
+    for (const h of user.pointsHistory) {
+      const r = (h.reason || "").toLowerCase();
+      if (
+        r.includes("referral") ||
+        r.includes("ambassador") ||
+        r.includes("invite") ||
+        r.includes("signup of") ||
+        r.includes("role to") ||
+        r.includes("linkedin") ||
+        r.includes("badge")
+      ) {
+        ap += h.points || 0;
+      }
+    }
+  }
+
+  // Fallback to referralsCount * 20 if pointsHistory was not logged
+  if (ap === 0 && (user.referralsCount || 0) > 0) {
+    ap = (user.referralsCount || 0) * 20;
+  }
+
+  // If user has only ambassador role and has points
+  const isContributor = user.role === "contributor" || (user.roles && user.roles.includes("contributor")) || (user.solvedIssuesCount || 0) > 0;
+  if (ap === 0 && !isContributor && (user.role === "ambassador" || user.roles?.includes("ambassador"))) {
+    ap = user.points || 0;
+  }
+
+  return ap;
+};
+
+/**
  * Get Ranked Ambassadors for the Leaderboard
  * GET /api/leaderboard/ambassador
  */
@@ -9,55 +45,70 @@ const getAmbassadorLeaderboard = async (req, res) => {
     const skip = parseInt(req.query.skip) || 0;
     const limit = parseInt(req.query.limit) || 0; // 0 means retrieve all
 
-    // Fetch users with ambassador role who have > 0 points
+    // Fetch users with ambassador role
     const query = {
       $or: [
         { role: "ambassador" },
-        { roles: "ambassador" }
+        { roles: "ambassador" },
+        { referralsCount: { $gt: 0 } },
       ],
-      points: { $gt: 0 }
     };
 
-    let mongoQuery = User.find(query, "name avatar points referralsCount referralCode role")
-      .sort({ points: -1, referralsCount: -1 });
+    const users = await User.find(
+      query,
+      "name avatar points referralsCount referralCode role roles pointsHistory"
+    ).lean();
 
-    if (limit > 0) {
-      mongoQuery = mongoQuery.skip(skip).limit(limit);
-    } else {
-      mongoQuery = mongoQuery.skip(skip);
-    }
+    // Calculate ambassador points and filter for active ambassadors
+    const validAmbassadors = users
+      .map((user) => {
+        const ambassadorPoints = getAmbassadorPoints(user);
+        return {
+          id: user._id,
+          name: user.name,
+          avatar: user.avatar || "",
+          points: ambassadorPoints,
+          commits: user.referralsCount || 0, // 'commits' maps to invites count
+          referralCode: user.referralCode || "",
+          role: "Ambassador",
+        };
+      })
+      .filter((u) => u.points > 0 || u.commits > 0);
 
-    const ambassadors = await mongoQuery.lean();
+    // Sort descending by points, then by referrals
+    validAmbassadors.sort((a, b) => b.points - a.points || b.commits - a.commits);
 
-    // Assign rank
-    const rankedAmbassadors = ambassadors.map((user, index) => ({
-      rank: index + 1 + skip,
-      id: user._id,
-      name: user.name,
-      avatar: user.avatar || "",
-      points: user.points || 0,
-      commits: user.referralsCount || 0, // Reuse 'commits' mapping for display invites count
-      referralCode: user.referralCode || "",
-      role: "Ambassador"
+    const totalCount = validAmbassadors.length;
+
+    // Apply pagination slice
+    const paginatedSlice = limit > 0
+      ? validAmbassadors.slice(skip, skip + limit)
+      : skip > 0
+      ? validAmbassadors.slice(skip)
+      : validAmbassadors;
+
+    // Assign dynamic 1-indexed ranks
+    const rankedAmbassadors = paginatedSlice.map((u, idx) => ({
+      ...u,
+      rank: skip + idx + 1,
     }));
-
-    const totalCount = await User.countDocuments(query);
 
     res.status(200).json({
       success: true,
       leaderboard: rankedAmbassadors,
-      hasMore: limit > 0 ? (skip + ambassadors.length < totalCount) : false,
-      totalCount
+      hasMore: limit > 0 ? skip + paginatedSlice.length < totalCount : false,
+      totalCount,
     });
   } catch (error) {
     console.error("Get ambassador leaderboard error:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to load ambassador leaderboard data"
+      message: "Failed to load ambassador leaderboard data",
     });
   }
 };
 
 module.exports = {
-  getAmbassadorLeaderboard
+  getAmbassadorLeaderboard,
 };
+
